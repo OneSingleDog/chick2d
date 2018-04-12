@@ -1,0 +1,47 @@
+game
+	[seed]
+
+	map
+		[wall]
+		[gift]
+	item
+
+	player
+		[life]
+		[armor]
+		[main_weapon]
+		[sub_weapon]
+		[pill]
+			1 100%b to100%
+			2 75%b	to75%
+			3 100%b	5%
+			4 75%b	5%
+		[location] - (x,y)
+		[angle]
+
+		cure()
+		more_bullet()
+		shoot()
+		exchange_gun()
+		pick()
+
+	weapon
+		[id]
+		[hurt]
+		[angle]
+		[max_bullet]
+		[cur_bullet]
+		[tot_bullet]
+		[distance]
+		[can_shoot]
+
+	wave
+		[color]
+		step_wave
+		gun_wave
+
+web_bag
+	shoot
+	player
+	gift
+	message
