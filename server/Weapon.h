@@ -41,48 +41,47 @@
 
 class Weapon {
 public:
-	void  InitWeapon(unsigned type);
-	float GetRandomFireAngle(float curangle);
-	void  LoadBegin(unsigned bgtime);
-	void  LoadEnd(unsigned edtime);
-	bool  Fire(unsigned nowtime)
-	void  Shoot(float _angle);
-	void  PickBullet(unsigned BulletCount);
+	void  InitWeapon(unsigned type); // 武器的初始化
+	float GetRandomFireAngle(float curangle); // 根据玩家选定的射击角在武器偏角范围内随机生成最终角度
+	void  LoadBegin(unsigned bgtime);  // 装弹开始
+	void  LoadEnd(unsigned edtime);    // 装弹结束，每次收到包后都要判断
+	bool  Fire(unsigned nowtime);      // 开火，返回是否开火成功
+	void  Exchange();				   // 当玩家调用更换武器时，调用该函数，主要是shut掉换弹操作
+	void  PickBullet(unsigned BulletCount); // 捡子弹，子弹会加入备弹中
 
-	bool CanShoot()const{return canshoot;}
-	float GetAngle()const{return angle;}
+	//bool CanShoot()const{return canshoot;}
+	float GetAngle()const{return angle;} // 获取武器的偏角
 	//void SetAngle(float _angle){angle = _angle;}
-	float GetShootDelay()const{return shootdelay;}
-	float GetLoadTime()const{return loadtime;}
-	float GetDamage()const{return damage;}
-	float GetDistance()const{return distance;}
-	unsigned GetType()const{return WeaponType;}
-	unsigned GetCurMaxBullet()const{return CurMaxBullet;}
-	unsigned GetCurBullet()const{return CurBullet;}
-	unsigned GetTotalBullet()const{return TotalBullet;}
-	unsigned GetBackupBullet()const{return BackupBullet;}
-
+	float GetShootDelay()const{return shootdelay;} // 获取射击间隔
+	float GetLoadTime()const{return loadtime;} // 获取换弹时间
+	float GetDamage()const{return damage;}   // 获取伤害值
+	float GetDistance()const{return distance;} // 获取射程
+	unsigned GetType()const{return WeaponType;} // 获取武器的type
+	unsigned GetCurMaxBullet()const{return CurMaxBullet;} // 获取弹夹容量
+	unsigned GetCurBullet()const{return CurBullet;} // 获取当前弹夹内子弹数
+	unsigned GetTotalBullet()const{return TotalBullet;} // 获取总共子弹数
+	unsigned GetBackupBullet()const{return BackupBullet;} // 获取备弹数
+	// 设置共有多少子弹，主要用于玩家死亡时和箱子中的随机生成
 	void SetTotalBullet(unsigned num){TotalBullet = num;BackupBullet = num;CurBullet = 0;}
 
 private:
-	unsigned WeaponType;    // ����������
-	unsigned CurMaxBullet;  // ��ǰ�����������ӵ���
-	unsigned CurBullet;     // ��ǰ���е��ӵ���
-	unsigned TotalBullet;   // ��ǰ���ж����ӵ�
-	unsigned BackupBullet;
+	unsigned WeaponType;    // 武器种类
+	unsigned CurMaxBullet;  // 弹夹容量
+	unsigned CurBullet;     // 当前弹夹内子弹数
+	unsigned TotalBullet;   // 总共的子弹数
+	unsigned BackupBullet;  // 备弹数
 
-	bool IsLoading;
-	unsigned Loadbegintime;
+	bool IsLoading;         // 标志正在进行装弹操作
+	unsigned Loadbegintime; // 记录开始装弹的时间
 
 	//bool IsShooting;
-	unsigned Shootbegintime;
+	unsigned Shootbegintime; // 记录上次射击的时间
 
-	float distance;         // ����������
-	float damage;			// �������˺�ֵ
-	float loadtime;			// ����ʱ��
-	float shootdelay;		// ��������
-	float angle;            // �����������Ƕ�
-	bool  canshoot;			// ���������ı�־λ
+	float distance;         // 武器的射程
+	float damage;			// 武器的伤害
+	float loadtime;			// 装弹时间
+	float shootdelay;		// 射击间隔
+	float angle;            // 射击偏角
 };
 
 
