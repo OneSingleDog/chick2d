@@ -4,20 +4,20 @@ void Player::InitalPlayer(int _player_id){
 	player_id = _player_id;
 	KillAmount = 0;
 	Isdead = false;
-	BagIsFull = false;
+//	BagIsFull = false;
 
 	Player_Current_Hp = 100.0;
 	Player_Total_Hp = 100.0;
 	Hppercentage = 1.0;
 
-	bagamount = FULLBAG;
-	Player_Speed = DEFAULTSPEED;
+	//bagamount = FULLBAG;
+	//Player_Speed = DEFAULTSPEED;
 	IsCuring = false;
 	//IsLoading = false;
 	HaveArmor = false;
 	Armornaijiu = 0;
 
-	PlayerDirection = 1;
+	//PlayerDirection = 1;
 
 	MainWeapon = NULL;
 	SubWeapon = NULL;
@@ -124,11 +124,87 @@ void Player::BeAttack(float damage){
 	SetHpPercent();
 }
 
-void Player::Shoot(unsigned targetX,unsigned target Y)
+void Player::LossHp(float damage){
+	if(Player_Current_Hp > damage)Player_Current_Hp -= damage;
+	else {
+		Player_Current_Hp = 0;
+		Isdead = true;
+	}
+	SetHpPercent();
+}
+
+bool Player::Shoot(unsigned targetX,unsigned target Y,unsigned nowtime)
 {
-
+	float shootangle = 0.0;
+	float dis = (float)sqrt((targetX - GetX())*(targetX - GetX()) + (targetY - GetY())*(targetY - GetY()));
+	float disX = (float)(targetX - GetX());
+	float disY = (float)(targetY - GetY());
+	shootangle = (float)acos(dis/disX);
+	if(disY < 0)shootangle = 2*PI - shootangle;
+	if(MainWeapon == NULL)return false;
+	shootangle = MainWeapon -> GetRandomFireAngle();
+	ShootAngle = shootangle;
+	//shootangle = MainWeapon
+	return MainWeapon -> Fire(nowtime);
 }
 
-void Player::LoadBegin(unsigned sttime){
-
+void Player::PickPillOne(unsigned num){
+	PillsOne += num;
 }
+
+void Player::PickPillTwo(unsigned num){
+	PillsTwo += num;
+}
+
+void Player::PickPillThree(unsigned num){
+	PillsThree += num;
+}
+
+void Player::PickPillFour(unsigned num){
+	PillsFour += num;
+}
+
+void Player::PickWeapon(Weapon* _weapon){
+	if(_weapon == NULL)return;
+	bool flag = false;
+	if(MainWeapon == NULL){
+		MainWeapon = _weapon;
+		_weapon = NULL;
+	}
+	//else if(SubWeapon == NULL)SubWeapon = _weapon;
+	else{
+		if(MainWeapon -> GetType() == _weapon -> GetType()){
+			MainWeapon -> PickBullet(_weapon -> GetTotalBullet());
+			_weapon -> SetTotalBullet(0);
+		}
+		else flag = true;
+	}
+	if(!flag)return;
+	if(SubWeapon == NULL){
+		SubWeapon = _weapon;
+		_weapon = NULL;
+	}
+	else{
+		if(SubWeapon -> GetType() == _weapon -> GetType()){
+			SubWeapon -> PickBullet(_weapon -> GetTotalBullet());
+			_weapon -> SetTotalBullet(0);
+		}
+		else {
+			delete SubWeapon;
+			SubWeapon = _weapon;
+		}
+	}
+}
+
+void Player::ExchangeWeapon(){
+	IsCuring = false;
+	Weapon* temp = NULL;
+	if(MainWeapon != NULL)MainWeapon -> Exchange();
+	temp = MainWeapon;
+	MainWeapon = SubWeapon;
+	SubWeapon = temp;
+}
+
+// void Player::LoadBegin(unsigned sttime){
+//
+// }

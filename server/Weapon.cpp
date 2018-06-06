@@ -95,8 +95,15 @@ void Weapon::PickBullet(unsigned BulletCount) {
 }
 
 bool Weapon::Fire(unsigned nowtime){
-	if(nowtime - Shootbegintime <= shootdelay)return;
-	if(CurBullet == 0)return;
+	if(nowtime - Shootbegintime <= shootdelay)return false;
+	if(CurBullet == 0)return false;
+	if(IsLoading)return false;
 	Shootbegintime = nowtime;
 	CurBullet --;
+	TotalBullet --;
+	return true;
+}
+
+void Weapon::Exchange(){
+	IsLoadig = false;
 }

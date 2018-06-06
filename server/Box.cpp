@@ -51,6 +51,10 @@ void Box::InitBoxByRandom(){
         weaponone = NULL;
         weapontwo = NULL;
     }
+
+    randtemp = rand()%100;
+    if(randtemp < 40)Armornaijiu = 100;
+    else Armornaijiu = 0;
 }
 
 void Box::InitBoxByPlayer(Player _player){
@@ -73,6 +77,8 @@ void Box::InitBoxByPlayer(Player _player){
         weapontwo -> SetTotalBullet(weapontwo -> GetTotalBullet());
     }
     else weapontwo = NULL;
+
+    Armornaijiu = _player -> GetArmorNaijiu();
 }
 
 void Box::TakePillOne(unsigned num){
@@ -103,6 +109,10 @@ void Box::TakeWeaponOneBul(unsigned num){
 void Box::TakeWeaponTwoBul(unsigned num){
     if(num > weapontwo -> GetTotalBullet())return;
     weapontwo -> SetTotalBullet(weapontwo -> GetTotalBullet() - num);
+}
+
+void Box::TakeArmor(unsigned oldnaijiu){
+    Armornaijiu = oldnaijiu;
 }
 
 void Box::TakeWeaponOne(){
