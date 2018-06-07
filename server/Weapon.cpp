@@ -105,5 +105,5 @@ bool Weapon::Fire(unsigned nowtime){
 }
 
 void Weapon::Exchange(){
-	IsLoadig = false;
+	IsLoading = false;
 }

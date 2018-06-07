@@ -1,0 +1,31 @@
+struct init{
+    unsigned player_x;
+    unsigned player_y;
+    unsigned player_id;
+};
+
+struct run{
+    unsigned player_id; // 用以标识不同的player
+    unsigned player_x;
+    unsigned player_y;
+    bool IsMoving;      // 标志是否移动了
+    bool CureBegin;     // 标志开始打药
+    unsigned Curetype;  // 如果开始打药，是药品的种类1-4，否则是0
+    unsigned PickBoxId; // 表示捡东西的箱子id，0表示没有捡箱子
+    bool PickPillone;   // 是否捡药品一，如果PBI为0，则以下的值无所谓
+    unsigned PickPilloneAmount; // 捡药品一的数量
+    bool PickPilltwo;   // 是否捡药品二
+    unsigned PickPilltwoAmount; // 捡药品二的数量
+    bool PickPillthree;  // 是否捡药品三
+    unsigned PickPillthreeAmount;   // 捡药品三的数量
+    bool PickPillfour;   // 是否捡药品四
+    unsigned PickPillfourAmount;    // 捡药品四的数量
+    bool PickArmor;     // 是否捡防弹衣
+    bool PickWeapon1;   // 是否捡武器1
+    bool PickWeapon2;   // 是否捡武器2
+    bool ShootRequest;  // 是否有射击请求
+    unsigned ShootTargetX;  // 射击坐标
+    unsigned ShootTargetY;  // 射击坐标
+    bool LoadRequest;       // 是否有换弹请求
+    bool ExchangeRequest;   // 是否有切枪请求
+}

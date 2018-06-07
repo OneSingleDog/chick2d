@@ -15,6 +15,7 @@
 
 class Player :public node {
 public:
+	Player(int _x,int _y):Node(_x,_y){}
 	// 初始化player
 	void InitalPlayer(int _player_id);
 	// 改变玩家的坐标
@@ -27,6 +28,8 @@ public:
 	bool Shoot(unsigned targetX,unsigned targetY,unsigned nowtime);
 	// 被武器击中，伤害为damage
 	void BeAttack(float damage);
+	// 换弹，返回是否可以换弹
+	bool LoadBullet(unsigned nowtime);
     // 受到电网伤害
 	void LossHp(float damage);
 	// 换武器
@@ -42,7 +45,7 @@ public:
     // 捡第四类药品
 	void PickPillFour(unsigned num);
 	// 捡武器
-	void PickWeapon(Weapon* _weapon);
+	Weapon* PickWeapon(Weapon* _weapon);
 	// 捡防弹衣
 	void PickArmor(unsigned naijiu){Armornaijiu = naijiu;}
 	// 设置生命值的百分比
