@@ -1,8 +1,8 @@
 #ifndef __BOX_H__
 #define __BOX_H__
 
-#include "Weapon.h"
 #include "Player.h"
+#include "node.h"
 
 class Box:public node{
 private:
@@ -59,10 +59,10 @@ public:
 	void TakeWeaponOneBul(unsigned num);
 	// 拿走weapon2 num个子弹
 	void TakeWeaponTwoBul(unsigned num);
-	// 拿走weapon1
-	void TakeWeaponOne();
-	// 拿走weapon2
-	void TakeWeaponTwo();
+	// 用_weapon 替换weapon1
+	void TakeWeaponOne(Weapon* _weapon);
+	// 用_weapon 替换weapon2
+	void TakeWeaponTwo(Weapon* _weapon);
 
 	// 拿走防弹衣，换下耐久为oldnaijiu的旧防弹衣
 	void TakeArmor(unsigned oldnaijiu);

@@ -48,7 +48,7 @@ public:
 	bool  Fire(unsigned nowtime);      // 开火，返回是否开火成功
 	void  Exchange();				   // 当玩家调用更换武器时，调用该函数，主要是shut掉换弹操作
 	void  PickBullet(unsigned BulletCount); // 捡子弹，子弹会加入备弹中
-
+	bool  IsLoadingBullet()const{return IsLoading}
 	//bool CanShoot()const{return canshoot;}
 	float GetAngle()const{return angle;} // 获取武器的偏角
 	//void SetAngle(float _angle){angle = _angle;}

@@ -115,10 +115,10 @@ void Box::TakeArmor(unsigned oldnaijiu){
     Armornaijiu = oldnaijiu;
 }
 
-void Box::TakeWeaponOne(){
-    weaponone = NULL;
+void Box::TakeWeaponOne(Weapon* _weapon){
+    weaponone = _weapon;
 }
 
-void Box::TakeWeaponTwo(){
-    weapontwo = NULL;
+void Box::TakeWeaponTwo(Weapon* _weapon){
+    weapontwo = _weapon;
 }

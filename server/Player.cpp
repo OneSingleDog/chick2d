@@ -164,8 +164,8 @@ void Player::PickPillFour(unsigned num){
 	PillsFour += num;
 }
 
-void Player::PickWeapon(Weapon* _weapon){
-	if(_weapon == NULL)return;
+Weapon* Player::PickWeapon(Weapon* _weapon){
+	if(_weapon == NULL)return NULL;
 	bool flag = false;
 	if(MainWeapon == NULL){
 		MainWeapon = _weapon;
@@ -179,7 +179,7 @@ void Player::PickWeapon(Weapon* _weapon){
 		}
 		else flag = true;
 	}
-	if(!flag)return;
+	if(!flag)return _weapon;
 	if(SubWeapon == NULL){
 		SubWeapon = _weapon;
 		_weapon = NULL;
@@ -190,10 +190,14 @@ void Player::PickWeapon(Weapon* _weapon){
 			_weapon -> SetTotalBullet(0);
 		}
 		else {
-			delete SubWeapon;
+			Weapon* temp;
+			SubWeapon -> SetTotalBullet(SubWeapon->GetTotalBullet());
+			SubWeapon = temp;
 			SubWeapon = _weapon;
+			_weapon = temp;
 		}
 	}
+	return _weapon;
 }
 
 void Player::ExchangeWeapon(){
@@ -203,6 +207,13 @@ void Player::ExchangeWeapon(){
 	temp = MainWeapon;
 	MainWeapon = SubWeapon;
 	SubWeapon = temp;
+}
+
+bool Player::LoadBullet(unsigend nowtime){
+	if(MainWeapon == NULL)return false;
+	if(MainWeapon -> GetBackupBullet() == 0)return false;
+	MainWeapon -> LoadBegin(nowtime);
+	return true;
 }
 
 // void Player::LoadBegin(unsigned sttime){
