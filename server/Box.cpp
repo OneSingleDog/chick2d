@@ -6,7 +6,7 @@ void Box::InitBoxByRandom(){
     else if(randtemp < 7)pill_amount = 1;
     else pill_amount = 2;
 
-    for(int i = 0;i < pill_amount;++ i){
+    for(unsigned i = 0;i < pill_amount;++ i){
         randtemp = rand()%100;
         if(randtemp < 10)Pill_One_Amount ++;
         else if(randtemp < 35)Pill_Two_Amount ++;
@@ -57,7 +57,7 @@ void Box::InitBoxByRandom(){
     else Armornaijiu = 0;
 }
 
-void Box::InitBoxByPlayer(Player _player){
+void Box::InitBoxByPlayer(Player*_player){
     pill_amount = _player -> GetPillOneAmount() + _player -> GetPillTwoAmount();
     pill_amount += _player -> GetPillThreeAmount() + _player -> GetPillFourAmount();
     Pill_One_Amount = _player -> GetPillOneAmount();
@@ -111,7 +111,7 @@ void Box::TakeWeaponTwoBul(unsigned num){
     weapontwo -> SetTotalBullet(weapontwo -> GetTotalBullet() - num);
 }
 
-void Box::TakeArmor(unsigned oldnaijiu){
+void Box::TakeArmor(double oldnaijiu){
     Armornaijiu = oldnaijiu;
 }
 

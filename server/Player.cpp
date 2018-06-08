@@ -1,7 +1,8 @@
 #include "Player.h"
 
-void Player::InitalPlayer(int _player_id){
+void Player::InitalPlayer(int _player_id,string _username){
 	player_id = _player_id;
+	username = _username;
 	KillAmount = 0;
 	Isdead = false;
 //	BagIsFull = false;
@@ -14,7 +15,7 @@ void Player::InitalPlayer(int _player_id){
 	//Player_Speed = DEFAULTSPEED;
 	IsCuring = false;
 	//IsLoading = false;
-	HaveArmor = false;
+
 	Armornaijiu = 0;
 
 	//PlayerDirection = 1;
@@ -43,7 +44,7 @@ void Player::CureStart(unsigned type,unsigned sttime){
 			curetype = type;
 			break;
 		case 2:
-			if(PIllsTwo == 0)return;
+			if(PillsTwo == 0)return;
 			if(Player_Current_Hp >= 75.0)return;
 			IsCuring = true;
 			curestarttime = sttime;
@@ -83,7 +84,7 @@ void Player::CureEnd(unsigned edtime){
 			curetype = 0;
 			Player_Current_Hp = 75.0;
 			SetHpPercent();
-			PIllsTwo --;
+			PillsTwo --;
 			break;
 		case 3:
 			if(edtime - curestarttime < PILLTHREEDELAY)return;
@@ -105,17 +106,11 @@ void Player::CureEnd(unsigned edtime){
 	return ;
 }
 
-void Player::BeAttack(float damage){
-	float coverdamage;
-	if(damage * 0.4 >= Armornaijiu){
-		coverdamage = 0.4 * Armornaijiu;
-		Armornaijiu --;
-		HaveArmor = false;
-	}
-	else {
-		coverdamage = 0.4*damage;
-	}
-	float realdamage = damage - coverdamage;
+void Player::BeAttack(double damage){
+	double coverdamage = damage*0.4;
+	if (coverdamage>=Armornaijiu)Armornaijiu = 0;
+	else Armornaijiu -= coverdamage;
+	double realdamage = damage - coverdamage;
 	if(Player_Current_Hp >= realdamage)Player_Current_Hp -= realdamage;
 	else {
 		Player_Current_Hp = 0.0;
@@ -124,7 +119,7 @@ void Player::BeAttack(float damage){
 	SetHpPercent();
 }
 
-void Player::LossHp(float damage){
+void Player::LossHp(double damage){
 	if(Player_Current_Hp > damage)Player_Current_Hp -= damage;
 	else {
 		Player_Current_Hp = 0;
@@ -133,16 +128,16 @@ void Player::LossHp(float damage){
 	SetHpPercent();
 }
 
-bool Player::Shoot(unsigned targetX,unsigned target Y,unsigned nowtime)
+bool Player::Shoot(unsigned targetX,unsigned targetY,unsigned nowtime)
 {
-	float shootangle = 0.0;
-	float dis = (float)sqrt((targetX - GetX())*(targetX - GetX()) + (targetY - GetY())*(targetY - GetY()));
-	float disX = (float)(targetX - GetX());
-	float disY = (float)(targetY - GetY());
-	shootangle = (float)acos(dis/disX);
+	double shootangle = 0.0;
+	double dis = (double)sqrt((targetX - GetX())*(targetX - GetX()) + (targetY - GetY())*(targetY - GetY()));
+	double disX = (double)(targetX - GetX());
+	double disY = (double)(targetY - GetY());
+	shootangle = (double)acos(dis/disX);
 	if(disY < 0)shootangle = 2*PI - shootangle;
 	if(MainWeapon == NULL)return false;
-	shootangle = MainWeapon -> GetRandomFireAngle();
+	shootangle = MainWeapon -> GetRandomFireAngle(shootangle);
 	ShootAngle = shootangle;
 	//shootangle = MainWeapon
 	return MainWeapon -> Fire(nowtime);
@@ -190,7 +185,7 @@ Weapon* Player::PickWeapon(Weapon* _weapon){
 			_weapon -> SetTotalBullet(0);
 		}
 		else {
-			Weapon* temp;
+			Weapon* temp=0;
 			SubWeapon -> SetTotalBullet(SubWeapon->GetTotalBullet());
 			SubWeapon = temp;
 			SubWeapon = _weapon;
@@ -209,7 +204,7 @@ void Player::ExchangeWeapon(){
 	SubWeapon = temp;
 }
 
-bool Player::LoadBullet(unsigend nowtime){
+bool Player::LoadBullet(unsigned nowtime){
 	if(MainWeapon == NULL)return false;
 	if(MainWeapon -> GetBackupBullet() == 0)return false;
 	MainWeapon -> LoadBegin(nowtime);

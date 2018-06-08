@@ -8,8 +8,9 @@ class Wall{
 private:
 	char wall[MAP_WIDTH][MAP_LENGTH];
 public:
-	Wall(char**);
+	Wall();
 	bool IsWall(int x,int y);
+	void Set(int x, int y, int value);
 };
 
 #endif

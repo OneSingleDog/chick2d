@@ -18,17 +18,17 @@ private:
 	unsigned Pill_Three_Amount;			// 第三种药品的数量
 	unsigned Pill_Four_Amount;			// 第四种药品的数量
 
-	unsigned Armornaijiu;				// 防弹衣耐久 0为没有防弹衣
+	double Armornaijiu;				// 防弹衣耐久 0为没有防弹衣
 public:
-	Box(int _x,int _y,int _id):x(_x),y(_y),Boxid(_id){}
+	Box(int _x,int _y,int _id):node(_x,_y),Boxid(_id){}
 	// 随机生成box
 	void InitBoxByRandom();
 	// 死了以后掉的box
-	void InitBoxByPlayer(Player _player);
+	void InitBoxByPlayer(Player*_player);
 	// 获取box的id
 	unsigned GetId()const{return Boxid;}
 	// 获取防弹衣耐久
-	unsigned GetArmorNaijiu()const{return Armornaijiu;}
+	double GetArmorNaijiu()const{return Armornaijiu;}
 	// 获取武器的数量
 	unsigned GetWeaponAmount()const{return weapon_amount;}
 	// 获取药品的数量
@@ -65,7 +65,7 @@ public:
 	void TakeWeaponTwo(Weapon* _weapon);
 
 	// 拿走防弹衣，换下耐久为oldnaijiu的旧防弹衣
-	void TakeArmor(unsigned oldnaijiu);
+	void TakeArmor(double oldnaijiu);
 };
 
 

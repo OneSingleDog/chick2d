@@ -1,13 +1,14 @@
 #include "Wall.h"
+#include <cstring>
 
-Wall::Wall(char** _wall){
-    for(int i = 0;i < MAP_WIDTH;++ i){
-        for(int j = 0;j < MAP_LENGTH;++ j){
-            wall[i][j] = _wall[i][j];
-        }
-    }
+Wall::Wall(){
+	memset(wall, 0, sizeof(wall));
 }
 
-bool IsWall(int x,int y){
+bool Wall::IsWall(int x,int y){
     return wall[x][y] == 1 ? true:false;
+}
+
+void Wall::Set(int x, int y, int value){
+	wall[x][y] = char(value);
 }

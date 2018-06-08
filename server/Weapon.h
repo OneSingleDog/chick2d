@@ -1,5 +1,5 @@
-#ifndef _WEAPON_H_
-#define _WEAPON_H_
+#ifndef __WEAPON_H__
+#define __WEAPON_H__
 
 #define PI 3.1415926535
 
@@ -42,20 +42,20 @@
 class Weapon {
 public:
 	void  InitWeapon(unsigned type); // 武器的初始化
-	float GetRandomFireAngle(float curangle); // 根据玩家选定的射击角在武器偏角范围内随机生成最终角度
+	double GetRandomFireAngle(double curangle); // 根据玩家选定的射击角在武器偏角范围内随机生成最终角度
 	void  LoadBegin(unsigned bgtime);  // 装弹开始
 	void  LoadEnd(unsigned edtime);    // 装弹结束，每次收到包后都要判断
 	bool  Fire(unsigned nowtime);      // 开火，返回是否开火成功
 	void  Exchange();				   // 当玩家调用更换武器时，调用该函数，主要是shut掉换弹操作
 	void  PickBullet(unsigned BulletCount); // 捡子弹，子弹会加入备弹中
-	bool  IsLoadingBullet()const{return IsLoading}
+	bool  IsLoadingBullet()const{return IsLoading;}
 	//bool CanShoot()const{return canshoot;}
-	float GetAngle()const{return angle;} // 获取武器的偏角
-	//void SetAngle(float _angle){angle = _angle;}
-	float GetShootDelay()const{return shootdelay;} // 获取射击间隔
-	float GetLoadTime()const{return loadtime;} // 获取换弹时间
-	float GetDamage()const{return damage;}   // 获取伤害值
-	float GetDistance()const{return distance;} // 获取射程
+	double GetAngle()const{return angle;} // 获取武器的偏角
+	//void SetAngle(double _angle){angle = _angle;}
+	double GetShootDelay()const{return shootdelay;} // 获取射击间隔
+	double GetLoadTime()const{return loadtime;} // 获取换弹时间
+	double GetDamage()const{return damage;}   // 获取伤害值
+	double GetDistance()const{return distance;} // 获取射程
 	unsigned GetType()const{return WeaponType;} // 获取武器的type
 	unsigned GetCurMaxBullet()const{return CurMaxBullet;} // 获取弹夹容量
 	unsigned GetCurBullet()const{return CurBullet;} // 获取当前弹夹内子弹数
@@ -77,11 +77,11 @@ private:
 	//bool IsShooting;
 	unsigned Shootbegintime; // 记录上次射击的时间
 
-	float distance;         // 武器的射程
-	float damage;			// 武器的伤害
-	float loadtime;			// 装弹时间
-	float shootdelay;		// 射击间隔
-	float angle;            // 射击偏角
+	double distance;         // 武器的射程
+	double damage;			// 武器的伤害
+	double loadtime;			// 装弹时间
+	double shootdelay;		// 射击间隔
+	double angle;            // 射击偏角
 };
 
 

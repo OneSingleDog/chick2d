@@ -7,7 +7,6 @@ void Weapon::InitWeapon(unsigned type) {
 	CurBullet = 0;
 	TotalBullet = 0;
 	BackupBullet = 0;
-	canshoot = true;
 
 	IsLoading = false;
 	Loadbegintime = 0;
@@ -58,9 +57,9 @@ void Weapon::InitWeapon(unsigned type) {
 	}
 }
 // uncomplete
-float Weapon::GetRandomFireAngle(float curangle) {
+double Weapon::GetRandomFireAngle(double curangle) {
 	//srand((unsigned)time(NULL));
-	float anglerange = rand()/(float)(RAND_MAX);
+	double anglerange = rand()/(double)(RAND_MAX);
 	anglerange *= angle;
 	anglerange -= (angle/2);
 	return curangle + anglerange;

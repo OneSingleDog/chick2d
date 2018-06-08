@@ -9,8 +9,8 @@ public:
 	node(unsigned _x = 0,unsigned _y = 0):x(_x),y(_y){}
 	unsigned GetX()const{return x;}
 	unsigned GetY()const{return y;}
-	void SetX(float _x){x = _x;}
-	void SetY(float _y){y = _y;}
+	void SetX(unsigned _x){x = _x;}
+	void SetY(unsigned _y){y = _y;}
 };
 
 #endif
