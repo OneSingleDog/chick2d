@@ -8,8 +8,6 @@
 using std::string;
 
 #define REDUCTION 0.10
-//#define DEFAULTSPEED 10
-//#define FULLBAG 100
 #define PILLONEDELAY 8000
 #define PILLTWODELAY 5000
 #define PILLTHREEDELAY 3000
@@ -27,9 +25,9 @@ public:
 	// 打药结束，每次发包都要检测
 	void CureEnd(unsigned edtime);
 	// 射击，返回是否射击成功
-	bool Shoot(unsigned targetX,unsigned targetY,unsigned nowtime);
+	bool Shoot(unsigned nowtime);
 	// 被武器击中，伤害为damage
-	void BeAttack(double damage);
+	void BeAttack(double damage,int from);
 	// 换弹，返回是否可以换弹
 	bool LoadBullet(unsigned nowtime);
     // 受到电网伤害
@@ -56,6 +54,8 @@ public:
 	int GetPlayerId()const{return player_id;}
 	// 获得击杀总数
 	unsigned GetKillAmount()const{return KillAmount;}
+	int GetKillerId()const{return killer_id;}	
+	double GetShootAngle(double _angle){return MainWeapon->GetRandomFireAngle(_angle);}
 	// 判断是否死亡
 	bool JudgeDead()const{return Isdead;}
 	// 获取当前生命值
@@ -81,6 +81,7 @@ public:
 private:
 	string username;
 	int player_id;			  // 玩家编号
+	int killer_id;            // 被谁击杀 -1毒
 	unsigned KillAmount;	  // 击杀总数
 	bool Isdead;	          // 判断是否死亡
 	unsigned curestarttime;	  // 治疗起始时间
@@ -91,7 +92,7 @@ private:
 	double Hppercentage;		  // 生命值总数
 
 	bool IsCuring;		      // 正在打药
-	double ShootAngle;		  // 射击角度
+	//double ShootAngle;		  // 射击角度
 
 	double Armornaijiu;     // 防弹衣耐久
 

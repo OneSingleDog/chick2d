@@ -1,5 +1,6 @@
 #ifndef __WEAPON_H__
 #define __WEAPON_H__
+#include <ctime>
 
 #define PI 3.1415926535
 
@@ -49,7 +50,6 @@ public:
 	void  Exchange();				   // 当玩家调用更换武器时，调用该函数，主要是shut掉换弹操作
 	void  PickBullet(unsigned BulletCount); // 捡子弹，子弹会加入备弹中
 	bool  IsLoadingBullet()const{return IsLoading;}
-	//bool CanShoot()const{return canshoot;}
 	double GetAngle()const{return angle;} // 获取武器的偏角
 	//void SetAngle(double _angle){angle = _angle;}
 	double GetShootDelay()const{return shootdelay;} // 获取射击间隔

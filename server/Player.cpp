@@ -2,23 +2,18 @@
 
 void Player::InitalPlayer(int _player_id,string _username){
 	player_id = _player_id;
+	killer_id = 0;
 	username = _username;
 	KillAmount = 0;
 	Isdead = false;
-//	BagIsFull = false;
 
 	Player_Current_Hp = 100.0;
 	Player_Total_Hp = 100.0;
 	Hppercentage = 1.0;
 
-	//bagamount = FULLBAG;
-	//Player_Speed = DEFAULTSPEED;
 	IsCuring = false;
-	//IsLoading = false;
 
 	Armornaijiu = 0;
-
-	//PlayerDirection = 1;
 
 	MainWeapon = NULL;
 	SubWeapon = NULL;
@@ -106,7 +101,7 @@ void Player::CureEnd(unsigned edtime){
 	return ;
 }
 
-void Player::BeAttack(double damage){
+void Player::BeAttack(double damage,int from){
 	double coverdamage = damage*0.4;
 	if (coverdamage>=Armornaijiu)Armornaijiu = 0;
 	else Armornaijiu -= coverdamage;
@@ -115,6 +110,7 @@ void Player::BeAttack(double damage){
 	else {
 		Player_Current_Hp = 0.0;
 		Isdead = true;
+		killer_id = from;
 	}
 	SetHpPercent();
 }
@@ -124,22 +120,21 @@ void Player::LossHp(double damage){
 	else {
 		Player_Current_Hp = 0;
 		Isdead = true;
+		killer_id = -1;
 	}
 	SetHpPercent();
 }
 
-bool Player::Shoot(unsigned targetX,unsigned targetY,unsigned nowtime)
+bool Player::Shoot(unsigned nowtime)
 {
-	double shootangle = 0.0;
-	double dis = (double)sqrt((targetX - GetX())*(targetX - GetX()) + (targetY - GetY())*(targetY - GetY()));
-	double disX = (double)(targetX - GetX());
-	double disY = (double)(targetY - GetY());
-	shootangle = (double)acos(dis/disX);
-	if(disY < 0)shootangle = 2*PI - shootangle;
+	//double shootangle = 0.0;
+	//double dis = (double)sqrt((targetX - GetX())*(targetX - GetX()) + (targetY - GetY())*(targetY - GetY()));
+	//double disX = (double)(targetX - GetX());
+	//double disY = (double)(targetY - GetY());
+	//shootangle = (double)acos(dis/disX);
+	//if(disY < 0)shootangle = 2*PI - shootangle;
 	if(MainWeapon == NULL)return false;
-	shootangle = MainWeapon -> GetRandomFireAngle(shootangle);
-	ShootAngle = shootangle;
-	//shootangle = MainWeapon
+	//ShootAngle = shootangle;
 	return MainWeapon -> Fire(nowtime);
 }
 
@@ -210,7 +205,3 @@ bool Player::LoadBullet(unsigned nowtime){
 	MainWeapon -> LoadBegin(nowtime);
 	return true;
 }
-
-// void Player::LoadBegin(unsigned sttime){
-//
-// }

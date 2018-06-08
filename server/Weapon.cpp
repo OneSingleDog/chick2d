@@ -1,6 +1,5 @@
 #include "Weapon.h"
 #include <stdlib.h>
-#include <time.h>
 
 void Weapon::InitWeapon(unsigned type) {
 	WeaponType = type;
@@ -58,7 +57,6 @@ void Weapon::InitWeapon(unsigned type) {
 }
 // uncomplete
 double Weapon::GetRandomFireAngle(double curangle) {
-	//srand((unsigned)time(NULL));
 	double anglerange = rand()/(double)(RAND_MAX);
 	anglerange *= angle;
 	anglerange -= (angle/2);
