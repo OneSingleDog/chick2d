@@ -19,8 +19,9 @@ private:
     Wall* wall;
 
 	int box_X[BEGINBOX], box_Y[BEGINBOX];
-	double poison_DMG[MAXLEVEL];
+	double poison_DMG[MAXLEVEL];//√øms…À∫¶
 	int poison_TIME[MAXLEVEL];
+	int poison_SIZE[MAXLEVEL];
 
 	int poison_LEVEL;
 	int poison_X, poison_Y;
@@ -30,6 +31,10 @@ private:
 	int connected;
 	int living_count;
 
+	void change_poison();
+	void Die(int player_id);
+
+	void Shoot(int player_id, double angle);
 public:
 	s_c_msg output;
     Game();

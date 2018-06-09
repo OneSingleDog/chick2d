@@ -48,6 +48,8 @@ public:
 	Weapon* PickWeapon(Weapon* _weapon);
 	// 捡防弹衣
 	void PickArmor(double naijiu){Armornaijiu = naijiu;}
+	// 捡子弹
+	bool PickBullet(int type, unsigned num);
 	// 设置生命值的百分比
 	void SetHpPercent(){Hppercentage = Player_Current_Hp / Player_Total_Hp;}
 	// 获得玩家的id
@@ -78,6 +80,9 @@ public:
 	double GetArmorNaijiu()const{return Armornaijiu;}
 	// 击杀玩家
 	void KillOnePlayer(){KillAmount ++;}
+	// 吃毒
+	void InPoison(unsigned nowtime,double dmg);
+	void OutPoison(){poison_time = -1;};
 private:
 	string username;
 	int player_id;			  // 玩家编号
@@ -86,6 +91,8 @@ private:
 	bool Isdead;	          // 判断是否死亡
 	unsigned curestarttime;	  // 治疗起始时间
 	unsigned curetype;		  // 正在使用的药的种类
+
+	unsigned poison_time;     // 上次在毒圈的时间
 
 	double Player_Current_Hp;  // 当前生命值
 	double Player_Total_Hp;	  // 总生命值

@@ -22,9 +22,13 @@ void Player::InitalPlayer(int _player_id,string _username){
 	PillsTwo = 0;
 	PillsThree = 0;
 	PillsFour = 0;
+
+	poison_time = -1;
 }
 
 void Player::ChangePosition(unsigned x,unsigned y){
+	if (x==GetX()&&y==GetY())return;
+	IsCuring = false;
 	SetX(x);
 	SetY(y);
 }
@@ -102,6 +106,7 @@ void Player::CureEnd(unsigned edtime){
 }
 
 void Player::BeAttack(double damage,int from){
+	IsCuring = false;
 	double coverdamage = damage*0.4;
 	if (coverdamage>=Armornaijiu)Armornaijiu = 0;
 	else Armornaijiu -= coverdamage;
@@ -133,61 +138,55 @@ bool Player::Shoot(unsigned nowtime)
 	//double disY = (double)(targetY - GetY());
 	//shootangle = (double)acos(dis/disX);
 	//if(disY < 0)shootangle = 2*PI - shootangle;
+	IsCuring = false;
 	if(MainWeapon == NULL)return false;
 	//ShootAngle = shootangle;
 	return MainWeapon -> Fire(nowtime);
 }
 
 void Player::PickPillOne(unsigned num){
+	IsCuring = false;
 	PillsOne += num;
 }
 
 void Player::PickPillTwo(unsigned num){
+	IsCuring = false;
 	PillsTwo += num;
 }
 
 void Player::PickPillThree(unsigned num){
+	IsCuring = false;
 	PillsThree += num;
 }
 
 void Player::PickPillFour(unsigned num){
+	IsCuring = false;
 	PillsFour += num;
 }
 
-Weapon* Player::PickWeapon(Weapon* _weapon){
-	if(_weapon == NULL)return NULL;
-	bool flag = false;
-	if(MainWeapon == NULL){
+Weapon* Player::PickWeapon(Weapon* _weapon){//ÖØÐ´ »»Ç¹ÏÂ×Óµ¯
+	IsCuring = false;
+	if (MainWeapon==NULL)
+		{
 		MainWeapon = _weapon;
-		_weapon = NULL;
-	}
-	//else if(SubWeapon == NULL)SubWeapon = _weapon;
-	else{
-		if(MainWeapon -> GetType() == _weapon -> GetType()){
-			MainWeapon -> PickBullet(_weapon -> GetTotalBullet());
-			_weapon -> SetTotalBullet(0);
+		return NULL;
 		}
-		else flag = true;
-	}
-	if(!flag)return _weapon;
-	if(SubWeapon == NULL){
+	else if (SubWeapon = NULL)
+		{
 		SubWeapon = _weapon;
-		_weapon = NULL;
-	}
-	else{
-		if(SubWeapon -> GetType() == _weapon -> GetType()){
-			SubWeapon -> PickBullet(_weapon -> GetTotalBullet());
-			_weapon -> SetTotalBullet(0);
+		return NULL;
 		}
-		else {
-			Weapon* temp=0;
-			SubWeapon -> SetTotalBullet(SubWeapon->GetTotalBullet());
-			SubWeapon = temp;
-			SubWeapon = _weapon;
-			_weapon = temp;
-		}
-	}
-	return _weapon;
+	Weapon*tmp = MainWeapon;
+	tmp->SetTotalBullet(tmp->GetTotalBullet());
+	MainWeapon = _weapon;
+	return tmp;
+}
+
+bool Player::PickBullet(int type, unsigned num){
+	if (type==MainWeapon->GetType())MainWeapon->PickBullet(num);
+	else if (type==SubWeapon->GetType())SubWeapon->PickBullet(num);
+	else return false;
+	return true;
 }
 
 void Player::ExchangeWeapon(){
@@ -200,8 +199,19 @@ void Player::ExchangeWeapon(){
 }
 
 bool Player::LoadBullet(unsigned nowtime){
+	IsCuring = false;
 	if(MainWeapon == NULL)return false;
 	if(MainWeapon -> GetBackupBullet() == 0)return false;
 	MainWeapon -> LoadBegin(nowtime);
 	return true;
+}
+
+void Player::InPoison(unsigned nowtime, double dmg){
+	if (poison_time<0)
+		{
+		poison_time = nowtime;
+		return;
+		}
+	LossHp(dmg*(nowtime-poison_time));
+	poison_time = nowtime;
 }

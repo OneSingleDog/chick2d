@@ -55,7 +55,7 @@ void Weapon::InitWeapon(unsigned type) {
 		break;
 	}
 }
-// uncomplete
+
 double Weapon::GetRandomFireAngle(double curangle) {
 	double anglerange = rand()/(double)(RAND_MAX);
 	anglerange *= angle;

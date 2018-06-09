@@ -7,15 +7,17 @@
 #define BEGINBOX 20
 
 struct c_s_msg{
-	char type;
+	char type;//0 登陆 1 正常
 	int x, y;
-	char curetype;//药 0没打
+	char curetype;//药 0没打 客户端处理
 	char BoxId;//捡的箱子，-1没捡
-	char PickPill[4];
-	bool PickArmor;
+	unsigned char PickPill[4];
+	unsigned short PickBl1;
+	unsigned short PickBl2;
+	bool PickArmor;	
 	bool PickWp1;
 	bool PickWp2;
-	bool Load, Exchange;//装弹，换枪
+	bool Load, Exchange;//装弹，换枪 客户端处理顺序
 	double ShootAngle;//射击角，负数没有发射
 	char remark[16];
 	};

@@ -16,7 +16,7 @@ Game::Game(){
 	for (int i = 0;i<BEGINBOX;++i)
 		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
-		fscanf_s(config, "%lf%d", poison_DMG+i, poison_TIME+i);
+		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
 	fclose(config);
 }
 
@@ -58,6 +58,7 @@ bool Game::alive(int player_id){
 }
 
 string Game::login(const c_s_msg&msg, int player_id){
+	if (msg.type)return "NULL";//´íÎó
 	player[player_id] = new Player(msg.x, msg.y);
 	string user_name = string(msg.remark);
 	player[player_id]->InitalPlayer(player_id, user_name);
@@ -94,5 +95,94 @@ s_c_msg&Game::info(int player_id){
 	return output;
 }
 
+void Game::change_poison(){
+	if (poison_LEVEL>=MAXLEVEL)return;
+	++poison_LEVEL;
+	int t = poison_SIZE[poison_LEVEL-1]-poison_SIZE[poison_LEVEL]+1;
+	poison_X += rand()%t;
+	poison_Y += rand()%t;
+}
+
+void Game::Die(int player_id){
+	if (!player[player_id]->JudgeDead())return;
+	box[BoxNumber] = new Box(player[player_id]->GetX(), player[player_id]->GetY(),BoxNumber);
+	box[BoxNumber]->InitBoxByPlayer(player[player_id]);
+	++BoxNumber;
+}
+
 void Game::merge(const c_s_msg&msg, int player_id){
+	if (msg.type!=1)return;
+	int nowtime = clock()-Gamebegintime;
+	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
+	player[player_id]->ChangePosition(msg.x, msg.y);
+	if (msg.x>=poison_X&&msg.x<=poison_X+poison_SIZE[poison_LEVEL]&&msg.y>=poison_Y&&msg.y<=poison_Y+poison_SIZE[poison_LEVEL])
+		{
+		player[player_id]->InPoison(nowtime, poison_DMG[poison_LEVEL]);
+		Die(player_id);
+		}
+	else player[player_id]->OutPoison();
+	if (~msg.BoxId)
+		{
+		if (msg.PickPill[0]&&msg.PickPill[0]<=box[msg.BoxId]->GetPillOneAmount())
+			{
+			box[msg.BoxId]->TakePillOne(msg.PickPill[0]);
+			player[player_id]->PickPillOne(msg.PickPill[0]);
+			}
+		if (msg.PickPill[1]&&msg.PickPill[1]<=box[msg.BoxId]->GetPillTwoAmount())
+			{
+			box[msg.BoxId]->TakePillTwo(msg.PickPill[1]);
+			player[player_id]->PickPillTwo(msg.PickPill[1]);
+			}
+		if (msg.PickPill[2]&&msg.PickPill[2]<=box[msg.BoxId]->GetPillThreeAmount())
+			{
+			box[msg.BoxId]->TakePillThree(msg.PickPill[2]);
+			player[player_id]->PickPillThree(msg.PickPill[2]);
+			}
+		if (msg.PickPill[3]&&msg.PickPill[3]<=box[msg.BoxId]->GetPillFourAmount())
+			{
+			box[msg.BoxId]->TakePillFour(msg.PickPill[3]);
+			player[player_id]->PickPillFour(msg.PickPill[3]);
+			}
+		if (msg.PickArmor)
+			{
+			double tmp = box[msg.BoxId]->GetArmorNaijiu();
+			box[msg.BoxId]->TakeArmor(player[player_id]->GetArmorNaijiu());
+			player[player_id]->PickArmor(tmp);
+			}
+		if (msg.PickBl1&&box[msg.BoxId]->GetWeaponOne()&&msg.PickBl1<=box[msg.BoxId]->GetWeaponOne()->GetTotalBullet())
+			{
+			int type = box[msg.BoxId]->GetWeaponOne()->GetType();
+			if(player[player_id]->PickBullet(type, msg.PickBl1))box[msg.BoxId]->TakeWeaponOneBul(msg.PickBl1);
+			}
+		if (msg.PickBl2&&box[msg.BoxId]->GetWeaponTwo()&&msg.PickBl2<=box[msg.BoxId]->GetWeaponTwo()->GetTotalBullet())
+			{
+			int type = box[msg.BoxId]->GetWeaponTwo()->GetType();
+			if(player[player_id]->PickBullet(type, msg.PickBl2))box[msg.BoxId]->TakeWeaponTwoBul(msg.PickBl2);
+			}
+		if (msg.PickWp1)
+			{
+			Weapon*tmp = box[msg.BoxId]->GetWeaponOne();
+			if (tmp)
+				{
+				tmp = player[player_id]->PickWeapon(tmp);
+				box[msg.BoxId]->TakeWeaponOne(tmp);
+				}
+			}
+		if (msg.PickWp2)
+			{
+			Weapon*tmp = box[msg.BoxId]->GetWeaponTwo();
+			if (tmp)
+				{
+				tmp = player[player_id]->PickWeapon(tmp);
+				box[msg.BoxId]->TakeWeaponTwo(tmp);
+				}
+			}
+		}
+	if (msg.Exchange)player[player_id]->ExchangeWeapon();
+	if (msg.Load)player[player_id]->LoadBullet(nowtime);
+	if (msg.ShootAngle>=0)Shoot(player_id, msg.ShootAngle);
+}
+
+void Game::Shoot(int player_id, double angle){
+
 }
