@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <cstdlib>
 #include <cstdio>
+#include <cmath>
 
 Game::Game(){
 	FILE*config;
@@ -103,16 +104,17 @@ void Game::change_poison(){
 	poison_Y += rand()%t;
 }
 
-void Game::Die(int player_id){
-	if (!player[player_id]->JudgeDead())return;
+bool Game::Die(int player_id){
+	if (!player[player_id]->JudgeDead())return false;
 	box[BoxNumber] = new Box(player[player_id]->GetX(), player[player_id]->GetY(),BoxNumber);
 	box[BoxNumber]->InitBoxByPlayer(player[player_id]);
 	++BoxNumber;
+	return true;
 }
 
 void Game::merge(const c_s_msg&msg, int player_id){
 	if (msg.type!=1)return;
-	int nowtime = clock()-Gamebegintime;
+	unsigned nowtime = clock()-Gamebegintime;
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
 	player[player_id]->ChangePosition(msg.x, msg.y);
 	if (msg.x>=poison_X&&msg.x<=poison_X+poison_SIZE[poison_LEVEL]&&msg.y>=poison_Y&&msg.y<=poison_Y+poison_SIZE[poison_LEVEL])
@@ -180,9 +182,79 @@ void Game::merge(const c_s_msg&msg, int player_id){
 		}
 	if (msg.Exchange)player[player_id]->ExchangeWeapon();
 	if (msg.Load)player[player_id]->LoadBullet(nowtime);
-	if (msg.ShootAngle>=0)Shoot(player_id, msg.ShootAngle);
+	player[player_id]->GetMainWeapon()->LoadEnd(nowtime);
+	if (msg.ShootAngle>=0)
+		Shoot(player_id, msg.ShootAngle,nowtime);
+	player[player_id]->CureStart(msg.type, nowtime);
+	player[player_id]->CureEnd(nowtime);
 }
 
-void Game::Shoot(int player_id, double angle){
+#define SGN(x) ((x)<0?-1:1)
+#define DIST(xa,ya,xb,yb) (sqrt(((xa)-(xb))*((xa)-(xb))+((ya)-(yb))*((ya)-(yb))))
+void Game::Shoot(int player_id, double angle,unsigned nowtime){
+	if (!player[player_id]->Shoot(nowtime))return;
+	int times = player[player_id]->GetMainWeapon()->GetType()==SHOTGUN ? 5 : 1;
 
+	while (times)
+		{
+		angle = player[player_id]->GetShootAngle(angle);
+		double mindist = player[player_id]->GetMainWeapon()->GetDistance();
+		int target = -1;
+		unsigned sourcex = player[player_id]->GetX()+PLAYERSIZE/2, sourcey = player[player_id]->GetY()+PLAYERSIZE/2;
+		double A = cos(angle), B = -sin(angle);
+		double C = -(A*sourcex+B*sourcey);
+
+		for (int i = 0;i<MAXPLAYER;++i)
+			{
+			if (i==player_id)continue;
+			if (player[i]->JudgeDead())continue;
+
+			bool hit = false;
+			unsigned tmpx = player[i]->GetX(), tmpy = player[i]->GetY();
+
+			char sign = SGN(A*tmpx+B*tmpy+C);
+			if (sign!=SGN(A*(tmpx+PLAYERSIZE)+B*tmpy+C))hit = true;
+			if (sign!=SGN(A*(tmpx+PLAYERSIZE)+B*(tmpy+PLAYERSIZE)+C))hit = true;
+			if (sign!=SGN(A*tmpx+B*(tmpy+PLAYERSIZE)+C))hit = true;
+
+			if (hit)
+				{
+				double dist = DIST(sourcex, sourcey, tmpx, tmpy);
+				if (dist<mindist)
+					{
+					mindist = dist;
+					target = i;
+					}
+				dist = DIST(sourcex, sourcey, tmpx+PLAYERSIZE, tmpy);
+				if (dist<mindist)
+					{
+					mindist = dist;
+					target = i;
+					}
+				dist = DIST(sourcex, sourcey, tmpx, tmpy+PLAYERSIZE);
+				if (dist<mindist)
+					{
+					mindist = dist;
+					target = i;
+					}
+				dist = DIST(sourcex, sourcey, tmpx+PLAYERSIZE, tmpy+PLAYERSIZE);
+				if (dist<mindist)
+					{
+					mindist = dist;
+					target = i;
+					}
+				}
+			}
+		if (target==-1)continue;
+		for (double tested_dist = 0;tested_dist<mindist;tested_dist += WALLSIZE/2.0)
+			if (wall->IsWall(int(sourcex+tested_dist*cos(angle)), int(sourcey+tested_dist*sin(angle))))
+				{
+				target = -1;
+				break;
+				}
+		if (target==-1)continue;
+		player[target]->BeAttack(player[player_id]->GetMainWeapon()->GetDamage(), player_id);
+		if (Die(target))player[player_id]->KillOnePlayer();
+		--times;
+		}
 }

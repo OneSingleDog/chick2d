@@ -36,9 +36,9 @@
 #define HANDGUN_ANGLE 2.0 * PI / 15.0
 
 #define SNIPER_RIFLE_DAMAGE 100
-#define ASSAULT_RIFLE_DAMAGE 40
-#define SHOTGUN_DAMAGE 200
-#define HANDGUN_DAMAGE 35
+#define ASSAULT_RIFLE_DAMAGE 30
+#define SHOTGUN_DAMAGE 20
+#define HANDGUN_DAMAGE 25
 
 class Weapon {
 public:

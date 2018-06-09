@@ -10,6 +10,8 @@
 //#define MAXBOX 30
 //#define MAXLEVEL 10
 //#define BEGINBOX 20
+//#define PLAYERSIZE 16
+//#define WALLSIZE 16
 //defined in msg.h
 
 class Game{
@@ -32,9 +34,9 @@ private:
 	int living_count;
 
 	void change_poison();
-	void Die(int player_id);
+	bool Die(int player_id);
 
-	void Shoot(int player_id, double angle);
+	void Shoot(int player_id, double angle,unsigned nowtime);
 public:
 	s_c_msg output;
     Game();

@@ -164,7 +164,7 @@ void Player::PickPillFour(unsigned num){
 	PillsFour += num;
 }
 
-Weapon* Player::PickWeapon(Weapon* _weapon){//ÖØÐ´ »»Ç¹ÏÂ×Óµ¯
+Weapon* Player::PickWeapon(Weapon* _weapon){
 	IsCuring = false;
 	if (MainWeapon==NULL)
 		{
