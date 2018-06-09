@@ -138,6 +138,8 @@ bool MainScene::init()
         Schedule of Action Move
      */
     
+    auto size = Director::getInstance()->getWinSize();
+    
     schedule(schedule_selector(MainScene::myMoveAction), (float)(1.0 / 60), kRepeatForever, 0);
     
     return true;
@@ -243,6 +245,7 @@ Point MainScene::tileCoordFromPosition(Point pos)
  *  125  B
  *  136  M
  *  12   Left Shift
+ *  134  K
  */
 void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
     int op = (int)keyCode;
@@ -275,9 +278,18 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             
         case 12:    // LS
             MainScene::SPEED_RATIO = 2;
+            break;
+            
+        case 134:   // K
+            player->getHurted(20);
+            break;
+            
+        case 135:
+            player->increaseShieldVal(20);
+            break;
             
         default:
-            //log("keyboard -> %d", op);
+            log("keyboard -> %d", op);
             break;
     }
 }

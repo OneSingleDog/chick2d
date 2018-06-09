@@ -49,6 +49,8 @@ public:
     
     int judgePlayerPosition(cocos2d::Point position);
     cocos2d::Point tileCoordFromPosition(cocos2d::Point pos);
+    
+    void scheduleBlood(float delta);
 };
 
 #endif /* MainScene_h */

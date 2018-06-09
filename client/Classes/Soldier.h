@@ -10,7 +10,9 @@
 
 #include "cocos2d.h"
 #include <string>
-using namespace std;
+#include <algorithm>
+
+using std::string;
 
 class Soldier {
 private:
@@ -19,12 +21,22 @@ private:
     cocos2d::Sprite *weapon;
     cocos2d::Sprite *fire;
     int MainWeapon, SubWeapon;
+    float existLife;
     
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
+    cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
 
     static string armName[2];
     static string weaponName[2];
     static string fireName[2];
+
+    cocos2d::Sprite *blood;
+    cocos2d::ProgressTimer *progress[3];
+    cocos2d::Sprite *shield;
+    
+    float shieldVal;
+    
+    cocos2d::Label *shieldText;
     
 public:
     Soldier();
@@ -43,6 +55,12 @@ public:
     void changeWeapon();
     void changeBullet();
     void Shoot();
+
+    void updateBlood();
+    void getHurted(float delta);
+    
+    void increaseShieldVal(float delta = 100);
+    void isDying();
 };
 
 #endif /* Soldier_h */
