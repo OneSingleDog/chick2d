@@ -4,8 +4,15 @@
 #include <cmath>
 
 Game::Game(){
-	FILE*config;
+	FILE*config=NULL;
 	fopen_s(&config, "config.txt", "r");
+	if (config==NULL)
+		{
+		printf("Open config failed\n");
+		system("pause");
+		exit(0);
+		}
+	else printf("Open config succeeded\n");
 	int tmp;
 	wall = new Wall;
 	for (int i = 0;i<MAP_WIDTH;++i)

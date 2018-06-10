@@ -3,10 +3,16 @@
 
 #include "cocos2d.h"
 #include "cocos-ext.h"
-#include "ui/CocosGUI.h"
+#include "ui\CocosGUI.h"
 
 class HelloWorld : public cocos2d::Scene
 {
+
+private:
+
+	cocos2d::ui::TextField* username;
+	cocos2d::ui::TextField* serverip;
+	cocos2d::ui::TextField* serverport;
 
 public:
 	static cocos2d::Scene* createScene();

@@ -1,6 +1,10 @@
 #include "HelloWorldScene.h"
+#include "ConnectfailScene.h"
 #include "SimpleAudioEngine.h"
 #include "MainScene.h"
+
+#define HAVE_STRUCT_TIMESPEC
+#include <pthread.h>
 
 
 USING_NS_CC;
@@ -36,9 +40,9 @@ bool HelloWorld::init()
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
 
-//    auto back = Sprite::create("scene.jpg");
-//    back->setPosition(80, 240);
-//    this->addChild(back, 1);
+	// auto back = Sprite::create("scene.jpg");
+	// back->setPosition(80, 240);
+	// this->addChild(back, 1);
 
 
 
@@ -111,36 +115,34 @@ bool HelloWorld::init()
 	auto user_name = Label::create("Username:", "fonts/Marker Felt.ttf",32);
 	user_name->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2+50);
 	this->addChild(user_name, 1);
-	auto s = ui::TextField::create("<Please input username here>",
+	username = ui::TextField::create("<Please input username here>",
 		"fonts/Marker Felt.ttf",
 		32);
-	s->setPosition(Point(origin.x + visibleSize.width / 2 +130, origin.y + visibleSize.height / 2+50));
-	s->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_username, this));
-	this->addChild(s, 1);
+	username->setPosition(Point(origin.x + visibleSize.width / 2 +130, origin.y + visibleSize.height / 2+50));
+	username->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_username, this));
+	this->addChild(username, 1);
 
 
-	auto user_ip = Label::create("ServerIP:", "fonts/Marker Felt.ttf", 32);
-	user_ip->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 25);
-	this->addChild(user_ip, 1);
-	auto ip = ui::TextField::create("<Please input server-ip here>",
+	auto server_ip = Label::create("ServerIP:", "fonts/Marker Felt.ttf", 32);
+	server_ip->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 25);
+	this->addChild(server_ip, 1);
+	serverip = ui::TextField::create("<Please input server-ip here>",
 		"fonts/Marker Felt.ttf",
 		32);
-	ip->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 25));
-	ip->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_userip, this));
-	this->addChild(ip, 1);
-	const std::string username_input = ip->getString();
-	//std::cout << username_input << std::endl;
+	serverip->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 25));
+	serverip->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_userip, this));
+	this->addChild(serverip, 1);
 
 
-	auto user_port = Label::create("ServerPort:", "fonts/Marker Felt.ttf", 32);
-	user_port->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 100);
-	this->addChild(user_port, 1);
-	auto port = ui::TextField::create("<Please input server-port here>",
+	auto server_port = Label::create("ServerPort:", "fonts/Marker Felt.ttf", 32);
+	server_port->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 100);
+	this->addChild(server_port, 1);
+	serverport = ui::TextField::create("<Please input server-port here>",
 		"fonts/Marker Felt.ttf",
 		32);
-	port->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 100));
-	port->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_userport, this));
-	this->addChild(port, 1);
+	serverport->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 100));
+	serverport->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_userport, this));
+	this->addChild(serverport, 1);
 
 
 	return true;
@@ -186,7 +188,7 @@ void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType t
 
 		Size screenSize = CCDirector::getInstance()->getWinSize();
 
-		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f+130, screenSize.height / 2.0f -5)));
+		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f - 5)));
 
 		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
 
@@ -207,11 +209,9 @@ void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType t
 
 		Size screenSize = CCDirector::getInstance()->getWinSize();
 
-		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f+130, screenSize.height / 2.0f - 25)));
+		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f - 25)));
 	}
-
 }
-
 void HelloWorld::textFieldEvent_userport(Ref * pSender, ui::TextField::EventType type)
 {
 	if (type == ui::TextField::EventType::ATTACH_WITH_IME) {
@@ -265,6 +265,53 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 }
 
 void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
-	auto scene = MainScene::createScene();
-	Director::getInstance()->replaceScene(scene);
+	extern pthread_mutex_t mutex_boost;
+	extern pthread_mutex_t mutex_cocos;
+	extern string login_username;
+	extern string login_host;
+	extern string login_port;
+	extern bool login_succeeded;
+
+	login_username = username->getString();
+	login_host = serverip->getString();
+	login_port = serverport->getString();
+
+	bool flag = true;
+	if (login_username=="NULL")flag = false;
+	if (login_username=="")flag = false;
+	if (login_host=="")flag = false;
+	if (login_port=="")flag = false;
+	int len = login_username.length();
+	for (int i = 0;i<len;++i)
+		if (!flag)break;
+		else if (login_username[i]>=48&&login_username[i]<=57||login_username[i]>=65&&login_username[i]<=90||login_username[i]>=97&&login_username[i]<=122||login_username[i]==95)continue;
+		else flag = false;
+	len = login_host.length();
+	for (int i = 0;i<len;++i)
+		if (!flag)break;
+		else if (login_host[i]>=48&&login_host[i]<=57||login_host[i]==46)continue;
+		else flag = false;
+	len = login_port.length();
+	for (int i = 0;i<len;++i)
+		if (!flag)break;
+		else if (login_port[i]>=48&&login_port[i]<=57)continue;
+		else flag = false;
+		
+	if (flag)
+		{
+		pthread_mutex_unlock(&mutex_boost);
+		pthread_mutex_lock(&mutex_cocos);
+		flag = flag&&login_succeeded;
+		}
+	if (flag)
+		{
+		auto scene = MainScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		}
+	else
+		{
+		auto scene = ConnectfailScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		}
+
 }

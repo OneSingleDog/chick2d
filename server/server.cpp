@@ -95,6 +95,7 @@ talk_to_client::ptr clients[MAXPLAYER];
 void handle_accept(talk_to_client::ptr client, const talk_to_client::error_code & err)
 	{
 	client->start();
+	printf("A player has connected\n");
 	talk_to_client::ptr new_client = talk_to_client::new_(now_opened+1);
 	clients[now_opened] = new_client;
 	if(now_opened<MAXPLAYER)acceptor.async_accept(new_client->sock(), boost::bind(handle_accept, new_client, _1));
@@ -106,6 +107,7 @@ int main()
 	while (true)
 		{
 		chick2d.InitGame();//³õÊ¼»¯ÓÎÏ·
+		printf("Initial completed\n");
 		now_opened = 0;
 		clients[now_opened] = talk_to_client::new_(now_opened+1);
 		acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
