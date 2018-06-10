@@ -2,13 +2,13 @@
 #include"msg.h"
 #include"Game.h"
 
-#define server_ip "127.0.0.1"
+#define server_ip "172.20.10.5"
 #define server_port 8001
 
 static Game chick2d;
 
 io_service service;
-ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::address::from_string(server_ip), server_port));
+ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), server_port));
 
 const size_t s_c_size = sizeof(s_c_msg);
 const size_t c_s_size = sizeof(c_s_msg);

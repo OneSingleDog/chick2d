@@ -5,7 +5,7 @@
 
 Game::Game(){
 	FILE*config=NULL;
-	config = fopen( "config.txt", "r");
+	config = fopen( "/Users/mac/Desktop/Test/Test/config.txt", "r");
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
@@ -102,6 +102,9 @@ s_c_msg&Game::info(int player_id){
 	else
 		{
 		output.type = 1;
+		output.Poison_X = poison_X;
+		output.Poison_Y = poison_Y;
+		output.Poison_Size = poison_SIZE[poison_LEVEL];
 		for(int i = 0;i < BoxNumber;++ i){
 			output.Boxes[i].PillAmount[0] = box[i] -> GetPillOneAmount();
 			output.Boxes[i].PillAmount[1] = box[i] -> GetPillTwoAmount();
@@ -125,6 +128,7 @@ s_c_msg&Game::info(int player_id){
 		output.SubWeaponCurBullet = player[player_id] -> GetSubWeapon() -> GetCurBullet();
 		output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
 		for(int i = 0;i < MAXPLAYER;++ i){
+			output.user_name[i] = player[i] -> GetUserName();
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
 			output.IsCuring[i] = player[i] -> IsCuringNow();
@@ -133,6 +137,7 @@ s_c_msg&Game::info(int player_id){
 			ShootSuccess[i] = false;
 			output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
 			output.Isdead[i] = player[i] -> JudgeDead();
+			output.BeKilledByPlayerId[i] = player[i] -> GetKillerId();
 		}
 
 	}

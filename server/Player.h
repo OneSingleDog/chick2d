@@ -56,7 +56,7 @@ public:
 	int GetPlayerId()const{return player_id;}
 	// 获得击杀总数
 	unsigned GetKillAmount()const{return KillAmount;}
-	int GetKillerId()const{return killer_id;}	
+	int GetKillerId()const{return killer_id;}
 	double GetShootAngle(double _angle){return MainWeapon->GetRandomFireAngle(_angle);}
 	// 判断是否死亡
 	bool JudgeDead()const{return Isdead;}
@@ -80,6 +80,7 @@ public:
 	double GetArmorNaijiu()const{return Armornaijiu;}
 	// 击杀玩家
 	void KillOnePlayer(){KillAmount ++;}
+	string GetUserName()const{return username;}
 	// 吃毒
 	void InPoison(unsigned nowtime,double dmg);
 	void OutPoison(){poison_time = -1;};
