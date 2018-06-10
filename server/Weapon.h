@@ -4,7 +4,7 @@
 
 #define PI 3.1415926535
 
-#define FIST -1
+#define FIST 5
 #define SNIPER_RIFLE 0
 #define ASSAULT_RIFLE 1
 #define SHOTGUN 2

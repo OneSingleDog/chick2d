@@ -21,9 +21,11 @@ private:
     Wall* wall;
 
 	int box_X[BEGINBOX], box_Y[BEGINBOX];
-	double poison_DMG[MAXLEVEL];//ÿms�˺�
+	double poison_DMG[MAXLEVEL];//ÿms�˺�
 	int poison_TIME[MAXLEVEL];
 	int poison_SIZE[MAXLEVEL];
+
+    bool ShootSuccess[MAXPLAYER];
 
 	int poison_LEVEL;
 	int poison_X, poison_Y;
