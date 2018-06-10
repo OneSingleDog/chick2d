@@ -84,7 +84,7 @@ private:
 
 	void do_write(const s_c_msg& m) {
 		if (!started()) return;
-		memcpy(write_buffer_, &m, s_c_size);
+		memcpy_s(write_buffer_, s_c_size, &m, s_c_size);
 		sock_.async_write_some(buffer(write_buffer_, s_c_size), MEM_FN2(on_write, _1, _2));
 		}
 };

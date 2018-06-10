@@ -9,18 +9,18 @@
 #define WALLSIZE 16
 
 struct c_s_msg{
-	char type;//0 ï¿½ï¿½Â½ 1 ï¿½ï¿½ï¿½ï¿½
+	char type;//0 µÇÂ½ 1 Õı³£
 	int x, y;
-	unsigned char curetype;//Ò© 0Ã»ï¿½ï¿½ ï¿½Í»ï¿½ï¿½Ë´ï¿½ï¿½ï¿½
-	char BoxId;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½-1Ã»ï¿½ï¿½
+	unsigned char curetype;//Ò© 0Ã»´ò ¿Í»§¶Ë´¦Àí
+	char BoxId;//¼ñµÄÏä×Ó£¬-1Ã»¼ñ
 	unsigned char PickPill[4];
 	unsigned short PickBl1;
 	unsigned short PickBl2;
-	bool PickArmor;
+	bool PickArmor;	
 	bool PickWp1;
 	bool PickWp2;
-	bool Load, Exchange;//×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¹ ï¿½Í»ï¿½ï¿½Ë´ï¿½ï¿½ï¿½Ë³ï¿½ï¿½
-	double ShootAngle;//ï¿½ï¿½ï¿½ï¿½ï¿½Ç£ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ğ·ï¿½ï¿½ï¿½
+	bool Load, Exchange;//×°µ¯£¬»»Ç¹ ¿Í»§¶Ë´¦ÀíË³Ğò
+	double ShootAngle;//Éä»÷½Ç£¬¸ºÊıÃ»ÓĞ·¢Éä
 	char remark[16];
 	};
 
@@ -33,24 +33,9 @@ struct send_box{
 };
 
 struct s_c_msg{
-	char type;//0 Î´ï¿½ï¿½Ê¼ 1 ï¿½ï¿½ï¿½ï¿½ 2 ï¿½ï¿½ï¿½ï¿½ 3 Ê¤ï¿½ï¿½
-	char infox, infoy;//×¼ï¿½ï¿½ï¿½ï¿½ /ï¿½ï¿½É±ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½É±ï¿½ï¿½
+	char type;//0 Î´¿ªÊ¼ 1 Õı³£ 2 ËÀÍö 3 Ê¤Àû
+	char infox, infoy;//×¼±¸Êı /»÷É±Êı ±»»÷É±Õß
 	send_box Boxes[MAXBOX];
-	double currenthp;
-	double Armornaijiu;
-	int PillAmount[4];
-	int SubWeaponType;
-	int MainWeaponCurBullet;
-	int MainWeaponBackupBullet;
-	int SubWeaponCurBullet;
-	int SubWeaponBackupBullet;
-	int x[MAXPLAYER];
-	int y[MAXPLAYER];
-	bool IsCuring[MAXPLAYER];
-	bool IsLoading[MAXPLAYER];
-	bool Firing[MAXPLAYER];	// è¡¨ç¤ºæ¯ä¸ªäººæ˜¯ä¸æ˜¯éƒ½åœ¨å¼€ç«
-	int MainWeaponType[MAXPLAYER];
-	bool Isdead[MAXPLAYER];
 	};
 
 #endif
