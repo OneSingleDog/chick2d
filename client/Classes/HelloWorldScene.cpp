@@ -6,6 +6,7 @@
 #define HAVE_STRUCT_TIMESPEC
 #include <pthread.h>
 
+#include "boost.h"
 
 USING_NS_CC;
 //USING_NS_CC_EXT;
@@ -159,14 +160,14 @@ void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventTyp
 
 		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
 
-		textField->setMaxLengthEnabled(true); //ÉèÖÃÔÊÐí×î´óÊýÄ¿ÏÞÖÆ
+		textField->setMaxLengthEnabled(true); //è®¾ç½®å…è®¸æœ€å¤§æ•°ç›®é™åˆ¶
 
 		textField->setMaxLength(20);
-		//ÉèÖÃ×î´óÔÊÐíÊýÄ¿Îª20
+		//è®¾ç½®æœ€å¤§å…è®¸æ•°ç›®ä¸º20
 
-		textField->setPlaceHolder("input text here");  //ÉèÖÃÕ¼Î»·û 
+		textField->setPlaceHolder("input text here");  //è®¾ç½®å ä½ç¬¦ 
 
-		textField->setPlaceHolderColor(Color4B::GRAY); //ÉèÖÃÕ¼Î»·ûÑÕÉ«
+		textField->setPlaceHolderColor(Color4B::GRAY); //è®¾ç½®å ä½ç¬¦é¢œè‰²
 
 		textField->setTextColor(Color4B::WHITE);
 	}
@@ -192,14 +193,14 @@ void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType t
 
 		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
 
-		textField->setMaxLengthEnabled(true); //ÉèÖÃÔÊÐí×î´óÊýÄ¿ÏÞÖÆ
+		textField->setMaxLengthEnabled(true); //è®¾ç½®å…è®¸æœ€å¤§æ•°ç›®é™åˆ¶
 
 		textField->setMaxLength(15);
-		//ÉèÖÃ×î´óÔÊÐíÊýÄ¿Îª15
+		//è®¾ç½®æœ€å¤§å…è®¸æ•°ç›®ä¸º15
 
-		textField->setPlaceHolder("input text here");  //ÉèÖÃÕ¼Î»·û 
+		textField->setPlaceHolder("input text here");  //è®¾ç½®å ä½ç¬¦ 
 
-		textField->setPlaceHolderColor(Color4B::GRAY); //ÉèÖÃÕ¼Î»·ûÑÕÉ«
+		textField->setPlaceHolderColor(Color4B::GRAY); //è®¾ç½®å ä½ç¬¦é¢œè‰²
 
 		textField->setTextColor(Color4B::WHITE);
 	}
@@ -224,14 +225,14 @@ void HelloWorld::textFieldEvent_userport(Ref * pSender, ui::TextField::EventType
 
 		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
 
-		textField->setMaxLengthEnabled(true); //ÉèÖÃÔÊÐí×î´óÊýÄ¿ÏÞÖÆ
+		textField->setMaxLengthEnabled(true); //è®¾ç½®å…è®¸æœ€å¤§æ•°ç›®é™åˆ¶
 
 		textField->setMaxLength(6);
-		//ÉèÖÃ×î´óÔÊÐíÊýÄ¿Îª6
+		//è®¾ç½®æœ€å¤§å…è®¸æ•°ç›®ä¸º6
 
-		textField->setPlaceHolder("input text here");  //ÉèÖÃÕ¼Î»·û 
+		textField->setPlaceHolder("input text here");  //è®¾ç½®å ä½ç¬¦ 
 
-		textField->setPlaceHolderColor(Color4B::GRAY); //ÉèÖÃÕ¼Î»·ûÑÕÉ«
+		textField->setPlaceHolderColor(Color4B::GRAY); //è®¾ç½®å ä½ç¬¦é¢œè‰²
 
 		textField->setTextColor(Color4B::WHITE);
 	}
@@ -270,7 +271,8 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 	extern string login_username;
 	extern string login_host;
 	extern string login_port;
-	extern bool login_succeeded;
+
+	extern talk_to_svr::ptr ptr;
 
 	login_username = username->getString();
 	login_host = serverip->getString();
@@ -301,7 +303,7 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		{
 		pthread_mutex_unlock(&mutex_boost);
 		pthread_mutex_lock(&mutex_cocos);
-		flag = flag&&login_succeeded;
+		flag = flag&&ptr->started();
 		}
 	if (flag)
 		{

@@ -1,8 +1,11 @@
 #include "main.h"
 #include "AppDelegate.h"
 #include "cocos2d.h"
+
 #define HAVE_STRUCT_TIMESPEC
 #include <pthread.h>
+
+#include "boost.h"
 
 USING_NS_CC;
 
@@ -36,7 +39,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance,
 
 	pthread_create(&cocos2d, NULL, cocos2d_main, NULL);
 	pthread_create(&boost, NULL, boost_main, NULL);
+
 	pthread_join(cocos2d, NULL);
+
+	extern bool canceled;
+	canceled= true;
+	pthread_mutex_unlock(&mutex_boost);
+	extern talk_to_svr::ptr ptr;
+	if (ptr.use_count())
+		ptr->stop();
+
 	pthread_join(boost, NULL);
 
 	return 0;
