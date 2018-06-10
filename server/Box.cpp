@@ -32,19 +32,26 @@ void Box::InitBoxByRandom(){
             if(temp == 0)weaponone -> SetTotalBullet(5);
             else weaponone -> SetTotalBullet(10);
         }
-        else if(randtemp < 50){
+        else if(randtemp < 35){
             weaponone = new Weapon;
             weaponone -> InitWeapon(ASSAULT_RIFLE);
             unsigned temp = rand()%2;
             if(temp == 0)weaponone -> SetTotalBullet(10);
             else weaponone -> SetTotalBullet(20);
         }
-        else {
+        else if(randtemp < 70){
             weaponone = new Weapon;
             weaponone -> InitWeapon(HANDGUN);
             unsigned temp = rand()%2;
             if(temp == 0)weaponone -> SetTotalBullet(15);
             else weaponone -> SetTotalBullet(30);
+        }
+        else {
+            weaponone = new Weapon;
+            weaponone -> InitWeapon(SHOTGUN);
+            unsigned temp = rand()%2;
+            if(temp == 0)weaponone -> SetTotalBullet(5);
+            else weaponone -> SetTotalBullet(10);
         }
     }
     else{

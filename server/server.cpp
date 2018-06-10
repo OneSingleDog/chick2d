@@ -61,19 +61,19 @@ private:
 		c_s_msg m=*((c_s_msg*)(read_buffer_));
 		if (username_=="NULL")
 			{
-			username_ = chick2d.login(m,id_);//µÇÂ½´¦Àí
+			username_ = chick2d.login(m,id_);//ç™»é™†å¤„ç†
 			do_write(chick2d.info(id_));
 			}
 		else
 			{
-			chick2d.merge(m,id_);//ºÏ²¢ĞÅÏ¢¿é
-			do_write(chick2d.info(id_));//µ±Ç°ĞÅÏ¢
+			chick2d.merge(m,id_);//åˆå¹¶ä¿¡æ¯å—
+			do_write(chick2d.info(id_));//å½“å‰ä¿¡æ¯
 			}
 		}
 
 	void on_write(const error_code & err, size_t bytes)
 		{
-		if(chick2d.alive(id_))do_read();//ÊÇ·ñ¼ÌĞøÁ¬½Ó
+		if(chick2d.alive(id_))do_read();//æ˜¯å¦ç»§ç»­è¿æ¥
 		else stop();
 		return;
 		}
@@ -106,7 +106,7 @@ int main()
 {
 	while (true)
 		{
-		chick2d.InitGame();//³õÊ¼»¯ÓÎÏ·
+		chick2d.InitGame();//åˆå§‹åŒ–æ¸¸æˆ
 		printf("Initial completed\n");
 		now_opened = 0;
 		clients[now_opened] = talk_to_client::new_(now_opened+1);

@@ -1,8 +1,8 @@
 #ifndef __WALL_H__
 #define __WALL_H__
 
-#define MAP_WIDTH 8000
-#define MAP_LENGTH 8000
+#define MAP_WIDTH 2048
+#define MAP_LENGTH 2048
 
 class Wall{
 private:

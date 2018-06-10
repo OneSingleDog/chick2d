@@ -24,7 +24,7 @@ Game::Game(){
 	for (int i = 0;i<BEGINBOX;++i)
 		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
-		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
+		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i, poison_SIZE+i);
 	fclose(config);
 }
 
@@ -46,6 +46,9 @@ void Game::InitGame(){
 		box[i] = new Box(box_X[i], box_Y[i], i);
 		box[i]->InitBoxByRandom();
 		}
+	for(int i = 0;i < MAXPLAYER;++ i){
+		ShootSuccess[i] = false;
+	}
     Gamebegintime = clock();
 	srand(time(0));
 }
@@ -61,12 +64,12 @@ void Game::EndGame(){
 }
 
 bool Game::alive(int player_id){
-	if (living_count<=1)return false;//ÓÎÏ·½áÊø
+	if (living_count<=1)return false;//æ¸¸æˆç»“æŸ
 	return player[player_id]->JudgeDead();
 }
 
 string Game::login(const c_s_msg&msg, int player_id){
-	if (msg.type)return "NULL";//´íÎó
+	if (msg.type)return "NULL";//é”™è¯¯
 	player[player_id] = new Player(msg.x, msg.y);
 	string user_name = string(msg.remark);
 	player[player_id]->InitalPlayer(player_id, user_name);
@@ -99,7 +102,40 @@ s_c_msg&Game::info(int player_id){
 	else
 		{
 		output.type = 1;
+		for(int i = 0;i < BoxNumber;++ i){
+			output.Boxes[i].PillAmount[0] = box[i] -> GetPillOneAmount();
+			output.Boxes[i].PillAmount[1] = box[i] -> GetPillTwoAmount();
+			output.Boxes[i].PillAmount[2] = box[i] -> GetPillThreeAmount();
+			output.Boxes[i].PillAmount[3] = box[i] -> GetPillFourAmount();
+			output.Boxes[i].Armor = box[i] -> GetArmorNaijiu();
+			output.Boxes[i].Wp1Type = box[i] -> GetWeaponOne() -> GetType();
+			output.Boxes[i].Wp2Type = box[i] -> GetWeaponTwo() -> GetType();
+			output.Boxes[i].Wp1Bullets = box[i] -> GetWeaponOne() -> GetTotalBullet();
+			output.Boxes[i].Wp2Bullets = box[i] -> GetWeaponTwo() -> GetTotalBullet();
 		}
+		output.currenthp = player[player_id] -> GetPlayerCurrentHP();
+		output.Armornaijiu = player[player_id] -> GetArmorNaijiu();
+		output.PillAmount[0] = player[player_id] -> GetPillOneAmount();
+		output.PillAmount[1] = player[player_id] -> GetPillTwoAmount();
+		output.PillAmount[2] = player[player_id] -> GetPillThreeAmount();
+		output.PillAmount[3] = player[player_id] -> GetPillFourAmount();
+		output.SubWeaponType = player[player_id] -> GetSubWeapon() -> GetType();
+		output.MainWeaponCurBullet = player[player_id] -> GetMainWeapon() -> GetCurBullet();
+		output.MainWeaponBackupBullet = player[player_id] -> GetMainWeapon() -> GetBackupBullet();
+		output.SubWeaponCurBullet = player[player_id] -> GetSubWeapon() -> GetCurBullet();
+		output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
+		for(int i = 0;i < MAXPLAYER;++ i){
+			output.x[i] = player[i] -> GetX();
+			output.y[i] = player[i] -> GetY();
+			output.IsCuring[i] = player[i] -> IsCuringNow();
+			output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
+			output.Firing[i] = ShootSuccess[i];
+			ShootSuccess[i] = false;
+			output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
+			output.Isdead[i] = player[i] -> JudgeDead();
+		}
+
+	}
 	return output;
 }
 
@@ -200,6 +236,7 @@ void Game::merge(const c_s_msg&msg, int player_id){
 #define DIST(xa,ya,xb,yb) (sqrt(((xa)-(xb))*((xa)-(xb))+((ya)-(yb))*((ya)-(yb))))
 void Game::Shoot(int player_id, double angle,unsigned nowtime){
 	if (!player[player_id]->Shoot(nowtime))return;
+	ShootSuccess[player_id] = true;
 	int times = player[player_id]->GetMainWeapon()->GetType()==SHOTGUN ? 5 : 1;
 
 	while (times)
