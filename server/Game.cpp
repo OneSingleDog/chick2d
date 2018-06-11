@@ -3,8 +3,34 @@
 #include <cstdio>
 #include <cmath>
 
+#ifdef MAC
 Game::Game(){
 	FILE*config=NULL;
+	config = fopen( "/Users/mac/Desktop/Test/Test/config.txt", "r");
+	if (config==NULL)
+		{
+		printf("Open config failed\n");
+		system("pause");
+		exit(0);
+		}
+	else printf("Open config succeeded\n");
+	int tmp;
+	wall = new Wall;
+	for (int i = 0;i<MAP_WIDTH;++i)
+		for (int j = 0;j<MAP_WIDTH;++j)
+			{
+			fscanf(config, "%d", &tmp);
+			wall->Set(i, j, tmp);
+			}
+	for (int i = 0;i<BEGINBOX;++i)
+		fscanf(config, "%d%d", box_X+i, box_Y+i);
+	for (int i = 0;i<MAXLEVEL;++i)
+		fscanf(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
+	fclose(config);
+}
+#else
+Game::Game(){
+	FILE*config = NULL;
 	fopen_s(&config, "config.txt", "r");
 	if (config==NULL)
 		{
@@ -26,7 +52,8 @@ Game::Game(){
 	for (int i = 0;i<MAXLEVEL;++i)
 		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i, poison_SIZE+i);
 	fclose(config);
-}
+	}
+#endif
 
 Game::~Game()
 	{
@@ -102,6 +129,9 @@ s_c_msg&Game::info(int player_id){
 	else
 		{
 		output.type = 1;
+		output.Poison_X = poison_X;
+		output.Poison_Y = poison_Y;
+		output.Poison_Size = poison_SIZE[poison_LEVEL];
 		for(int i = 0;i < BoxNumber;++ i){
 			output.Boxes[i].PillAmount[0] = box[i] -> GetPillOneAmount();
 			output.Boxes[i].PillAmount[1] = box[i] -> GetPillTwoAmount();
@@ -125,6 +155,7 @@ s_c_msg&Game::info(int player_id){
 		output.SubWeaponCurBullet = player[player_id] -> GetSubWeapon() -> GetCurBullet();
 		output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
 		for(int i = 0;i < MAXPLAYER;++ i){
+			output.user_name[i] = player[i] -> GetUserName();
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
 			output.IsCuring[i] = player[i] -> IsCuringNow();
@@ -133,6 +164,7 @@ s_c_msg&Game::info(int player_id){
 			ShootSuccess[i] = false;
 			output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
 			output.Isdead[i] = player[i] -> JudgeDead();
+			output.BeKilledByPlayerId[i] = player[i] -> GetKillerId();
 		}
 
 	}

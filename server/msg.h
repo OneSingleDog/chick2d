@@ -36,6 +36,9 @@ struct s_c_msg{
 	char type;//0 未开始 1 正常 2 死亡 3 胜利
 	char infox, infoy;//准备数 /击杀数 被击杀者
 	send_box Boxes[MAXBOX];
+	int Poison_X;
+	int Poison_Y;
+	int Poison_Size;
 	double currenthp;
 	double Armornaijiu;
 	int PillAmount[4];
@@ -51,6 +54,8 @@ struct s_c_msg{
 	bool Firing[MAXPLAYER];	// 表示每个人是不是都在开火
 	int MainWeaponType[MAXPLAYER];
 	bool Isdead[MAXPLAYER];
+	int BeKilledByPlayerId[MAXPLAYER];
+	char user_name[MAXPLAYER][16];
 	};
 
 #endif

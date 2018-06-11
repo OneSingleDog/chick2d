@@ -16,7 +16,7 @@ struct c_s_msg{
 	unsigned char PickPill[4];
 	unsigned short PickBl1;
 	unsigned short PickBl2;
-	bool PickArmor;	
+	bool PickArmor;
 	bool PickWp1;
 	bool PickWp2;
 	bool Load, Exchange;//装弹，换枪 客户端处理顺序
@@ -36,6 +36,48 @@ struct s_c_msg{
 	char type;//0 未开始 1 正常 2 死亡 3 胜利
 	char infox, infoy;//准备数 /击杀数 被击杀者
 	send_box Boxes[MAXBOX];
+	int Poison_X;
+	int Poison_Y;
+	int Poison_Size;
+	double currenthp;
+	double Armornaijiu;
+	int PillAmount[4];
+	int SubWeaponType;
+	int MainWeaponCurBullet;
+	int MainWeaponBackupBullet;
+	int SubWeaponCurBullet;
+	int SubWeaponBackupBullet;
+	int x[MAXPLAYER];
+	int y[MAXPLAYER];
+	bool IsCuring[MAXPLAYER];
+	bool IsLoading[MAXPLAYER];
+	bool Firing[MAXPLAYER];	// 表示每个人是不是都在开火
+	int MainWeaponType[MAXPLAYER];
+	bool Isdead[MAXPLAYER];
+	int BeKilledByPlayerId[MAXPLAYER];
+	char user_name[MAXPLAYER][16];
+	};
+	
+struct cg_msg{
+	bool type;
+	bool infox,infoy;
+	bool Boxes[MAXBOX];
+	bool currenthp;
+	bool Armornaijiu;
+	bool PillAmount[4];
+	bool SubWeaponType;
+	bool MainWeaponCurBullet;
+	bool MainWeaponBackupBullet;
+	bool SubWeaponCurBullet;
+	bool SubWeaponBackupBullet;
+	bool x[MAXPLAYER];
+	bool y[MAXPLAYER];
+	bool IsCuring[MAXPLAYER];
+	bool IsLoading[MAXPLAYER];
+	bool Firing[MAXPLAYER];
+	bool MainWeaponType[MAXPLAYER];
+	bool Isdead[MAXPLAYER];
+	bool BeKilledByPlayerId[MAXPLAYER];
 	};
 
 #endif

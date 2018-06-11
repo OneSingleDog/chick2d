@@ -2,13 +2,13 @@
 #include"msg.h"
 #include"Game.h"
 
-#define server_ip "127.0.0.1"
+#define server_ip "172.20.10.5"
 #define server_port 8001
 
 static Game chick2d;
 
 io_service service;
-ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::address::from_string(server_ip), server_port));
+ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), server_port));
 
 const size_t s_c_size = sizeof(s_c_msg);
 const size_t c_s_size = sizeof(c_s_msg);
@@ -61,19 +61,19 @@ private:
 		c_s_msg m=*((c_s_msg*)(read_buffer_));
 		if (username_=="NULL")
 			{
-			username_ = chick2d.login(m,id_);//ç™»é™†å¤„ç†
+			username_ = chick2d.login(m,id_);//µÇÂ½´¦Àí
 			do_write(chick2d.info(id_));
 			}
 		else
 			{
-			chick2d.merge(m,id_);//åˆå¹¶ä¿¡æ¯å—
-			do_write(chick2d.info(id_));//å½“å‰ä¿¡æ¯
+			chick2d.merge(m,id_);//ºÏ²¢ĞÅÏ¢¿é
+			do_write(chick2d.info(id_));//µ±Ç°ĞÅÏ¢
 			}
 		}
 
 	void on_write(const error_code & err, size_t bytes)
 		{
-		if(chick2d.alive(id_))do_read();//æ˜¯å¦ç»§ç»­è¿æ¥
+		if(chick2d.alive(id_))do_read();//ÊÇ·ñ¼ÌĞøÁ¬½Ó
 		else stop();
 		return;
 		}
@@ -84,7 +84,7 @@ private:
 
 	void do_write(const s_c_msg& m) {
 		if (!started()) return;
-		memcpy_s(write_buffer_, s_c_size, &m, s_c_size);
+		memcpy(write_buffer_, &m, s_c_size);
 		sock_.async_write_some(buffer(write_buffer_, s_c_size), MEM_FN2(on_write, _1, _2));
 		}
 };
@@ -106,7 +106,7 @@ int main()
 {
 	while (true)
 		{
-		chick2d.InitGame();//åˆå§‹åŒ–æ¸¸æˆ
+		chick2d.InitGame();//³õÊ¼»¯ÓÎÏ·
 		printf("Initial completed\n");
 		now_opened = 0;
 		clients[now_opened] = talk_to_client::new_(now_opened+1);
