@@ -1,4 +1,4 @@
-#ifndef MAC
+#ifdef WINDOWS
 #include "main.h"
 #endif
 #include "AppDelegate.h"

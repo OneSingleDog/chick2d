@@ -61,7 +61,12 @@ void talk_to_svr::on_read(const error_code & err, size_t bytes) {
 	if (err) stop();
 	if (!started()) return;
 
+    #ifdef MAC
+    memcpy(&s2c, read_buffer_, s_c_size);
+    #else
 	memcpy_s(&s2c, s_c_size, read_buffer_, s_c_size);
+    #endif
+    
 	pthread_mutex_unlock(&mutex_cocos);
 
 	pthread_mutex_lock(&mutex_boost);
@@ -82,7 +87,9 @@ void talk_to_svr::stop() {
 	if (!started_) return;
 	started_ = false;
 	sock_.close();
+    #ifdef DEBUGVS
 	OutputDebugPrintf("Socket closed\n");
+    #endif
 	}
 
 std::string login_username;
