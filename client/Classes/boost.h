@@ -69,7 +69,11 @@ class talk_to_svr: public boost::enable_shared_from_this<talk_to_svr>, boost::no
 
 	void do_write(const c_s_msg& m) {
 		if (!started()) return;
+        #ifdef MAC
+        memcpy(write_buffer_, &m, c_s_size);
+        #else
 		memcpy_s(write_buffer_, c_s_size, &m, c_s_size);
+        #endif
 		sock_.async_write_some(buffer(write_buffer_, c_s_size), MEM_FN2(on_write, _1, _2));
 		}
 

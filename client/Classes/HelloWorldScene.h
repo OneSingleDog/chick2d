@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 #include "cocos-ext.h"
-#include "ui\CocosGUI.h"
+#include "ui/CocosGUI.h"
 
 class HelloWorld : public cocos2d::Scene
 {
