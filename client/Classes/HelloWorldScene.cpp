@@ -28,10 +28,9 @@ bool HelloWorld::init()
 	{
 		return false;
 	}
-
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
+    
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
@@ -60,7 +59,7 @@ bool HelloWorld::init()
 		float y = origin.y + closeItem->getContentSize().height / 2;
 		closeItem->setPosition(Vec2(x, y));
 	}
-
+    
 	// Add Start Game Button
 	auto StartGameItem = MenuItemImage::create(
 		"StartGameNormal.png",
@@ -84,15 +83,15 @@ bool HelloWorld::init()
 
 	// create menu, it's an autorelease object
 	auto menu = Menu::create(closeItem, StartGameItem, NULL);
-	menu->setPosition(Vec2::ZERO);
+    menu->setPosition(Vec2(0, 0));
 	this->addChild(menu, 1);
-
+    
 	/////////////////////////////
 	// 3. add your codes below...
 
 	// add a label shows "Chick2d"
 	// create and initialize a label
-
+    
 	auto label = Label::createWithTTF("Chick2d", "fonts/Marker Felt.ttf", 180);
 	if (label == nullptr)
 	{
@@ -151,9 +150,9 @@ void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventTyp
 
 		ui::TextField * textField = dynamic_cast<ui::TextField*>(pSender);
 
-		Size screenSize = CCDirector::getInstance()->getWinSize();
+		Size screenSize = Director::getInstance()->getWinSize();
 
-		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f+70)));
+		textField->runAction(MoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f+70)));
 
 		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
 
