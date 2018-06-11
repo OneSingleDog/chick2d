@@ -101,5 +101,8 @@ void*boost_main(void*)
 	talk_to_svr::start(ptr,ip::tcp::endpoint(ip::address::from_string(login_host.c_str()), stoi(login_port)), login_username);
 	service.run();
 	//system("pause");
+	#ifdef MAC
+	pthread_detach(pthread_self());
+	#endif
 	return NULL;
 }
