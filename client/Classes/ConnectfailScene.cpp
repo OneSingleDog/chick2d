@@ -40,9 +40,9 @@ bool ConnectfailScene::init()
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
 
-	auto back = cocos2d::Sprite::create("scene.jpg");
-	back->setPosition(80, 240);
-	this->addChild(back, 1);
+	//auto back = cocos2d::Sprite::create("scene.jpg");
+	//back->setPosition(80, 240);
+	//this->addChild(back, 1);
 
 
 
