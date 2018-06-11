@@ -14,12 +14,16 @@ USING_NS_CC;
 using std::string;
 
 Soldier::Soldier() {
-    body = arm = weapon = fire = shield = blood = nullptr;
-    MainWeapon = 0;
-    shieldVal = 0;
-    SubWeapon = 1;
+    body = arm = weapon = fire = shield = blood = MainWin = SubWin = mainWeaponShow = subWeaponShow = nullptr;
+    shieldText = mainWeaponText = subWeaponText = nullptr;
     existLife = 100;
     shieldVal = 0;
+    MainWeapon = 0;
+    SubWeapon = 1;
+    mainCurBulletNum = 0;
+    mainTotBulletNum = 0;
+    subCurBulletNum = 30;
+    subTotBulletNum = 60;
     
     // animation
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("player/changeBullet.plist");
@@ -45,18 +49,30 @@ Soldier::~Soldier() {
     if(blood != nullptr) { delete blood; }
     if(shield != nullptr) { delete shield; }
     if(shieldText != nullptr) { delete shieldText; }
+    if(MainWin != nullptr) { delete MainWin; }
+    if(SubWin != nullptr) { delete SubWin; }
+    if(mainWeaponShow != nullptr) { delete mainWeaponShow; }
+    if(subWeaponShow != nullptr) { delete subWeaponShow; }
+    if (circle != nullptr) { delete circle; }
+    if(mainWeaponText != nullptr) { delete mainWeaponText; }
+    if(subWeaponText != nullptr) { delete subWeaponText; }
 }
 
-string Soldier::armName[2] = { "player/arm0.png", "player/arm1.png" };
-string Soldier::weaponName[2] = { "player/blank.png", "player/weapon1.png" };
-string Soldier::fireName[2] = { "player/blank.png", "player/fire1.png" };
+string Soldier::armName[NUM_OF_WEAPON] = { "player/arm0.png", "player/arm1.png" };
+string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon1.png" };
+string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/fire1.png" };
+string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/blank.png", "player/weaponshow1.png" };
+int Soldier::maxBullet[NUM_OF_WEAPON] = { 0, 30 };
+float Soldier::circleSize[NUM_OF_WEAPON] = { 0.0001, 0.58 };
 
 void Soldier::create() {
     body = Sprite::create("player/body.png");
     arm = Sprite::create(Soldier::armName[MainWeapon]);
     weapon = Sprite::create(Soldier::weaponName[MainWeapon]);
     fire = Sprite::create("player/blank.png");
-    
+    circle = Sprite::create("player/circle.png");
+    circle->setScale(Soldier::circleSize[MainWeapon]);
+
     blood = Sprite::create("others/bar.png");   //创建进度框
     blood->setScale(0.7);
     auto sprBlood0 = Sprite::create("others/bloodG.png");  //创建血条
@@ -80,6 +96,20 @@ void Soldier::create() {
     shield = Sprite::create("others/shield.png");
     shield->setScale(0.1);
     shieldText = Label::createWithTTF("0", "fonts/Marker Felt.ttf", 20);
+    
+    MainWin = Sprite::create("others/win.png");
+    MainWin->setScale(2.9, 1);
+    SubWin = Sprite::create("others/win.png");
+    SubWin->setScale(2.9, 1);
+    
+    mainWeaponShow = Sprite::create(Soldier::weaponShowName[MainWeapon]);
+    subWeaponShow = Sprite::create(Soldier::weaponShowName[SubWeapon]);
+    
+    mainWeaponText = Label::createWithTTF((std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum)).c_str(), "fonts/Marker Felt.ttf", 20);
+    mainWeaponText->setTextColor(Color4B::BLACK);
+    
+    subWeaponText = Label::createWithTTF((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str(), "fonts/Marker Felt.ttf", 20);
+    subWeaponText->setTextColor(Color4B::BLACK);
 }
 
 void Soldier::updateBlood() {
@@ -102,6 +132,7 @@ void Soldier::setPosition(float x, float y) {
     weapon->setPosition(x, y);
     arm->setPosition(x, y);
     fire->setPosition(x, y);
+    circle->setPosition(x, y);
 
     auto size = Director::getInstance()->getWinSize();
     
@@ -112,6 +143,17 @@ void Soldier::setPosition(float x, float y) {
     
     shield->setPosition(Vec2(x, y) - Vec2(-size.width * 0.97 / 5, size.height / 2.175));
     shieldText->setPosition(shield->getPosition());
+    
+    MainWin->setPosition(shield->getPosition() + Vec2(-2.5 * size.width / 8, 0));
+    SubWin->setPosition(shield->getPosition() + Vec2(-size.width / 8, 0));
+    
+    mainWeaponShow->setPosition(MainWin->getPosition());
+    subWeaponShow->setPosition(SubWin->getPosition());
+    
+    auto minisize = MainWin->getContentSize();
+    
+    mainWeaponText->setPosition(MainWin->getPosition() + Vec2(minisize.width, -minisize.height / 4 * 0.9));
+    subWeaponText->setPosition(SubWin->getPosition() + Vec2(minisize.width, -minisize.height / 4 * 0.9));
 }
 
 void Soldier::addChild(Scene *scene, int level) {
@@ -119,7 +161,8 @@ void Soldier::addChild(Scene *scene, int level) {
     scene->addChild(weapon);
     scene->addChild(arm);
     scene->addChild(fire);
-    
+    scene->addChild(circle,1);
+   
     scene->addChild(blood);
     for(int i = 0; i < 3; ++i) {
         scene->addChild(progress[i]);
@@ -127,6 +170,14 @@ void Soldier::addChild(Scene *scene, int level) {
     
     scene->addChild(shield);
     scene->addChild(shieldText);
+    scene->addChild(MainWin);
+    scene->addChild(SubWin);
+    
+    scene->addChild(mainWeaponShow);
+    scene->addChild(subWeaponShow);
+    
+    scene->addChild(mainWeaponText);
+    scene->addChild(subWeaponText);
 }
 
 Point Soldier::getPosition() {
@@ -142,7 +193,18 @@ void Soldier::changeWeapon() {
     arm->setTexture(Soldier::armName[SubWeapon]);
     weapon->setTexture(Soldier::weaponName[SubWeapon]);
     std::swap(MainWeapon, SubWeapon);
+    circle->setScale(circleSize[MainWeapon]);
     arm->setPosition(body->getPosition());
+    
+    mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
+    subWeaponShow->setTexture(Soldier::weaponShowName[SubWeapon]);
+    
+    string mainStr = mainWeaponText->getString();
+    string subStr = subWeaponText->getString();
+    mainWeaponText->setString(subStr);
+    subWeaponText->setString(mainStr);
+    std::swap(mainCurBulletNum, subCurBulletNum);
+    std::swap(mainTotBulletNum, subTotBulletNum);
 }
 
 void Soldier::changeBullet() {
@@ -154,10 +216,24 @@ void Soldier::changeBullet() {
     // create act
     auto animate= Animate::create(animation);
     // run
-    arm->runAction(animate);
+    
+    auto callbackChangeBullet = CallFunc::create([&](){
+        int delta = Soldier::maxBullet[MainWeapon] - mainCurBulletNum;
+        if(delta > 0) {
+            mainCurBulletNum += delta;
+            mainTotBulletNum -= delta;
+            mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
+        }
+    });
+    
+    auto seq = Sequence::create(animate, callbackChangeBullet, NULL);
+    
+    arm->runAction(seq);
 }
 
 void Soldier::Shoot() {
+    arm->stopAllActions();
+
     if(MainWeapon == 0) {
         return;
     }
@@ -169,6 +245,9 @@ void Soldier::Shoot() {
     // create the animation out of the frames
     Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
     Animate* animate = Animate::create(animation);
+    
+    --mainCurBulletNum;
+    mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
     
     // run it
     fire->runAction(animate);
@@ -196,10 +275,39 @@ void Soldier::increaseShieldVal(float delta) {
 void Soldier::isDying() {
     arm->setVisible(false);
     weapon->setVisible(false);
+    circle->setVisible(false);
     // create aninmation
     auto animation = Animation::create(SpExploit, 0.1);
     // create act
     auto animate= Animate::create(animation);
     // run
     body->runAction(animate);
+}
+
+void Soldier::hideStatus() {
+    blood->setVisible(false);
+    for(int i = 0; i < 3; ++i) {
+        progress[i]->setVisible(false);
+    }
+    shield->setVisible(false);
+    MainWin->setVisible(false);
+    SubWin->setVisible(false);
+    shieldText->setVisible(false);
+    mainWeaponShow->setVisible(false);
+    subWeaponShow->setVisible(false);
+    mainWeaponText->setVisible(false);
+    subWeaponText->setVisible(false);
+}
+
+void Soldier::showStatus() {
+    blood->setVisible(true);
+    updateBlood();
+    shield->setVisible(true);
+    MainWin->setVisible(true);
+    SubWin->setVisible(true);
+    shieldText->setVisible(true);
+    mainWeaponShow->setVisible(true);
+    subWeaponShow->setVisible(true);
+    mainWeaponText->setVisible(true);
+    subWeaponText->setVisible(true);
 }

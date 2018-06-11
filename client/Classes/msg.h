@@ -9,18 +9,18 @@
 #define WALLSIZE 16
 
 struct c_s_msg{
-	char type;//0 µÇÂ½ 1 Õı³£
+	char type;//0 ç™»é™† 1 æ­£å¸¸
 	int x, y;
-	unsigned char curetype;//Ò© 0Ã»´ò ¿Í»§¶Ë´¦Àí
-	char BoxId;//¼ñµÄÏä×Ó£¬-1Ã»¼ñ
+	unsigned char curetype;//è¯ 0æ²¡æ‰“ å®¢æˆ·ç«¯å¤„ç†
+	char BoxId;//æ¡çš„ç®±å­ï¼Œ-1æ²¡æ¡
 	unsigned char PickPill[4];
 	unsigned short PickBl1;
 	unsigned short PickBl2;
-	bool PickArmor;	
+	bool PickArmor;
 	bool PickWp1;
 	bool PickWp2;
-	bool Load, Exchange;//×°µ¯£¬»»Ç¹ ¿Í»§¶Ë´¦ÀíË³Ğò
-	double ShootAngle;//Éä»÷½Ç£¬¸ºÊıÃ»ÓĞ·¢Éä
+	bool Load, Exchange;//è£…å¼¹ï¼Œæ¢æª å®¢æˆ·ç«¯å¤„ç†é¡ºåº
+	double ShootAngle;//å°„å‡»è§’ï¼Œè´Ÿæ•°æ²¡æœ‰å‘å°„
 	char remark[16];
 	};
 
@@ -33,9 +33,51 @@ struct send_box{
 };
 
 struct s_c_msg{
-	char type;//0 Î´¿ªÊ¼ 1 Õı³£ 2 ËÀÍö 3 Ê¤Àû
-	char infox, infoy;//×¼±¸Êı /»÷É±Êı ±»»÷É±Õß
+	char type;//0 æœªå¼€å§‹ 1 æ­£å¸¸ 2 æ­»äº¡ 3 èƒœåˆ©
+	char infox, infoy;//å‡†å¤‡æ•° /å‡»æ€æ•° è¢«å‡»æ€è€…
 	send_box Boxes[MAXBOX];
+	int Poison_X;
+	int Poison_Y;
+	int Poison_Size;
+	double currenthp;
+	double Armornaijiu;
+	int PillAmount[4];
+	int SubWeaponType;
+	int MainWeaponCurBullet;
+	int MainWeaponBackupBullet;
+	int SubWeaponCurBullet;
+	int SubWeaponBackupBullet;
+	int x[MAXPLAYER];
+	int y[MAXPLAYER];
+	bool IsCuring[MAXPLAYER];
+	bool IsLoading[MAXPLAYER];
+	bool Firing[MAXPLAYER];	// è¡¨ç¤ºæ¯ä¸ªäººæ˜¯ä¸æ˜¯éƒ½åœ¨å¼€ç«
+	int MainWeaponType[MAXPLAYER];
+	bool Isdead[MAXPLAYER];
+	int BeKilledByPlayerId[MAXPLAYER];
+	char user_name[MAXPLAYER][16];
+	};
+	
+struct cg_msg{
+	bool type;
+	bool infox,infoy;
+	bool Boxes[MAXBOX];
+	bool currenthp;
+	bool Armornaijiu;
+	bool PillAmount[4];
+	bool SubWeaponType;
+	bool MainWeaponCurBullet;
+	bool MainWeaponBackupBullet;
+	bool SubWeaponCurBullet;
+	bool SubWeaponBackupBullet;
+	bool x[MAXPLAYER];
+	bool y[MAXPLAYER];
+	bool IsCuring[MAXPLAYER];
+	bool IsLoading[MAXPLAYER];
+	bool Firing[MAXPLAYER];
+	bool MainWeaponType[MAXPLAYER];
+	bool Isdead[MAXPLAYER];
+	bool BeKilledByPlayerId[MAXPLAYER];
 	};
 
 #endif

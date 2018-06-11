@@ -55,7 +55,7 @@ struct s_c_msg{
 	int MainWeaponType[MAXPLAYER];
 	bool Isdead[MAXPLAYER];
 	int BeKilledByPlayerId[MAXPLAYER];
-	string user_name[MAXPLAYER];
+	char user_name[MAXPLAYER][16];
 	};
 
 struct cg_msg{

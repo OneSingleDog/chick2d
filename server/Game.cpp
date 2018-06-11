@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cmath>
 
+#ifdef MAC
 Game::Game(){
 	FILE*config=NULL;
 	config = fopen( "/Users/mac/Desktop/Test/Test/config.txt", "r");
@@ -27,6 +28,32 @@ Game::Game(){
 		fscanf(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
 	fclose(config);
 }
+#else
+Game::Game(){
+	FILE*config = NULL;
+	fopen_s(&config, "config.txt", "r");
+	if (config==NULL)
+		{
+		printf("Open config failed\n");
+		system("pause");
+		exit(0);
+		}
+	else printf("Open config succeeded\n");
+	int tmp;
+	wall = new Wall;
+	for (int i = 0;i<MAP_WIDTH;++i)
+		for (int j = 0;j<MAP_WIDTH;++j)
+			{
+			fscanf_s(config, "%d", &tmp);
+			wall->Set(i, j, tmp);
+			}
+	for (int i = 0;i<BEGINBOX;++i)
+		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
+	for (int i = 0;i<MAXLEVEL;++i)
+		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i, poison_SIZE+i);
+	fclose(config);
+	}
+#endif
 
 Game::~Game()
 	{
@@ -64,12 +91,12 @@ void Game::EndGame(){
 }
 
 bool Game::alive(int player_id){
-	if (living_count<=1)return false;//ÓÎÏ·½áÊø
+	if (living_count<=1)return false;//æ¸¸æˆç»“æŸ
 	return player[player_id]->JudgeDead();
 }
 
 string Game::login(const c_s_msg&msg, int player_id){
-	if (msg.type)return "NULL";//´íÎó
+	if (msg.type)return "NULL";//é”™è¯¯
 	player[player_id] = new Player(msg.x, msg.y);
 	string user_name = string(msg.remark);
 	player[player_id]->InitalPlayer(player_id, user_name);
