@@ -403,25 +403,6 @@ void MainScene::myMoveAction(float dt) {
         float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
         float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
         
-<<<<<<< HEAD
-    Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
-    littlePoint->setPosition(delta + player->getPosition());
-		
-	littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/8);
-
-	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
-	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
-	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
-	Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
-
-	Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
-	Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
-	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
-	Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
-	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
-	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
-	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
-=======
         Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
         littlePoint->setPosition(delta + player->getPosition());
         
@@ -434,13 +415,16 @@ void MainScene::myMoveAction(float dt) {
         Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
         Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
         Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
+		
+		Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
+		Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+		Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
+
         
         Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
     }
     
     littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/8);
-
->>>>>>> hyp
 }
 
 // 0 -> can move
