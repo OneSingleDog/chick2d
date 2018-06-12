@@ -27,16 +27,32 @@ private:
     cocos2d::Sprite *glass;
     cocos2d::Sprite *littleMap;
     cocos2d::Sprite *littlePoint;
+	cocos2d::Sprite *Safe_Zone;
+	cocos2d::Sprite *littleSafeZone;
+	cocos2d::Sprite *Medical_kit;
+	cocos2d::Sprite *First_aid;
+	cocos2d::Sprite *Bandage;
+	cocos2d::Sprite *Drink;
         
     cocos2d::Vec2 direction;
     bool isOpenSight;
     bool isOpenBox;
     bool isOpenMap;
 
+	bool isOnline;
+
     cocos2d::MenuItemImage* GoGameItem;
-    cocos2d::Label*Notice;
+    cocos2d::Label  *Notice;
     cocos2d::Label * to_ready;
     cocos2d::Label * already;
+	cocos2d::Label * Medical_cnt;
+	cocos2d::Label * Firstaid_cnt;
+	cocos2d::Label * Bandage_cnt;
+	cocos2d::Label * Drink_cnt;
+	cocos2d::Label * Remain;
+
+	 static float SafezoneScaleSize[4];
+
 
     int playerID;
     
@@ -74,10 +90,13 @@ public:
     void closeMap();
     
     //void scheduleBlood(float delta);
-    void GOCallback(cocos2d::Ref* pSender);
     void show_notice(std::string killer,std::string be_killed);
-    void show_begin(int status,int ready_person);
+	void show_begin(int status, int ready_person);
     void ReadyCallback();
+
+	void setSafeZone(cocos2d::Point new_center, int size);
+	//void use_Medical();
+
 };
 
 #endif /* MainScene_h */
