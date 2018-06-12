@@ -18,6 +18,7 @@ const int NUM_OF_WEAPON = 2;
 
 class Soldier {
 private:
+	int type;
     float shieldVal;
     float existLife;
     int MainWeapon, SubWeapon;
@@ -35,13 +36,7 @@ private:
    
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
     cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
-
-    static string armName[NUM_OF_WEAPON];
-    static string weaponName[NUM_OF_WEAPON];
-    static string fireName[NUM_OF_WEAPON];
-    static string weaponShowName[NUM_OF_WEAPON];
-    static int maxBullet[NUM_OF_WEAPON];
-    static float circleSize[NUM_OF_WEAPON];
+//	cocos2d::Vector<cocos2d::AnimationFrame*> SpWave;
 
     cocos2d::Sprite *blood;
     cocos2d::ProgressTimer *progress[3];
@@ -55,8 +50,14 @@ private:
     cocos2d::Label *subWeaponText;
 
 public:
+	static string armName[NUM_OF_WEAPON];
+	static string weaponName[NUM_OF_WEAPON];
+	static string fireName[NUM_OF_WEAPON];
+	static string weaponShowName[NUM_OF_WEAPON];
+	static int maxBullet[NUM_OF_WEAPON];
+	static float circleSize[NUM_OF_WEAPON];
     
-    Soldier();
+    Soldier(int tp);
     ~Soldier();
 
     void create();
@@ -81,6 +82,9 @@ public:
     
     void hideStatus();
     void showStatus();
+
+	void setHP(float newVal);
+	void setShield(float newVal);
 };
 
 #endif /* Soldier_h */

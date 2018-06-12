@@ -13,7 +13,7 @@
 USING_NS_CC;
 using std::string;
 
-Soldier::Soldier() {
+Soldier::Soldier(int tp):type(tp) {
     body = arm = weapon = fire = shield = blood = MainWin = SubWin = mainWeaponShow = subWeaponShow = nullptr;
     shieldText = mainWeaponText = subWeaponText = nullptr;
     existLife = 100;
@@ -310,4 +310,14 @@ void Soldier::showStatus() {
     subWeaponShow->setVisible(true);
     mainWeaponText->setVisible(true);
     subWeaponText->setVisible(true);
+}
+
+void Soldier::setHP(float newVal)
+{
+	existLife = newVal;
+}
+
+void Soldier::setShield(float newVal)
+{
+	shieldVal = newVal;
 }

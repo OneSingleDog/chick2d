@@ -3,4 +3,6 @@
 
 bool received();
 void write();
+bool socket_closed();
+void close_socket();
 #endif

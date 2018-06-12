@@ -6,6 +6,7 @@
 //
 
 #include "MainScene.h"
+#include "ConnectfailScene.h"
 #include "SimpleAudioEngine.h"
 #include <iostream>
 #include <cmath>
@@ -64,7 +65,8 @@ bool MainScene::init()
         return false;
     }
     
-    player = new Soldier();
+    player = new Soldier(0);
+	for (int i = 0;i<SOLDIER_NUM;++i)enemy[i] = new Soldier(1);
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -98,6 +100,15 @@ bool MainScene::init()
     addChild(MainMap, -5);
     player->addChild(this);
     setViewPointCenter(player->getPosition());
+
+	//create enemy and set position
+	for(int i=0;i<SOLDIER_NUM;++i)
+		{
+		enemy[i]->create();
+		enemy[i]->setPosition(0,0);
+//		enemy[i]->setVisible(false);
+		enemy[i]->addChild(this);
+		}
     
     // mouse create
     mouse = Sprite::create("others/mouse.png");
@@ -185,6 +196,7 @@ bool MainScene::init()
     auto size = Director::getInstance()->getWinSize();
     
     schedule(schedule_selector(MainScene::myMoveAction), (float)(1.0 / 60), kRepeatForever, 0);
+	schedule(schedule_selector(MainScene::try_receive), (float)(1.0/60), kRepeatForever, 0);
     
     glass = Sprite::create("others/glass.png");
     addChild(glass);
@@ -266,6 +278,17 @@ bool MainScene::init()
 	Drink_cnt->setTextColor(Color4B::BLACK);
 	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
 	addChild(Drink_cnt);
+	
+	DeadLayer = cocos2d::Sprite::create("others/glass.png");
+	DeadLayer->setPosition(player->getPosition());
+	addChild(DeadLayer,40);
+	DeadLayer->setVisible(false);
+
+	Warning = cocos2d::Sprite::create("others/warn.png");
+	Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
+	addChild(Warning);
+	Warning->setScale(0.15);
+	Warning->setVisible(false);
 
     return true;
 }
@@ -667,36 +690,6 @@ void MainScene::OpenBox(int boxID) {
     player->hideStatus();
     fog->setVisible(false);
     
-    // create Menu
-//    Vector<MenuItem*> MenuItems;
-//
-//    for(int i = 0; i < (int)Box_ve.size(); ++i) {
-//
-//    }
-    //auto myMenu = Menu::create();
-    // creating a menu with a single item
-    
-    // create a menu item by specifying images
-    
-    //auto closeItem = MenuItemImage::create("StartGameNormal.png", "StartGameSelected.png",
-//                                           [&](Ref* sender){
-//                                               log("I'm touched!!!");
-//                                           });
-    
-//    Size visibleSize = Director::getInstance()->getVisibleSize();
-//    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-//
-//    auto closeItem = MenuItemImage::create(
-//                                           "StartGameNormal.png",
-//                                           "StartGameSelected.png",
-//                                           CC_CALLBACK_1(MainScene::func, this));
-//
-//    auto menu = Menu::create(closeItem, NULL);
-//    closeItem->setPosition(Vec2::ZERO);
-//    menu->setPositionZ(1);
-//    menu->setPosition(Vec2::ZERO);
-//    this->addChild(menu, 1);
-//    log("%f", menu->getPositionZ());
 }
 
 void MainScene::closeBox() {
@@ -739,8 +732,8 @@ void MainScene::ReadyCallback() {
     extern c_s_msg to_be_sent;
 	extern string login_username;
 	to_be_sent.type = 0;
-	to_be_sent.x = int(player->getPosition().x)/32;
-	to_be_sent.y = int(player->getPosition().y)/32;
+	to_be_sent.x = int(player->getPosition().x)/2;
+	to_be_sent.y = int(player->getPosition().y)/2;
 	#ifndef MAC
 	memcpy_s(to_be_sent.remark, 16, login_username.c_str(), login_username.length());
 	#else
@@ -749,4 +742,74 @@ void MainScene::ReadyCallback() {
 	write();
 	isOnline = true;
 	show_begin(-1, 0);
+}
+
+
+void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifwinner) {
+
+	DeadLayer->setVisible(true);
+	fog->setVisible(false);
+
+	std::string Remind[2] = { "WINNER WINNER,CHICKEN DINNER!","BETTER LUCK FOR NEXT TIME" };
+
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	auto show_User = cocos2d::Label::createWithTTF(Username, "fonts/Marker Felt.ttf", 30);
+	show_User->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 20);
+	addChild(show_User);
+
+	auto show_res = cocos2d::Label::createWithTTF(Remind[ifwinner], "fonts/Marker Felt.ttf", 50);
+	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 50);
+	addChild(show_res);
+	show_res->setTextColor(Color4B::YELLOW);
+
+	auto show_rank = cocos2d::Label::createWithTTF("Rank: " + std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
+	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 100);
+	addChild(show_rank);
+
+	//close the windows
+
+}
+
+void MainScene::try_receive(float dt)
+{
+	if (!isOnline)return;
+	if (socket_closed())
+		{
+		auto scene = ConnectfailScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		return;
+		}
+	if (!received())return;
+	extern s_c_msg s2c;
+	if (!isRunning)
+		{
+		if (s2c.type)
+			{
+			isRunning = true;
+			BASIC_SPEED = 2.5;
+			}
+		show_begin(s2c.type, s2c.infox);
+		}
+	if (!isRunning)playerID = s2c.infoy;
+	else if (s2c.type==2||s2c.type==3)
+		{
+		isOnline = false;
+		close_socket();
+		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, s2c.type==3);
+		}
+	else
+		{
+		for (int i = 0;i<SOLDIER_NUM;++i)
+			enemy[i]->setPosition(s2c.x[i]*2,s2c.y[i]*2);
+		if (s2c.Poison_LEVEL)
+			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
+		player->setHP(s2c.currenthp);
+		player->setShield(s2c.Armornaijiu);
+		Warning->setVisible(s2c.inpoison);
+		extern c_s_msg to_be_sent;
+		to_be_sent.type = 1;
+		to_be_sent.x = player->getPosition().x/2;
+		to_be_sent.y = player->getPosition().y/2;
+		}
+	write();
 }

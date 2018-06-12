@@ -12,11 +12,10 @@
 #include "Soldier.h"
 #include "ui/CocosGUI.h"
 
-const int SOLDIER_NUM = 4;
-
 class MainScene : public cocos2d::Scene
 {
 private:
+	static const int SOLDIER_NUM = 4;
     cocos2d::TMXTiledMap *MainMap;
     cocos2d::TMXLayer *background;  // background layer of MainMap
     cocos2d::TMXLayer *collidable;
@@ -33,6 +32,8 @@ private:
 	cocos2d::Sprite *First_aid;
 	cocos2d::Sprite *Bandage;
 	cocos2d::Sprite *Drink;
+	cocos2d::Sprite *DeadLayer;
+	cocos2d::Sprite *Warning;
         
     cocos2d::Vec2 direction;
     bool isOpenSight;
@@ -40,6 +41,7 @@ private:
     bool isOpenMap;
 
 	bool isOnline;
+	bool isRunning;
 
     cocos2d::MenuItemImage* GoGameItem;
     cocos2d::Label  *Notice;
@@ -53,10 +55,10 @@ private:
 
 	 static float SafezoneScaleSize[4];
 
-
     int playerID;
     
-    
+	Soldier*enemy[SOLDIER_NUM];
+
 public:
     static double BASIC_SPEED;
     static int SPEED_RATIO;
@@ -82,7 +84,6 @@ public:
     int judgePlayerPosition(cocos2d::Point position);
     cocos2d::Point tileCoordFromPosition(cocos2d::Point pos);
     
-    void scheduleBlood(float delta);
     void CheckBoxes();
     void OpenBox(int boxID);
     void closeBox();
@@ -95,8 +96,9 @@ public:
     void ReadyCallback();
 
 	void setSafeZone(cocos2d::Point new_center, int size);
-	//void use_Medical();
+	void FinalScene(std::string Uername, int rank, int kill_num, int ifwinner);
 
+	void try_receive(float dt);
 };
 
 #endif /* MainScene_h */
