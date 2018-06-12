@@ -85,6 +85,10 @@ public:
 	void setusername(std::string username);
     
     void makeWave(cocos2d::Scene *scene);
+    
+    void setMainWeapon(int weaponType);
+    void setSubWeapon(int weaponType);
+    void setBullet(int Mcur, int Mback, int Scur, int Sback);
 };
 
 #endif /* Soldier_h */

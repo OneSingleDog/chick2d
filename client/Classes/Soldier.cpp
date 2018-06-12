@@ -268,9 +268,10 @@ void Soldier::Shoot() {
     // create the animation out of the frames
     Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
     Animate* animate = Animate::create(animation);
-    
-    --mainCurBulletNum;
-    mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
+
+    // Just show animation
+//    --mainCurBulletNum;
+//    mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
     
     // run it
     fire->runAction(animate);
@@ -398,3 +399,24 @@ void Soldier::makeWave(cocos2d::Scene *scene) {
     
     wavePoint->runAction(seq);
 }
+
+void Soldier::setSubWeapon(int weaponType) {
+    SubWeapon = weaponType;
+    subWeaponShow->setTexture(Soldier::weaponShowName[SubWeapon]);
+}
+
+void Soldier::setMainWeapon(int weaponType) {
+    MainWeapon = weaponType;
+    mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
+}
+
+void Soldier::setBullet(int Mcur, int Mback, int Scur, int Sback) {
+    mainCurBulletNum = Mcur;
+    mainTotBulletNum = Mback;
+    subCurBulletNum = Scur;
+    subTotBulletNum = Sback;
+    
+    mainWeaponText->setString((std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum)).c_str());
+    subWeaponText->setString((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str());
+}
+
