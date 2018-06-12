@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <cmath>
 
 #ifdef MAC
@@ -166,19 +167,19 @@ s_c_msg&Game::info(int player_id){
 		else output.MainWeaponBackupBullet = player[player_id] -> GetMainWeapon() -> GetBackupBullet();
 		if(player[player_id] -> GetSubWeapon() == NULL)output.SubWeaponCurBullet = 0;
 		else output.SubWeaponCurBullet = player[player_id] -> GetSubWeapon() -> GetCurBullet();
-		if(player[player_id] -> GetSubWeapon() == NULL)output.SubWeaponBackupBullet == NULL;
+		if(player[player_id] -> GetSubWeapon() == NULL)output.SubWeaponBackupBullet = 0;
 		else output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
 		output.IsCuring = player[player_id] -> IsCuringNow();
 		for(int i = 0;i < MAXPLAYER;++ i){
-			output.user_name[i] = player[i] -> GetUserName();
+			strcpy(output.user_name[i],player[i] -> GetUserName().c_str());
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
 			//output.IsCuring[i] = player[i] -> IsCuringNow();
-			if(player[i] -> GetMainWeapon() == NULL)output.IsLoading = false;
+			if(player[i] -> GetMainWeapon() == NULL)output.IsLoading[i] = false;
 			else output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
 			output.Firing[i] = ShootSuccess[i];
 			ShootSuccess[i] = false;
-			if(player[i] -> GetMainWeapon() == NULL || player[i] -> GetMainWeapon() -> GetType() == NULL) MainWeaponType = -1;
+			if(player[i] -> GetMainWeapon() == NULL || player[i] -> GetMainWeapon() -> GetType() == FIST) output.MainWeaponType[i] = -1;
 			else output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
 			output.Isdead[i] = player[i] -> JudgeDead();
 			output.BeKilledByPlayerId[i] = player[i] -> GetKillerId();

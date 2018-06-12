@@ -60,26 +60,4 @@ struct s_c_msg{
 	char user_name[MAXPLAYER][16];
 	};
 
-struct cg_msg{
-	bool type;
-	bool infox,infoy;
-	bool Boxes[MAXBOX];
-	bool currenthp;
-	bool Armornaijiu;
-	bool PillAmount[4];
-	bool SubWeaponType;
-	bool MainWeaponCurBullet;
-	bool MainWeaponBackupBullet;
-	bool SubWeaponCurBullet;
-	bool SubWeaponBackupBullet;
-	bool x[MAXPLAYER];
-	bool y[MAXPLAYER];
-	bool IsCuring[MAXPLAYER];
-	bool IsLoading[MAXPLAYER];
-	bool Firing[MAXPLAYER];
-	bool MainWeaponType[MAXPLAYER];
-	bool Isdead[MAXPLAYER];
-	bool BeKilledByPlayerId[MAXPLAYER];
-}
-
 #endif
