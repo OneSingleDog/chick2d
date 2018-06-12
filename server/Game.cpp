@@ -135,6 +135,7 @@ s_c_msg&Game::info(int player_id){
 		{
 		output.type = 1;
 		output.infoy = player_id;
+		output.live_count = living_count;
 		output.Poison_X = poison_X + poison_SIZE[poison_LEVEL]/2;
 		output.Poison_Y = poison_Y + poison_SIZE[poison_LEVEL]/2;
 		output.Poison_LEVEL = poison_LEVEL;
@@ -180,8 +181,8 @@ s_c_msg&Game::info(int player_id){
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
 			//output.IsCuring[i] = player[i] -> IsCuringNow();
-			if(player[i] -> GetMainWeapon() == NULL)output.IsLoading[i] = false;
-			else output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
+			//if(player[i] -> GetMainWeapon() == NULL)output.IsLoading[i] = false;
+			//else output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
 			output.Firing[i] = ShootSuccess[i];
 			ShootSuccess[i] = false;
 			if(player[i] -> GetMainWeapon() == NULL || player[i] -> GetMainWeapon() -> GetType() == FIST) output.MainWeaponType[i] = -1;
