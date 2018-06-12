@@ -156,6 +156,8 @@ void Soldier::setPosition(float x, float y) {
     
     mainWeaponText->setPosition(MainWin->getPosition() + Vec2(minisize.width, -minisize.height / 4 * 0.9));
     subWeaponText->setPosition(SubWin->getPosition() + Vec2(minisize.width, -minisize.height / 4 * 0.9));
+
+	User_tag->setPosition(x, y+10);
 }
 
 void Soldier::addChild(Scene *scene, int level) {
@@ -354,6 +356,7 @@ void Soldier::setVisible(bool flag) {
 	if (type)return;
 	circle->setVisible(flag);
 	blood->setVisible(flag);
+	User_tag->setVisible(flag);
 	for (int i = 0; i < 3; ++i) {
 		progress[i]->setVisible(flag);
 	}

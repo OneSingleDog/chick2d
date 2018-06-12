@@ -85,6 +85,8 @@ public:
 	void setusername(std::string username);
     
     void makeWave(cocos2d::Scene *scene);
+
+	bool dead(){return existLife>1e-6;}
 };
 
 #endif /* Soldier_h */
