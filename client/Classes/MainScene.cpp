@@ -927,7 +927,11 @@ void MainScene::try_receive(float dt)
 			isRunning = true;
 			BASIC_SPEED = 2.5;
 			for (int i = 0;i<SOLDIER_NUM;++i)
-				if(i!=playerID)enemy[i]->setVisible(true);
+				{
+				if (i!=playerID)enemy[i]->setVisible(true);
+				enemy[i]->setusername(string(s2c.user_name[i]));
+				}
+			Remain->setVisible(true);
 			}
 		show_begin(s2c.type, s2c.infox);
 		}
@@ -939,15 +943,39 @@ void MainScene::try_receive(float dt)
 		}
 	else
 		{
-		for (int i = 0;i<SOLDIER_NUM;++i)
-			enemy[i]->setPosition(s2c.x[i]*2,s2c.y[i]*2);
+
 		if (s2c.Poison_LEVEL)
 			{
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
 			}
+
 		player->setHP(s2c.currenthp);
 		player->setShield(s2c.Armornaijiu);
 		Warning->setVisible(s2c.inpoison);
+		Healing->setVisible(s2c.IsCuring);
+
+		set_pill(s2c.PillAmount);
+
+		player->setSubWeapon(s2c.SubWeaponType);
+		player->setBullet(s2c.MainWeaponCurBullet, s2c.MainWeaponBackupBullet, s2c.SubWeaponCurBullet, s2c.SubWeaponBackupBullet);
+
+		show_remain(s2c.live_count);
+
+		for (int i = 0;i<SOLDIER_NUM;++i)
+			{
+			if (i==playerID)continue;
+			if (enemy[i].dead())continue;
+			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
+			enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
+			if (s2c.Firing[i]);//shoot
+			if (s2c.Isdead[i])
+				{
+				enemy[i]->setHP(0);
+				//die
+				if (~s2c.BeKilledByPlayerId[i])show_notice(string(s2c.user_name[i])+" was killed by "+string(s2c.user_name[s2c.BeKilledByPlayerId[i]]);
+				else show_notice(string(s2c.user_name[i])+" was killed out of safe zone");
+				}
+			}
 		extern c_s_msg to_be_sent;
 		to_be_sent.type = 1;
 		to_be_sent.x = player->getPosition().x/2;
