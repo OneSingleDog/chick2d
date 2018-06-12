@@ -28,6 +28,7 @@ private:
 
 	cocos2d::Sprite *DeadLayer;
 	cocos2d::Sprite *Warning;
+    cocos2d::Sprite *Healing;
 
     cocos2d::Menu *boxMenu;
         
@@ -54,6 +55,8 @@ private:
     int playerID;
     
 	Soldier*enemy[SOLDIER_NUM];
+    
+    bool Wflag, Aflag, Sflag, Dflag;
 
 public:
     static double BASIC_SPEED;

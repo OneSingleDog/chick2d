@@ -29,12 +29,13 @@ private:
    
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
     cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
-//	cocos2d::Vector<cocos2d::AnimationFrame*> SpWave;
+	cocos2d::Vector<cocos2d::AnimationFrame*> SpWave;
 
     cocos2d::Sprite *blood;
     cocos2d::ProgressTimer *progress[3];
     cocos2d::Sprite *shield;
     cocos2d::Sprite *MainWin, *SubWin;
+    cocos2d::Sprite *wave;
     
     cocos2d::Label *shieldText;
     cocos2d::Sprite *mainWeaponShow;
@@ -82,6 +83,8 @@ public:
 
 	void setVisible(bool flag);
 	void setusername(std::string username);
+    
+    void makeWave(cocos2d::Scene *scene);
 };
 
 #endif /* Soldier_h */

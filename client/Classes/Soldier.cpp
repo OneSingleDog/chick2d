@@ -32,6 +32,12 @@ Soldier::Soldier(int tp):type(tp) {
         string name = std::to_string(i) + ".png";
         SpExploit.pushBack(cocos2d::AnimationFrame::create(cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(name.c_str()), 1, ValueMap()));
     }
+    
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("player/wave.plist");
+    for(int i = 1; i <= 6; ++i) {
+        string name = std::to_string(i) + ".png";
+        SpWave.pushBack(cocos2d::AnimationFrame::create(cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(name.c_str()), 1, ValueMap()));
+    }
 }
 
 Soldier::~Soldier() {
@@ -372,3 +378,23 @@ void Soldier::setusername(std::string username) {
 	else User_tag->setTextColor(Color4B::RED);
 }
 
+void Soldier::makeWave(cocos2d::Scene *scene) {
+    auto wavePoint = Sprite::create("player/blank.png");
+    wavePoint->setScale(1.5);
+    wavePoint->setPosition(this->getPosition());
+    scene->addChild(wavePoint);
+    
+    // create aninmation
+    auto animation = Animation::create(SpWave, 1.0 / 6);
+    // create act
+    auto animate= Animate::create(animation);
+    // run
+    
+    auto callbackWave = CallFunc::create([=](){
+        scene->removeChild(wavePoint);
+    });
+    
+    auto seq = Sequence::create(animate, callbackWave, NULL);
+    
+    wavePoint->runAction(seq);
+}
