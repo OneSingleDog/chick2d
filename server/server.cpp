@@ -74,7 +74,11 @@ private:
 	void on_write(const error_code & err, size_t bytes)
 		{
 		if(chick2d.alive(id_))do_read();//是否继续连接
-		else stop();
+		else
+			{
+			printf("%d has died.\n",id_);
+			stop();
+			}
 		return;
 		}
 
@@ -96,7 +100,7 @@ void handle_accept(talk_to_client::ptr client, const talk_to_client::error_code 
 	{
 	client->start();
 	printf("A player has connected\n");
-	talk_to_client::ptr new_client = talk_to_client::new_(now_opened+1);
+	talk_to_client::ptr new_client = talk_to_client::new_(now_opened);
 	clients[now_opened] = new_client;
 	if(now_opened<MAXPLAYER)acceptor.async_accept(new_client->sock(), boost::bind(handle_accept, new_client, _1));
 	++now_opened;
@@ -109,7 +113,7 @@ int main()
 		chick2d.InitGame();//初始化游戏
 		printf("Initial completed\n");
 		now_opened = 0;
-		clients[now_opened] = talk_to_client::new_(now_opened+1);
+		clients[now_opened] = talk_to_client::new_(now_opened);
 		acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
 		++now_opened;
 		service.run();
@@ -119,6 +123,7 @@ int main()
 			clients[i].reset();
 			}
 		chick2d.EndGame();
+		service.stop();
 		service.reset();
 		}
 	return 0;

@@ -77,6 +77,7 @@ void Game::InitGame(){
 		}
 	for(int i = 0;i < MAXPLAYER;++ i){
 		ShootSuccess[i] = false;
+		dead[i] = false;
 	}
 }
 
@@ -91,9 +92,7 @@ void Game::EndGame(){
 }
 
 bool Game::alive(int player_id){
-	if(!started)return true;
-	if (living_count<=1)return false;//游戏结束
-	return player[player_id]->JudgeDead();
+	return !dead[player_id];
 }
 
 string Game::login(const c_s_msg&msg, int player_id){
@@ -122,12 +121,15 @@ s_c_msg&Game::info(int player_id){
 		{
 		output.type = 2;
 		output.infox = player[player_id]->GetKillAmount();
-		output.infoy = player[player_id]->GetKillerId();
+		output.infoy = living_count+1;
+		dead[player_id] = true;
 		}
 	else if (living_count==1)
 		{
 		output.type = 3;
 		output.infox = player[player_id]->GetKillAmount();
+		output.infoy = 1;
+		dead[player_id] = true;
 		}
 	else
 		{
@@ -278,7 +280,8 @@ void Game::merge(const c_s_msg&msg, int player_id){
 		}
 	if (msg.Exchange)player[player_id]->ExchangeWeapon();
 	if (msg.Load)player[player_id]->LoadBullet(nowtime);
-	player[player_id]->GetMainWeapon()->LoadEnd(nowtime);
+	if(player[player_id]->GetMainWeapon())
+		player[player_id]->GetMainWeapon()->LoadEnd(nowtime);
 	if (msg.ShootAngle>=0)
 		Shoot(player_id, msg.ShootAngle,nowtime);
 	player[player_id]->CureStart(msg.type, nowtime);

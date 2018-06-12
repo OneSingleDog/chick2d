@@ -35,6 +35,8 @@ private:
 	int connected;
 	int living_count;
 
+	bool dead[MAXPLAYER];
+
 	void change_poison();
 	bool Die(int player_id);
 
