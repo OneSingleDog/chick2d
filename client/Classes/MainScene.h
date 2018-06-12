@@ -1,10 +1,3 @@
-//
-//  MainScene.h
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/4/24.
-//
-
 #ifndef MainScene_h
 #define MainScene_h
 
@@ -32,8 +25,11 @@ private:
 	cocos2d::Sprite *First_aid;
 	cocos2d::Sprite *Bandage;
 	cocos2d::Sprite *Drink;
+
 	cocos2d::Sprite *DeadLayer;
 	cocos2d::Sprite *Warning;
+
+    cocos2d::Menu *boxMenu;
         
     cocos2d::Vec2 direction;
     bool isOpenSight;
