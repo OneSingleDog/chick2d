@@ -20,7 +20,7 @@ private:
     Box* box[MAXBOX];
     Wall* wall;
 
-	int box_X[BEGINBOX], box_Y[BEGINBOX];
+//	int box_X[BEGINBOX], box_Y[BEGINBOX];
 	double poison_DMG[MAXLEVEL];//没ms注释
 	int poison_TIME[MAXLEVEL];
 	int poison_SIZE[MAXLEVEL];

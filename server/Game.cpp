@@ -23,8 +23,8 @@ Game::Game(){
 			fscanf(config, "%d", &tmp);
 			wall->Set(i, j, tmp);
 			}
-	for (int i = 0;i<BEGINBOX;++i)
-		fscanf(config, "%d%d", box_X+i, box_Y+i);
+//	for (int i = 0;i<BEGINBOX;++i)
+//		fscanf(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
 		fscanf(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
 	fclose(config);
@@ -32,7 +32,7 @@ Game::Game(){
 #else
 Game::Game(){
 	FILE*config = NULL;
-	fopen_s(&config, "config.txt", "r");
+	fopen_s(&config, "E:\\VS2017\\Source\\chick2d-server\\x64\\Debug\\config.txt", "r");
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
@@ -48,8 +48,8 @@ Game::Game(){
 			fscanf_s(config, "%d", &tmp);
 			wall->Set(i, j, tmp);
 			}
-	for (int i = 0;i<BEGINBOX;++i)
-		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
+//	for (int i = 0;i<BEGINBOX;++i)
+//		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
 		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i, poison_SIZE+i);
 	fclose(config);
@@ -63,6 +63,7 @@ Game::~Game()
 	}
 
 void Game::InitGame(){
+	srand(time(0));
 	BoxNumber = BEGINBOX;
 	poison_X = 0;
 	poison_Y = 0;
@@ -71,14 +72,12 @@ void Game::InitGame(){
 	connected = 0;
 	for (int i = 0;i<BEGINBOX;++i)
 		{
-		box[i] = new Box(box_X[i], box_Y[i], i);
+		box[i] = new Box(rand()%MAP_WIDTH, rand()%MAP_LENGTH, i);
 		box[i]->InitBoxByRandom();
 		}
 	for(int i = 0;i < MAXPLAYER;++ i){
 		ShootSuccess[i] = false;
 	}
-    Gamebegintime = clock();
-	srand(time(0));
 }
 
 void Game::EndGame(){
@@ -171,7 +170,11 @@ s_c_msg&Game::info(int player_id){
 		else output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
 		output.IsCuring = player[player_id] -> IsCuringNow();
 		for(int i = 0;i < MAXPLAYER;++ i){
+			#ifdef MAC
 			strcpy(output.user_name[i],player[i] -> GetUserName().c_str());
+			#else
+			strcpy_s(output.user_name[i], 16, player[i]->GetUserName().c_str());
+			#endif
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
 			//output.IsCuring[i] = player[i] -> IsCuringNow();
