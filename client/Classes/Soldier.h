@@ -29,10 +29,7 @@ private:
    
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
     cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
-<<<<<<< HEAD
 //	cocos2d::Vector<cocos2d::AnimationFrame*> SpWave;
-=======
->>>>>>> hyp
 
     cocos2d::Sprite *blood;
     cocos2d::ProgressTimer *progress[3];
@@ -46,21 +43,12 @@ private:
     cocos2d::Label *subWeaponText;
 
 public:
-<<<<<<< HEAD
 	static string armName[NUM_OF_WEAPON];
 	static string weaponName[NUM_OF_WEAPON];
 	static string fireName[NUM_OF_WEAPON];
 	static string weaponShowName[NUM_OF_WEAPON];
 	static int maxBullet[NUM_OF_WEAPON];
 	static float circleSize[NUM_OF_WEAPON];
-=======
-    static string armName[NUM_OF_WEAPON];
-    static string weaponName[NUM_OF_WEAPON];
-    static string fireName[NUM_OF_WEAPON];
-    static string weaponShowName[NUM_OF_WEAPON];
-    static int maxBullet[NUM_OF_WEAPON];
-    static float circleSize[NUM_OF_WEAPON];
->>>>>>> hyp
     
     Soldier(int tp);
     ~Soldier();

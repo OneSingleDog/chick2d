@@ -696,8 +696,6 @@ void MainScene::OpenBox(int boxID) {
     player->hideStatus();
     fog->setVisible(false);
     
-<<<<<<< HEAD
-=======
     auto oriPos = this->getPosition();
     this->setPosition(Vec2::ZERO);
     MainMap->setPosition(oriPos);
@@ -807,7 +805,6 @@ void MainScene::OpenBox(int boxID) {
     /*
         End of menu
      */
->>>>>>> hyp
 }
 
 void MainScene::closeBox() {
