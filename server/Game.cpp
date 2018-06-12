@@ -216,12 +216,13 @@ void Game::merge(const c_s_msg&msg, int player_id){
 	unsigned nowtime = clock()-Gamebegintime;
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
 	player[player_id]->ChangePosition(msg.x, msg.y);
-	if (msg.x>=poison_X&&msg.x<=poison_X+poison_SIZE[poison_LEVEL]&&msg.y>=poison_Y&&msg.y<=poison_Y+poison_SIZE[poison_LEVEL])
+	if (msg.x>=poison_X&&msg.x<=(poison_X+poison_SIZE[poison_LEVEL])&&msg.y>=poison_Y&&msg.y<=(poison_Y+poison_SIZE[poison_LEVEL]))
+		player[player_id]->OutPoison();
+	else
 		{
 		player[player_id]->InPoison(nowtime, poison_DMG[poison_LEVEL]);
 		Die(player_id);
 		}
-	else player[player_id]->OutPoison();
 	if (~msg.BoxId)
 		{
 		if (msg.PickPill[0]&&msg.PickPill[0]<=box[msg.BoxId]->GetPillOneAmount())

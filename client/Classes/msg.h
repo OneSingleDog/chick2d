@@ -63,10 +63,11 @@ struct s_c_msg{
 	int SubWeaponCurBullet;
 	int SubWeaponBackupBullet;
 	bool IsCuring;
+	int live_count;
 	int x[MAXPLAYER];
 	int y[MAXPLAYER];
 	//bool IsCuring[MAXPLAYER];
-	bool IsLoading[MAXPLAYER];
+	//bool IsLoading[MAXPLAYER];
 	bool Firing[MAXPLAYER];	// 表示每个人是不是都在开火
 	int MainWeaponType[MAXPLAYER];
 	bool Isdead[MAXPLAYER];

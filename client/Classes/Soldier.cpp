@@ -32,6 +32,12 @@ Soldier::Soldier(int tp):type(tp) {
         string name = std::to_string(i) + ".png";
         SpExploit.pushBack(cocos2d::AnimationFrame::create(cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(name.c_str()), 1, ValueMap()));
     }
+    
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("player/wave.plist");
+    for(int i = 1; i <= 6; ++i) {
+        string name = std::to_string(i) + ".png";
+        SpWave.pushBack(cocos2d::AnimationFrame::create(cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(name.c_str()), 1, ValueMap()));
+    }
 }
 
 Soldier::~Soldier() {
@@ -52,7 +58,7 @@ Soldier::~Soldier() {
 }
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm0.png", "player/arm1.png" };
-string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon1.png" };
+string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon0_lookover.png" };
 string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/fire1.png" };
 string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/blank.png", "player/weaponshow1.png" };
 int Soldier::maxBullet[NUM_OF_WEAPON] = { 0, 30 };
@@ -103,6 +109,9 @@ void Soldier::create() {
     
     subWeaponText = Label::createWithTTF((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str(), "fonts/Marker Felt.ttf", 20);
     subWeaponText->setTextColor(Color4B::BLACK);
+
+	User_tag = Label::createWithTTF("", "fonts/Marker Felt.ttf", 20);
+
 }
 
 void Soldier::updateBlood() {
@@ -154,23 +163,44 @@ void Soldier::addChild(Scene *scene, int level) {
     scene->addChild(weapon);
     scene->addChild(arm);
     scene->addChild(fire);
-    scene->addChild(circle,1);
-   
-    scene->addChild(blood);
-    for(int i = 0; i < 3; ++i) {
-        scene->addChild(progress[i]);
-    }
+
+	scene->addChild(circle, 1);
+	scene->addChild(blood);
+	for(int i = 0; i < 3; ++i) {
+		scene->addChild(progress[i]);
+	}
     
-    scene->addChild(shield);
-    scene->addChild(shieldText);
-    scene->addChild(MainWin);
-    scene->addChild(SubWin);
+	scene->addChild(shield);
+	scene->addChild(shieldText);
+	scene->addChild(MainWin);
+	scene->addChild(SubWin);
     
-    scene->addChild(mainWeaponShow);
-    scene->addChild(subWeaponShow);
+	scene->addChild(mainWeaponShow);
+	scene->addChild(subWeaponShow);
     
-    scene->addChild(mainWeaponText);
-    scene->addChild(subWeaponText);
+	scene->addChild(mainWeaponText);
+	scene->addChild(subWeaponText);
+	scene->addChild(User_tag);
+
+	if (type == 1) {
+		circle->setVisible(false);
+		blood->setVisible(false);
+		for (int i = 0; i < 3; ++i) {
+			progress[i]->setVisible(false);
+		}
+		shield->setVisible(false);
+		shieldText->setVisible(false);
+		MainWin->setVisible(false);
+		SubWin->setVisible(false);
+
+		mainWeaponShow->setVisible(false);
+		subWeaponShow->setVisible(false);
+
+		mainWeaponText->setVisible(false);
+		subWeaponText->setVisible(false);
+		
+	}
+	
 }
 
 Point Soldier::getPosition() {
@@ -313,4 +343,58 @@ void Soldier::setHP(float newVal)
 void Soldier::setShield(float newVal)
 {
 	shieldVal = newVal;
+}
+
+void Soldier::setVisible(bool flag) {
+
+	body->setVisible(flag);
+	weapon->setVisible(flag);
+	arm->setVisible(flag);
+	fire->setVisible(flag);
+	if (type)return;
+	circle->setVisible(flag);
+	blood->setVisible(flag);
+	for (int i = 0; i < 3; ++i) {
+		progress[i]->setVisible(flag);
+	}
+	shield->setVisible(flag);
+	shieldText->setVisible(flag);
+	MainWin->setVisible(flag);
+	SubWin->setVisible(flag);
+
+	mainWeaponShow->setVisible(flag);
+	subWeaponShow->setVisible(flag);
+
+	mainWeaponText->setVisible(flag);
+	subWeaponText->setVisible(flag);
+
+}
+
+
+void Soldier::setusername(std::string username) {
+	if (User_tag == nullptr) return;
+	User_tag->setString(username);
+	if (type == 0) User_tag->setTextColor(Color4B::BLACK);
+	else User_tag->setTextColor(Color4B::RED);
+}
+
+void Soldier::makeWave(cocos2d::Scene *scene) {
+    auto wavePoint = Sprite::create("player/blank.png");
+    wavePoint->setScale(1.5);
+    wavePoint->setPosition(this->getPosition());
+    scene->addChild(wavePoint);
+    
+    // create aninmation
+    auto animation = Animation::create(SpWave, 1.0 / 6);
+    // create act
+    auto animate= Animate::create(animation);
+    // run
+    
+    auto callbackWave = CallFunc::create([=](){
+        scene->removeChild(wavePoint);
+    });
+    
+    auto seq = Sequence::create(animate, callbackWave, NULL);
+    
+    wavePoint->runAction(seq);
 }

@@ -53,7 +53,6 @@ bool MainScene::init()
     isOpenBox = false;
     isOpenMap = false;
     
-    Box_ve.push_back(Box(64, 64, 1, 1, 60, 0, 1, 1, 1, 1, 100));
     Box_ve.push_back(Box(80, 64, 1, 1, 60, 30,  1, 0, 1, 0, 100));
     Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 1, 1, 1, 100));
 
@@ -105,7 +104,7 @@ bool MainScene::init()
 		{
 		enemy[i]->create();
 		enemy[i]->setPosition(0,0);
-//		enemy[i]->setVisible(false);
+		enemy[i]->setVisible(false);
 		enemy[i]->addChild(this);
 		}
     
@@ -168,6 +167,7 @@ bool MainScene::init()
         } else {
             if(SPEED_RATIO != 1) { return; }
             player->Shoot();
+            player->makeWave(this);
         }
     };
     
@@ -288,7 +288,26 @@ bool MainScene::init()
 	addChild(Warning);
 	Warning->setScale(0.15);
 	Warning->setVisible(false);
+    
+    Healing = cocos2d::Sprite::create("others/heal.png");
+    Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
+    Healing->setScale(0.15);
+    addChild(Healing);
+    Healing->setVisible(true);
 
+	Notice = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 30);
+	Notice->setTextColor(Color4B::BLACK);
+	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+	addChild(Notice);
+
+	Remain = cocos2d::Label::createWithTTF("4 / 4", "fonts/Marker Felt.ttf", 50);
+	Remain->setTextColor(Color4B::ORANGE);
+	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
+	addChild(Remain);
+	Remain->setVisible(false);
+
+    Wflag = Aflag = Sflag = Dflag = false;
+    
     return true;
 }
 
@@ -313,8 +332,6 @@ void MainScene::openSight() {
     sight->setVisible(true);
     fog->setVisible(false);
     isOpenSight = true;
-    
-    
 }
 
 void MainScene::closeSight() {
@@ -340,6 +357,11 @@ void MainScene::myMoveAction(float dt) {
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+    direction = Vec2::ZERO;
+    if(Wflag) { direction.y += BASIC_SPEED; }
+    if(Aflag) { direction.x -= BASIC_SPEED; }
+    if(Sflag) { direction.y -= BASIC_SPEED; }
+    if(Dflag) { direction.x += BASIC_SPEED; }
 	if (player!=nullptr && fabs(direction.length())>1e-6) {
 		bool xflag = false, yflag = false;
 		Point ori((player->getPosition()+direction*2.0).x, (player->getPosition()+direction*2.0).y);
@@ -364,39 +386,45 @@ void MainScene::myMoveAction(float dt) {
 		if (xflag==false) { new_pos.x = player->getPosition().x; }
 		if (yflag==false) { new_pos.y = player->getPosition().y; }
 		player->setPosition(new_pos.x, new_pos.y);
-		}
-
-    if (Notice != nullptr) {
-        Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
-    }
-    //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
-    setViewPointCenter(player->getPosition());
-    to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
-    if(isOpenSight) {
-        closeSight();
-    }
-    if(isOpenBox) {
-        closeBox();
-    }
-    littleMap->setPosition(player->getPosition());
+        setViewPointCenter(player->getPosition());
+        if(isOpenSight) {
+            closeSight();
+        }
+        if(isOpenBox) {
+            closeBox();
+        }
+        if (Notice != nullptr) {
+            Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
+        }
+        //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
+        to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
+        littleMap->setPosition(player->getPosition());
         
-    float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
-    float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
+        float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
+        float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
         
-    Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
-    littlePoint->setPosition(delta + player->getPosition());
+        Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
+        littlePoint->setPosition(delta + player->getPosition());
+        
+        Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
+        First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
+        Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
+        Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+        
+        Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
+        Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
+        Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
+        Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
 		
-	littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/64);
+		Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
+		Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+		Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
 
-	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
-	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
-	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
-	Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
-
-	Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
-	Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
-	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
-	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
+        
+        Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
+    }
+    
+    littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/8);
 }
 
 // 0 -> can move
@@ -501,19 +529,19 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
     int op = (int)keyCode;
     switch (op) {
         case 146:   // W
-            direction.y += BASIC_SPEED;
+            Wflag = true;
             break;
             
         case 142:   // S
-            direction.y -= BASIC_SPEED;
+            Sflag = true;
             break;
             
         case 124:   // A
-            direction.x -= BASIC_SPEED;
+            Aflag = true;
             break;
             
         case 127:   // D
-            direction.x += BASIC_SPEED;
+            Dflag = true;
             break;
             
         case 140:   // Q
@@ -554,6 +582,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
                 closeBox();
             } else {
                 CheckBoxes();
+                //log("%f %f", boxMenu->getPosition().x, boxMenu->getPosition().y);
             }
             
             break;
@@ -569,10 +598,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
                 openMap();
             }
             break;
-            
-        case 139: // P
-            MainScene::show_notice("kaikai", "xuanxuan");
-            break;
+        
 
         case 59: // space
             MainScene::ReadyCallback();
@@ -588,19 +614,19 @@ void MainScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     int op = (int)keyCode;
     switch (op) {
         case 146:   // W
-            direction.y -= BASIC_SPEED;
+            Wflag = false;
             break;
             
         case 142:   // S
-            direction.y += BASIC_SPEED;
+            Sflag = false;
             break;
             
         case 124:   // A
-            direction.x += BASIC_SPEED;
+            Aflag = false;
             break;
             
         case 127:   // D
-            direction.x -= BASIC_SPEED;
+            Dflag = false;
             break;
             
         case 12:    // LS
@@ -632,17 +658,16 @@ void MainScene::setViewPointCenter(Point position) {
     if (GoGameItem != nullptr)GoGameItem->setPosition(GoGameItem->getPosition() - delta);
 }
 
-void MainScene::show_notice(std::string killer, std::string be_killed) {
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    if (Notice != nullptr) return;
-    Notice = cocos2d::Label::createWithTTF("hhhhhh","fonts/Marker Felt.ttf",30);
-    //Notice->setString("xixixi");
-    Notice->setString(be_killed + " is killed by " + killer);
-    Notice->setTextColor(Color4B::BLACK);
-    Notice->setPosition(player->getPosition().x + visibleSize.width / 2-200, player->getPosition().y + visibleSize.height / 2-20);
-    addChild(Notice);
+void MainScene::show_notice(std::string killevent) {
+    if (Notice == nullptr) return;
+    Notice->setString(killevent);
+}
 
+void MainScene::show_remain(int life_cnt) {
+	if (Remain == nullptr) return;
+	Remain->setVisible(true);
+	std::string tem = std::to_string(life_cnt) + " / 4";
+	Remain->setString(tem);
 }
 
 void MainScene::show_begin(int status,int ready_person) {
@@ -800,7 +825,7 @@ void MainScene::OpenBox(int boxID) {
     /* repeat for as many menu items as needed */
     
     boxMenu = Menu::createWithArray(MenuItems);
-    this->addChild(boxMenu, 1);
+    this->addChild(boxMenu, 100);
     
     /*
         End of menu
@@ -853,6 +878,7 @@ void MainScene::setSafeZone(cocos2d::Point new_center, int size) {
 }
 
 void MainScene::ReadyCallback() {
+	if (isOnline)return;
     to_ready->setVisible(false);
 	BASIC_SPEED = 0;
 	direction = Vec2::ZERO;
@@ -910,14 +936,20 @@ void MainScene::try_receive(float dt)
 	extern s_c_msg s2c;
 	if (!isRunning)
 		{
+		playerID = s2c.infoy;
 		if (s2c.type)
 			{
 			isRunning = true;
 			BASIC_SPEED = 2.5;
+			for (int i = 0;i<SOLDIER_NUM;++i)
+				{
+				if (i!=playerID)enemy[i]->setVisible(true);
+				enemy[i]->setusername(string(s2c.user_name[i]));
+				}
+			Remain->setVisible(true);
 			}
 		show_begin(s2c.type, s2c.infox);
 		}
-	if (!isRunning)playerID = s2c.infoy;
 	else if (s2c.type==2||s2c.type==3)
 		{
 		isOnline = false;
@@ -926,18 +958,39 @@ void MainScene::try_receive(float dt)
 		}
 	else
 		{
-		for (int i = 0;i<SOLDIER_NUM;++i)
-			enemy[i]->setPosition(s2c.x[i]*2,s2c.y[i]*2);
+
 		if (s2c.Poison_LEVEL)
 			{
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
-			log("SafeZone change %d %d\n", s2c.Poison_X*2, s2c.Poison_Y*2);
 			}
+
 		player->setHP(s2c.currenthp);
 		player->setShield(s2c.Armornaijiu);
 		Warning->setVisible(s2c.inpoison);
-		if (s2c.inpoison)log("in poison\n");
-		else log("not in poison\n");
+		Healing->setVisible(s2c.IsCuring);
+
+		set_pill(s2c.PillAmount);
+
+		player->setSubWeapon(s2c.SubWeaponType);
+		player->setBullet(s2c.MainWeaponCurBullet, s2c.MainWeaponBackupBullet, s2c.SubWeaponCurBullet, s2c.SubWeaponBackupBullet);
+
+		show_remain(s2c.live_count);
+
+		for (int i = 0;i<SOLDIER_NUM;++i)
+			{
+			if (i==playerID)continue;
+			if (enemy[i].dead())continue;
+			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
+			enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
+			if (s2c.Firing[i]);//shoot
+			if (s2c.Isdead[i])
+				{
+				enemy[i]->setHP(0);
+				//die
+				if (~s2c.BeKilledByPlayerId[i])show_notice(string(s2c.user_name[i])+" was killed by "+string(s2c.user_name[s2c.BeKilledByPlayerId[i]]);
+				else show_notice(string(s2c.user_name[i])+" was killed out of safe zone");
+				}
+			}
 		extern c_s_msg to_be_sent;
 		to_be_sent.type = 1;
 		to_be_sent.x = player->getPosition().x/2;
