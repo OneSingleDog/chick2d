@@ -94,7 +94,7 @@ private:
 	unsigned curestarttime;	  // 治疗起始时间
 	unsigned curetype;		  // 正在使用的药的种类
 
-	unsigned poison_time;     // 上次在毒圈的时间
+	int poison_time;     // 上次在毒圈的时间
 
 	double Player_Current_Hp;  // 当前生命值
 	double Player_Total_Hp;	  // 总生命值

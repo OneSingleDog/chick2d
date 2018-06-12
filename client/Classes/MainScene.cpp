@@ -386,7 +386,7 @@ void MainScene::myMoveAction(float dt) {
     Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
     littlePoint->setPosition(delta + player->getPosition());
 		
-	littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/64);
+	littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/8);
 
 	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
 	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
@@ -800,7 +800,7 @@ void MainScene::OpenBox(int boxID) {
     /* repeat for as many menu items as needed */
     
     boxMenu = Menu::createWithArray(MenuItems);
-    this->addChild(boxMenu, 1);
+    this->addChild(boxMenu, 100);
     
     /*
         End of menu
@@ -853,6 +853,7 @@ void MainScene::setSafeZone(cocos2d::Point new_center, int size) {
 }
 
 void MainScene::ReadyCallback() {
+	if (isOnline)return;
     to_ready->setVisible(false);
 	BASIC_SPEED = 0;
 	direction = Vec2::ZERO;
