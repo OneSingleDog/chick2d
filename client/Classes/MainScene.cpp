@@ -341,59 +341,63 @@ void MainScene::myMoveAction(float dt) {
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    if(player != nullptr && fabs(direction.length()) > 1e-6) {
-        bool xflag = false, yflag = false;
-        Point ori((player->getPosition() + direction*2.0).x, (player->getPosition() + direction*2.0).y);
-        
-        if (this->judgePlayerPosition(ori) != 0) {
-            if(this->judgePlayerPosition(Point(player->getPosition().x, ori.y)) == 0) {
-                yflag = true;
-            }
-            if(this->judgePlayerPosition(Point(ori.x, player->getPosition().y)) == 0) {
-                xflag = true;
-            }
-        } else {
-            xflag = yflag = true;
-        }
-        if(BASIC_SPEED >= 10) { xflag = yflag = true; }
-        Point new_pos((player->getPosition() + direction * SPEED_RATIO).x, (player->getPosition() + direction * SPEED_RATIO).y);
-        if(xflag == false) { new_pos.x = player->getPosition().x; }
-        if(yflag == false) { new_pos.y = player->getPosition().y; }
-        player->setPosition(new_pos.x, new_pos.y);
-        if (Notice != nullptr)
-        {
-            Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
-        }
-        //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
-        setViewPointCenter(player->getPosition());
-        to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
-        if(isOpenSight) {
-            closeSight();
-        }
-        if(isOpenBox) {
-            closeBox();
-        }
-        littleMap->setPosition(player->getPosition());
-        
-        float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
-        float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
-        
-        Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
-        littlePoint->setPosition(delta + player->getPosition());
-		
-		littleSafeZone->setPosition(player->getPosition()+Safe_Zone->getPosition() - Vec2(MainMap->getMapSize().width / 2 * 32, MainMap->getMapSize().height / 2 * 32));
+	if (player!=nullptr && fabs(direction.length())>1e-6) {
+		bool xflag = false, yflag = false;
+		Point ori((player->getPosition()+direction*2.0).x, (player->getPosition()+direction*2.0).y);
 
-		Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
-		First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
-		Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
-		Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+		if (this->judgePlayerPosition(ori)!=0)
+			{
+			if (this->judgePlayerPosition(Point(player->getPosition().x, ori.y))==0)
+				{
+				yflag = true;
+				}
+			if (this->judgePlayerPosition(Point(ori.x, player->getPosition().y))==0)
+				{
+				xflag = true;
+				}
+			}
+		else
+			{
+			xflag = yflag = true;
+			}
+		if (BASIC_SPEED>=10) { xflag = yflag = true; }
+		Point new_pos((player->getPosition()+direction*SPEED_RATIO).x, (player->getPosition()+direction*SPEED_RATIO).y);
+		if (xflag==false) { new_pos.x = player->getPosition().x; }
+		if (yflag==false) { new_pos.y = player->getPosition().y; }
+		player->setPosition(new_pos.x, new_pos.y);
+		}
 
-		Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
-		Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
-		Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
-		Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
-
+    if (Notice != nullptr) {
+        Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
     }
+    //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
+    setViewPointCenter(player->getPosition());
+    to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
+    if(isOpenSight) {
+        closeSight();
+    }
+    if(isOpenBox) {
+        closeBox();
+    }
+    littleMap->setPosition(player->getPosition());
+        
+    float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
+    float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
+        
+    Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
+    littlePoint->setPosition(delta + player->getPosition());
+		
+	littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/64);
+
+	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
+	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
+	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
+	Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+
+	Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
+	Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
+	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
+	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
 }
 
 // 0 -> can move
@@ -709,19 +713,23 @@ void MainScene::openMap() {
     
     Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
     littlePoint->setPosition(delta + player->getPosition());
+	
+	littleSafeZone->setVisible(true);
 }
 
 void MainScene::closeMap() {
     littleMap->setVisible(false);
     littlePoint->setVisible(false);
     isOpenMap = false;
+	littleSafeZone->setVisible(false);
 }
 
 void MainScene::setSafeZone(cocos2d::Point new_center, int size) {
 	//all the site should be set between 0 and 128
-	Safe_Zone->setPosition(new_center * 32);
+	Safe_Zone->setPosition(new_center);
 	Safe_Zone->setScale(SafezoneScaleSize[size]);
 	SafezoneScaleSize[0] = SafezoneScaleSize[size];//the first one is the cur status
+	littleSafeZone->setScale(1.11*SafezoneScaleSize[0]/9);
 	return;
 }
 
@@ -802,10 +810,15 @@ void MainScene::try_receive(float dt)
 		for (int i = 0;i<SOLDIER_NUM;++i)
 			enemy[i]->setPosition(s2c.x[i]*2,s2c.y[i]*2);
 		if (s2c.Poison_LEVEL)
+			{
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
+			log("SafeZone change %d %d\n", s2c.Poison_X*2, s2c.Poison_Y*2);
+			}
 		player->setHP(s2c.currenthp);
 		player->setShield(s2c.Armornaijiu);
 		Warning->setVisible(s2c.inpoison);
+		if (s2c.inpoison)log("in poison\n");
+		else log("not in poison\n");
 		extern c_s_msg to_be_sent;
 		to_be_sent.type = 1;
 		to_be_sent.x = player->getPosition().x/2;
