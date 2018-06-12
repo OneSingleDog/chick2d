@@ -41,9 +41,9 @@ bool HelloWorld::init()
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
 
-	// auto back = Sprite::create("scene.jpg");
-	// back->setPosition(80, 240);
-	// this->addChild(back, 1);
+	 auto back = Sprite::create("Background.jpg");
+	 back->setPosition(510, 400);
+	 this->addChild(back, 1);
 
 
 
@@ -116,6 +116,7 @@ bool HelloWorld::init()
 	auto user_name = Label::create("Username:", "fonts/Marker Felt.ttf",32);
 	user_name->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2+50);
 	this->addChild(user_name, 1);
+	user_name->setTextColor(Color4B::GRAY);
 	username = ui::TextField::create("<Please input username here>",
 		"fonts/Marker Felt.ttf",
 		32);
@@ -127,6 +128,7 @@ bool HelloWorld::init()
 	auto server_ip = Label::create("ServerIP:", "fonts/Marker Felt.ttf", 32);
 	server_ip->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 25);
 	this->addChild(server_ip, 1);
+	server_ip->setTextColor(Color4B::GRAY);
 	serverip = ui::TextField::create("<Please input server-ip here>",
 		"fonts/Marker Felt.ttf",
 		32);
@@ -138,6 +140,7 @@ bool HelloWorld::init()
 	auto server_port = Label::create("ServerPort:", "fonts/Marker Felt.ttf", 32);
 	server_port->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 100);
 	this->addChild(server_port, 1);
+	server_port->setTextColor(Color4B::GRAY);
 	serverport = ui::TextField::create("<Please input server-port here>",
 		"fonts/Marker Felt.ttf",
 		32);
@@ -169,7 +172,7 @@ void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventTyp
 
 		textField->setPlaceHolderColor(Color4B::GRAY); //设置占位符颜色
 
-		textField->setTextColor(Color4B::WHITE);
+		textField->setTextColor(Color4B::GRAY);
 	}
 	else if (type == ui::TextField::EventType::DETACH_WITH_IME) {
 
@@ -202,7 +205,7 @@ void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType t
 
 		textField->setPlaceHolderColor(Color4B::GRAY); //设置占位符颜色
 
-		textField->setTextColor(Color4B::WHITE);
+		textField->setTextColor(Color4B::GRAY);
 	}
 	else if (type == ui::TextField::EventType::DETACH_WITH_IME) {
 
@@ -234,7 +237,7 @@ void HelloWorld::textFieldEvent_userport(Ref * pSender, ui::TextField::EventType
 
 		textField->setPlaceHolderColor(Color4B::GRAY); //设置占位符颜色
 
-		textField->setTextColor(Color4B::WHITE);
+		textField->setTextColor(Color4B::GRAY);
 	}
 	else if (type == ui::TextField::EventType::DETACH_WITH_IME) {
 
@@ -305,6 +308,10 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		pthread_mutex_lock(&mutex_cocos);
 		flag = flag&&ptr->started();
 		}
+
+	flag = true;
+
+
 	if (flag)
 		{
 		auto scene = MainScene::createScene();

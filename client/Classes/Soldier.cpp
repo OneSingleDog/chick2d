@@ -1,10 +1,3 @@
-//
-//  Soldier.cpp
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/6/8.
-//
-
 #include "Soldier.h"
 #include <algorithm>
 #include <cstdio>
@@ -13,7 +6,7 @@
 USING_NS_CC;
 using std::string;
 
-Soldier::Soldier() {
+Soldier::Soldier(int tp):type(tp) {
     body = arm = weapon = fire = shield = blood = MainWin = SubWin = mainWeaponShow = subWeaponShow = nullptr;
     shieldText = mainWeaponText = subWeaponText = nullptr;
     existLife = 100;
@@ -59,7 +52,7 @@ Soldier::~Soldier() {
 }
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm0.png", "player/arm1.png" };
-string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon1.png" };
+string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon0_lookover.png" };
 string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/fire1.png" };
 string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/blank.png", "player/weaponshow1.png" };
 int Soldier::maxBullet[NUM_OF_WEAPON] = { 0, 30 };
@@ -110,6 +103,9 @@ void Soldier::create() {
     
     subWeaponText = Label::createWithTTF((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str(), "fonts/Marker Felt.ttf", 20);
     subWeaponText->setTextColor(Color4B::BLACK);
+
+	User_tag = Label::createWithTTF("", "fonts/Marker Felt.ttf", 20);
+
 }
 
 void Soldier::updateBlood() {
@@ -161,23 +157,44 @@ void Soldier::addChild(Scene *scene, int level) {
     scene->addChild(weapon);
     scene->addChild(arm);
     scene->addChild(fire);
-    scene->addChild(circle,1);
-   
-    scene->addChild(blood);
-    for(int i = 0; i < 3; ++i) {
-        scene->addChild(progress[i]);
-    }
+
+	scene->addChild(circle, 1);
+	scene->addChild(blood);
+	for(int i = 0; i < 3; ++i) {
+		scene->addChild(progress[i]);
+	}
     
-    scene->addChild(shield);
-    scene->addChild(shieldText);
-    scene->addChild(MainWin);
-    scene->addChild(SubWin);
+	scene->addChild(shield);
+	scene->addChild(shieldText);
+	scene->addChild(MainWin);
+	scene->addChild(SubWin);
     
-    scene->addChild(mainWeaponShow);
-    scene->addChild(subWeaponShow);
+	scene->addChild(mainWeaponShow);
+	scene->addChild(subWeaponShow);
     
-    scene->addChild(mainWeaponText);
-    scene->addChild(subWeaponText);
+	scene->addChild(mainWeaponText);
+	scene->addChild(subWeaponText);
+	scene->addChild(User_tag);
+
+	if (type == 1) {
+		circle->setVisible(false);
+		blood->setVisible(false);
+		for (int i = 0; i < 3; ++i) {
+			progress[i]->setVisible(false);
+		}
+		shield->setVisible(false);
+		shieldText->setVisible(false);
+		MainWin->setVisible(false);
+		SubWin->setVisible(false);
+
+		mainWeaponShow->setVisible(false);
+		subWeaponShow->setVisible(false);
+
+		mainWeaponText->setVisible(false);
+		subWeaponText->setVisible(false);
+		
+	}
+	
 }
 
 Point Soldier::getPosition() {
@@ -311,3 +328,45 @@ void Soldier::showStatus() {
     mainWeaponText->setVisible(true);
     subWeaponText->setVisible(true);
 }
+
+void Soldier::setHP(float newVal)
+{
+	existLife = newVal;
+}
+
+void Soldier::setShield(float newVal)
+{
+	shieldVal = newVal;
+}
+
+void Soldier::setVisible(bool ifenemy) {
+
+	body->setVisible(ifenemy);
+	weapon->setVisible(ifenemy);
+	arm->setVisible(ifenemy);
+	fire->setVisible(ifenemy);
+	circle->setVisible(ifenemy);
+	blood->setVisible(ifenemy);
+	for (int i = 0; i < 3; ++i) {
+		progress[i]->setVisible(ifenemy);
+	}
+	shield->setVisible(ifenemy);
+	shieldText->setVisible(ifenemy);
+	MainWin->setVisible(ifenemy);
+	SubWin->setVisible(ifenemy);
+
+	mainWeaponShow->setVisible(ifenemy);
+	subWeaponShow->setVisible(ifenemy);
+
+	mainWeaponText->setVisible(ifenemy);
+	subWeaponText->setVisible(ifenemy);
+
+}
+
+void Soldier::setusername(std::string username) {
+	if (User_tag == nullptr) return;
+	User_tag->setString(username);
+	if (type == 0) User_tag->setTextColor(Color4B::BLACK);
+	else User_tag->setTextColor(Color4B::RED);
+}
+

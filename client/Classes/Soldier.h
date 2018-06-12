@@ -1,10 +1,3 @@
-//
-//  Soldier.h
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/6/8.
-//
-
 #ifndef Soldier_h
 #define Soldier_h
 
@@ -18,6 +11,7 @@ const int NUM_OF_WEAPON = 2;
 
 class Soldier {
 private:
+	int type;
     float shieldVal;
     float existLife;
     int MainWeapon, SubWeapon;
@@ -35,13 +29,7 @@ private:
    
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
     cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
-
-    static string armName[NUM_OF_WEAPON];
-    static string weaponName[NUM_OF_WEAPON];
-    static string fireName[NUM_OF_WEAPON];
-    static string weaponShowName[NUM_OF_WEAPON];
-    static int maxBullet[NUM_OF_WEAPON];
-    static float circleSize[NUM_OF_WEAPON];
+//	cocos2d::Vector<cocos2d::AnimationFrame*> SpWave;
 
     cocos2d::Sprite *blood;
     cocos2d::ProgressTimer *progress[3];
@@ -53,10 +41,17 @@ private:
     cocos2d::Sprite *subWeaponShow;
     cocos2d::Label *mainWeaponText;
     cocos2d::Label *subWeaponText;
+	cocos2d::Label *User_tag;
 
 public:
+	static string armName[NUM_OF_WEAPON];
+	static string weaponName[NUM_OF_WEAPON];
+	static string fireName[NUM_OF_WEAPON];
+	static string weaponShowName[NUM_OF_WEAPON];
+	static int maxBullet[NUM_OF_WEAPON];
+	static float circleSize[NUM_OF_WEAPON];
     
-    Soldier();
+    Soldier(int tp);
     ~Soldier();
 
     void create();
@@ -81,6 +76,12 @@ public:
     
     void hideStatus();
     void showStatus();
+
+	void setHP(float newVal);
+	void setShield(float newVal);
+
+	void setVisible(bool ifenemy);
+	void setusername(std::string username);
 };
 
 #endif /* Soldier_h */

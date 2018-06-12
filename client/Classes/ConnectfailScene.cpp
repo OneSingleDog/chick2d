@@ -44,6 +44,9 @@ bool ConnectfailScene::init()
 	//back->setPosition(80, 240);
 	//this->addChild(back, 1);
 
+	auto back = cocos2d::Sprite::create("Background.jpg");
+	back->setPosition(510, 400);
+	this->addChild(back, 1);
 
 
 	// add a "close" icon to exit the progress. it's an autorelease object
@@ -104,6 +107,7 @@ bool ConnectfailScene::init()
 	auto label2 = cocos2d::Label::createWithTTF("Connection Fail", "fonts/Marker Felt.ttf", 100);
 	label2->setPosition(cocos2d::Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(label2, 1);
+	label2->setTextColor(cocos2d::Color4B::RED);
 
 	return true;
 }

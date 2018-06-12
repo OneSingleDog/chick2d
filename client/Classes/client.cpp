@@ -28,6 +28,8 @@ pthread_mutex_t mutex_cocos;
 s_c_msg s2c;
 c_s_msg c2s;
 
+bool canceled;
+
 talk_to_svr::talk_to_svr(const std::string & username): sock_(service), started_(true), username_(username), last_sent_(0) {}
 
 void talk_to_svr::start(ptr& newptr, ip::tcp::endpoint ep, const std::string & username) {
@@ -58,8 +60,18 @@ void talk_to_svr::on_connect(const error_code & err) {
 	}
 
 void talk_to_svr::on_read(const error_code & err, size_t bytes) {
-	if (err) stop();
+	if (err)
+		{
+		stop();
+		#ifdef DEBUGVS
+		OutputDebugPrintf("%s\n", err.message().c_str());
+		#endif
+		}
 	if (!started()) return;
+
+	#ifdef DEBUGVS
+	//OutputDebugPrintf("Read!\n");
+	#endif
 
     #ifdef MAC
     memcpy(&s2c, read_buffer_, s_c_size);
@@ -70,16 +82,9 @@ void talk_to_svr::on_read(const error_code & err, size_t bytes) {
 	pthread_mutex_unlock(&mutex_cocos);
 
 	pthread_mutex_lock(&mutex_boost);
-	//clock_t now = clock();
-	//if (last_sent_)
-	//	{
-	//	int delay=now-last_sent_;
-	//	if (delay<MinPing)Sleep(MinPing-delay);
-	//	now = clock();
-	//	delay = now-last_sent_;
-	//	OutputDebugPrintf("delay:%dms\n", delay);
-	//	}
-	//last_sent_ = now;
+
+	if (canceled)stop();
+	
 	do_write(c2s);
 	}
 
@@ -96,7 +101,6 @@ std::string login_username;
 std::string login_host;
 std::string login_port;
 talk_to_svr::ptr ptr;
-bool canceled;
 
 void*boost_main(void*)
 {

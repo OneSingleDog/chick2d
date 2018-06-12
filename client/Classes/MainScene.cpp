@@ -1,17 +1,14 @@
-//
-//  MainScene.cpp
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/4/24.
-//
-
 #include "MainScene.h"
+#include "ConnectfailScene.h"
 #include "SimpleAudioEngine.h"
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <cstring>
 #include <Notice.h>
+
+#include "msg.h"
+#include "post.h"
 
 USING_NS_CC;
 
@@ -27,18 +24,25 @@ struct Box {
     int weapon2;
     int bullet1;
     int bullet2;
-    int pill1;
-    int pill2;
+    int pillNum[4];
     int shield;
-    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int p1 = 0, int p2 = 0, int s = 0) :
-    x(x), y(y), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), pill1(p1), pill2(p2), shield(s) {}
+    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int p0 = 0, int p1 = 0, int p2 = 0, int p3 = 0, int s = 0) :
+    x(x), y(y), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), shield(s) {
+        pillNum[0] = p0;
+        pillNum[1] = p1;
+        pillNum[2] = p2;
+        pillNum[3] = p3;
+    }
 };
 
 std::vector<Box> Box_ve;
+float MainScene::SafezoneScaleSize[4] = { 9,4.5,2.25,1.125 };
 
 Scene* MainScene::createScene() {
     return MainScene::create();
 }
+
+const string PillName[4] = { "others/medical_kit.png", "others/first_aid.png", "others/enr_drink.png", "others/bandage.png" };
 
 // on "init" you need to initialize your instance
 bool MainScene::init()
@@ -49,9 +53,9 @@ bool MainScene::init()
     isOpenBox = false;
     isOpenMap = false;
     
-    Box_ve.push_back(Box(64, 64, 1, 0, 60, 0, 1, 2, 100));
-    Box_ve.push_back(Box(80, 64, 1, 0, 60, 0, 1, 2, 100));
-    Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 2, 100));
+    Box_ve.push_back(Box(64, 64, 1, 1, 60, 0, 1, 1, 1, 1, 100));
+    Box_ve.push_back(Box(80, 64, 1, 1, 60, 30,  1, 0, 1, 0, 100));
+    Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 1, 1, 1, 100));
 
     //////////////////////////////
     // 1. super init first
@@ -60,7 +64,8 @@ bool MainScene::init()
         return false;
     }
     
-    player = new Soldier();
+    player = new Soldier(0);
+	for (int i = 0;i<SOLDIER_NUM;++i)enemy[i] = new Soldier(1);
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -94,6 +99,15 @@ bool MainScene::init()
     addChild(MainMap, -5);
     player->addChild(this);
     setViewPointCenter(player->getPosition());
+
+	//create enemy and set position
+	for(int i=0;i<SOLDIER_NUM;++i)
+		{
+		enemy[i]->create();
+		enemy[i]->setPosition(0,0);
+//		enemy[i]->setVisible(false);
+		enemy[i]->addChild(this);
+		}
     
     // mouse create
     mouse = Sprite::create("others/mouse.png");
@@ -181,10 +195,11 @@ bool MainScene::init()
     auto size = Director::getInstance()->getWinSize();
     
     schedule(schedule_selector(MainScene::myMoveAction), (float)(1.0 / 60), kRepeatForever, 0);
+	schedule(schedule_selector(MainScene::try_receive), (float)(1.0/60), kRepeatForever, 0);
     
     glass = Sprite::create("others/glass.png");
     addChild(glass);
-    glass->setPosition(player->getPosition());
+    glass->setPosition(visibleSize / 2);
     glass->setVisible(false);
     
     littleMap = Sprite::create("others/littlemap.png");
@@ -202,6 +217,88 @@ bool MainScene::init()
     to_ready->setTextColor(Color4B::BLACK);
     to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
     addChild(to_ready);
+
+	already = cocos2d::Label::createWithTTF(" ", "fonts/Marker Felt.ttf", 40);
+	already->setTextColor(Color4B::BLACK);
+	//already->setString(std::to_string(ready_person) + "/ 4");
+	already->setPosition(Vec2::ZERO);
+	addChild(already,2);
+	already->setVisible(false);
+	
+	Safe_Zone = cocos2d::Sprite::create("others/poison_range.png");
+	Safe_Zone->setPosition(MainMap->getMapSize().width / 2  * 32, MainMap->getMapSize().height / 2 *  32);
+	//Safe_Zone->setPosition(MainMap->getMapSize().width / 2 * 32-100, MainMap->getMapSize().height / 2 * 32-100);
+	Safe_Zone->setScale(9);
+	//Safe_Zone->setScale(4.5);
+	addChild(Safe_Zone);
+
+	littleSafeZone = Sprite::create("others/poison_range.png");
+	addChild(littleSafeZone, 30);
+	littleSafeZone->setPosition(player->getPosition());
+	littleSafeZone->setScale(1.11);
+	littleSafeZone->setVisible(false);
+
+	Medical_kit = Sprite::create(PillName[0]);
+	addChild(Medical_kit);
+	Medical_kit->setScale(0.3);
+	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2+200);
+
+	First_aid = Sprite::create(PillName[1]);
+	addChild(First_aid);
+	First_aid->setScale(0.6);
+	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
+
+    Drink = Sprite::create(PillName[2]);
+    addChild(Drink);
+    Drink->setScale(0.25);
+    Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+    
+	Bandage = Sprite::create(PillName[3]);
+	addChild(Bandage);
+	Bandage->setScale(0.23);
+	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
+
+	Medical_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
+	Medical_cnt->setTextColor(Color4B::BLACK);
+	Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 -35, player->getPosition().y - visibleSize.height / 2 + 200);
+	addChild(Medical_cnt);
+
+	Firstaid_cnt=cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
+	Firstaid_cnt->setTextColor(Color4B::BLACK);
+	Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
+	addChild(Firstaid_cnt);
+
+	Bandage_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
+	Bandage_cnt->setTextColor(Color4B::BLACK);
+	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
+	addChild(Bandage_cnt);
+
+	Drink_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
+	Drink_cnt->setTextColor(Color4B::BLACK);
+	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
+	addChild(Drink_cnt);
+	
+	DeadLayer = cocos2d::Sprite::create("others/glass.png");
+	DeadLayer->setPosition(player->getPosition());
+	addChild(DeadLayer,40);
+	DeadLayer->setVisible(false);
+
+	Warning = cocos2d::Sprite::create("others/warn.png");
+	Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
+	addChild(Warning);
+	Warning->setScale(0.15);
+	Warning->setVisible(false);
+
+	Notice = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 30);
+	Notice->setTextColor(Color4B::BLACK);
+	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+	addChild(Notice);
+
+	Remain = cocos2d::Label::createWithTTF("4 / 4", "fonts/Marker Felt.ttf", 50);
+	Remain->setTextColor(Color4B::ORANGE);
+	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
+	addChild(Remain);
+	Remain->setVisible(false);
 
     return true;
 }
@@ -254,52 +351,72 @@ void MainScene::myMoveAction(float dt) {
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    if(player != nullptr && fabs(direction.length()) > 1e-6) {
-        bool xflag = false, yflag = false;
-        Point ori((player->getPosition() + direction * 6.1).x, (player->getPosition() + direction * 6.1).y);
-        
-        if (this->judgePlayerPosition(ori) != 0) {
-            if(this->judgePlayerPosition(Point(player->getPosition().x, ori.y)) == 0) {
-                yflag = true;
-            }
-            if(this->judgePlayerPosition(Point(ori.x, player->getPosition().y)) == 0) {
-                xflag = true;
-            }
-        } else {
-            xflag = yflag = true;
-        }
-        if(BASIC_SPEED >= 10) { xflag = yflag = true; }
-        Point new_pos((player->getPosition() + direction * SPEED_RATIO).x, (player->getPosition() + direction * SPEED_RATIO).y);
-        if(xflag == false) { new_pos.x = player->getPosition().x; }
-        if(yflag == false) { new_pos.y = player->getPosition().y; }
-        player->setPosition(new_pos.x, new_pos.y);
-        if (Notice != nullptr)
-        {
-            Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
-        }
-        //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
-        setViewPointCenter(player->getPosition());
-        to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
-        if(isOpenSight) {
-            closeSight();
-        }
-        if(isOpenBox) {
-            closeBox();
-        }
-        littleMap->setPosition(player->getPosition());
-        
-        float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
-        float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
-        
-        Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
-        littlePoint->setPosition(delta + player->getPosition());
+	if (player!=nullptr && fabs(direction.length())>1e-6) {
+		bool xflag = false, yflag = false;
+		Point ori((player->getPosition()+direction*2.0).x, (player->getPosition()+direction*2.0).y);
+
+		if (this->judgePlayerPosition(ori)!=0)
+			{
+			if (this->judgePlayerPosition(Point(player->getPosition().x, ori.y))==0)
+				{
+				yflag = true;
+				}
+			if (this->judgePlayerPosition(Point(ori.x, player->getPosition().y))==0)
+				{
+				xflag = true;
+				}
+			}
+		else
+			{
+			xflag = yflag = true;
+			}
+		if (BASIC_SPEED>=10) { xflag = yflag = true; }
+		Point new_pos((player->getPosition()+direction*SPEED_RATIO).x, (player->getPosition()+direction*SPEED_RATIO).y);
+		if (xflag==false) { new_pos.x = player->getPosition().x; }
+		if (yflag==false) { new_pos.y = player->getPosition().y; }
+		player->setPosition(new_pos.x, new_pos.y);
+		}
+
+    if (Notice != nullptr) {
+        Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
     }
+    //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
+    setViewPointCenter(player->getPosition());
+    to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
+    if(isOpenSight) {
+        closeSight();
+    }
+    if(isOpenBox) {
+        closeBox();
+    }
+    littleMap->setPosition(player->getPosition());
+        
+    float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
+    float yrate = player->getPosition().y / (MainMap->getTileSize().height * MainMap->getMapSize().width);
+        
+    Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
+    littlePoint->setPosition(delta + player->getPosition());
+		
+	littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/64);
+
+	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
+	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
+	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
+	Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+	Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
+	Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
+	Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
+	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
+	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
+	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
 }
+
 
 // 0 -> can move
 // 1 -> cannot move
 int MainScene::judgePlayerPosition(Point position) {
-    Point tileCoord = this->tileCoordFromPosition(position);
+    Point tileCoord = this->tileCoordFromPosition(position+Vec2(14,14));
     int tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
     
     if (tileGid > 0) { //in the collidable layer
@@ -314,6 +431,61 @@ int MainScene::judgePlayerPosition(Point position) {
             return 1;
         }
     }
+
+	tileCoord = this->tileCoordFromPosition(position+Vec2(-14, 14));
+	tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+	if (tileGid > 0)
+		{ //in the collidable layer
+		Value prop = MainMap->getPropertiesForGID(tileGid);
+		ValueMap propValueMap = prop.asValueMap();
+
+		//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+		std::string collision = propValueMap["collidable"].asString();
+
+		if (collision=="true")
+			{
+			return 1;
+			}
+		}
+
+	tileCoord = this->tileCoordFromPosition(position+Vec2(14, -14));
+	tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+	if (tileGid > 0)
+		{ //in the collidable layer
+		Value prop = MainMap->getPropertiesForGID(tileGid);
+		ValueMap propValueMap = prop.asValueMap();
+
+		//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+		std::string collision = propValueMap["collidable"].asString();
+
+		if (collision=="true")
+			{
+			return 1;
+			}
+		}
+
+	tileCoord = this->tileCoordFromPosition(position+Vec2(-14, -14));
+	tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+	if (tileGid > 0)
+		{ //in the collidable layer
+		Value prop = MainMap->getPropertiesForGID(tileGid);
+		ValueMap propValueMap = prop.asValueMap();
+
+		//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+		std::string collision = propValueMap["collidable"].asString();
+
+		if (collision=="true")
+			{
+			return 1;
+			}
+		}
+
     return 0;
 }
 
@@ -411,10 +583,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
                 openMap();
             }
             break;
-            
-        case 139: // P
-            MainScene::show_notice("kaikai", "xuanxuan");
-            break;
+        
 
         case 59: // space
             MainScene::ReadyCallback();
@@ -474,34 +643,32 @@ void MainScene::setViewPointCenter(Point position) {
     if (GoGameItem != nullptr)GoGameItem->setPosition(GoGameItem->getPosition() - delta);
 }
 
-void MainScene::show_notice(std::string killer, std::string be_killed) {
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    if (Notice != nullptr) return;
-    Notice = cocos2d::Label::createWithTTF("hhhhhh","fonts/Marker Felt.ttf",30);
-    //Notice->setString("xixixi");
-    Notice->setString(be_killed + " is killed by " + killer);
-    Notice->setTextColor(Color4B::BLACK);
-    Notice->setPosition(player->getPosition().x + visibleSize.width / 2-200, player->getPosition().y + visibleSize.height / 2-20);
-    addChild(Notice);
+void MainScene::show_notice(std::string killevent) {
+    if (Notice == nullptr) return;
+    Notice->setString(killevent);
+}
 
+void MainScene::show_remain(int life_cnt) {
+	if (Remain == nullptr) return;
+	Remain->setVisible(true);
+	std::string tem = std::to_string(life_cnt) + " / 4";
+	Remain->setString(tem);
 }
 
 void MainScene::show_begin(int status,int ready_person) {
-    if (status == 0) {//not begiin
-        Size visibleSize = Director::getInstance()->getVisibleSize();
-        Vec2 origin = Director::getInstance()->getVisibleOrigin();
-        already = cocos2d::Label::createWithTTF(" ", "fonts/Marker Felt.ttf", 20);
-        //Notice->setString("xixixi");
+	if (status==-1)
+		{
+		Size visibleSize = Director::getInstance()->getVisibleSize();
+		already->setPosition(player->getPosition().x+visibleSize.width/2-100, player->getPosition().y+visibleSize.height/2-120);
+		}
+    else if (status == 0) {//not begin
         already->setString(std::to_string(ready_person) + "/ 4");
-        already->setPosition(player->getPosition().x + visibleSize.width / 2-20, player->getPosition().y + visibleSize.height / 2-20);
-        addChild(already);
+		already->setVisible(true);
     }
-    else if (status == 1) {
+    else {
         already->setVisible(false);
     }
 }
-
 
 const float OK_OPEN_BOX = 32;
 
@@ -526,44 +693,128 @@ void MainScene::CheckBoxes() {
     }
 }
 
+string boxWeapon[NUM_OF_WEAPON] = { "", "box/weaponshow1.png" };
+string boxPill[4] = { "box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pill3.png" };
+string boxSheild = "shield.png";
+
 void MainScene::OpenBox(int boxID) {
+    Box& B = Box_ve[boxID];
+    
     log("open Box:%d", boxID);
-    glass->setPosition(player->getPosition());
     glass->setVisible(true);
     isOpenBox = true;
     player->hideStatus();
     fog->setVisible(false);
     
-    // create Menu
-//    Vector<MenuItem*> MenuItems;
-//
-//    for(int i = 0; i < (int)Box_ve.size(); ++i) {
-//
-//    }
-    //auto myMenu = Menu::create();
-    // creating a menu with a single item
+    auto oriPos = this->getPosition();
+    this->setPosition(Vec2::ZERO);
+    MainMap->setPosition(oriPos);
+    Safe_Zone->setVisible(false);
+        
+    /*
+        Menu of things in the box
+    */
     
-    // create a menu item by specifying images
+    auto visibleSize = Director::getInstance()->getWinSize();
     
-    //auto closeItem = MenuItemImage::create("StartGameNormal.png", "StartGameSelected.png",
-//                                           [&](Ref* sender){
-//                                               log("I'm touched!!!");
-//                                           });
+    // creating a Menu from a Vector of items
+    Vector<MenuItem*> MenuItems;
+
     
-//    Size visibleSize = Director::getInstance()->getVisibleSize();
-//    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-//
-//    auto closeItem = MenuItemImage::create(
-//                                           "StartGameNormal.png",
-//                                           "StartGameSelected.png",
-//                                           CC_CALLBACK_1(MainScene::func, this));
-//
-//    auto menu = Menu::create(closeItem, NULL);
-//    closeItem->setPosition(Vec2::ZERO);
-//    menu->setPositionZ(1);
-//    menu->setPosition(Vec2::ZERO);
-//    this->addChild(menu, 1);
-//    log("%f", menu->getPositionZ());
+    if(B.weapon1 != 0) {
+        auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon1], "box/blank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick weapon %d", B.weapon1);
+                                                 boxMenu->removeChildByTag(0);
+                                                 boxMenu->removeChildByTag(7);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4);
+        tmpItem->setTag(0);
+        auto tmpText = Label::createWithTTF(std::to_string(B.bullet1), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    if(B.weapon2 != 0) {
+        auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon2], "box/blank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick weapon %d", B.weapon2);
+                                                 boxMenu->removeChildByTag(1);
+                                                 boxMenu->removeChildByTag(8);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4 - visibleSize.height / 8);
+        tmpItem->setTag(1);
+        auto tmpText = Label::createWithTTF(std::to_string(B.bullet2), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    for(int i = 0; i < 4; ++i) if(B.pillNum[i] != 0) {
+        auto tmpItem = MenuItemImage::create(boxPill[i], "box/blank.png",
+                                             [&, i](Ref* sender){
+                                                 log("Pick %d pill %d", B.pillNum[i], i);
+                                                 boxMenu->removeChildByTag(i + 2);
+                                             });
+        tmpItem->setPosition(visibleSize.width / 6, visibleSize.height / 4 - i * visibleSize.height / 8);
+        tmpItem->setTag(2 + i);
+        auto tmpText = Label::createWithTTF(std::to_string(B.pillNum[i]), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    if(B.shield != 0) {
+        auto tmpItem = MenuItemImage::create("box/shield.png", "box/blank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick shield with val %f", (float)B.shield);
+                                                 boxMenu->removeChildByTag(6);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4 - 3 * visibleSize.height / 8);
+        tmpItem->setTag(6);
+        auto tmpText = Label::createWithTTF(std::to_string(B.shield), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    // bullet1
+    if(B.bullet1 != 0) {
+        auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick bullet %d", B.bullet1);
+                                                 boxMenu->removeChildByTag(7);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 3.5, visibleSize.height / 4);
+        tmpItem->setTag(7);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    // bullet2
+    if(B.bullet2 != 0) {
+        auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick bullet %d", B.bullet2);
+                                                 boxMenu->removeChildByTag(8);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 3.5, visibleSize.height / 4 - visibleSize.height / 8);
+        tmpItem->setTag(8);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    /* repeat for as many menu items as needed */
+    
+    boxMenu = Menu::createWithArray(MenuItems);
+    this->addChild(boxMenu, 1);
+    
+    /*
+        End of menu
+     */
 }
 
 void MainScene::closeBox() {
@@ -571,6 +822,14 @@ void MainScene::closeBox() {
     isOpenBox = false;
     player->showStatus();
     fog->setVisible(true);
+    
+    auto oriPos = MainMap->getPosition();
+    this->setPosition(oriPos);
+    MainMap->setPosition(Vec2::ZERO);
+    Safe_Zone->setVisible(true);
+    fog->setPosition(player->getPosition());
+    
+    this->removeChild(boxMenu);
 }
 
 void MainScene::openMap() {
@@ -583,15 +842,116 @@ void MainScene::openMap() {
     
     Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
     littlePoint->setPosition(delta + player->getPosition());
+	
+	littleSafeZone->setVisible(true);
 }
 
 void MainScene::closeMap() {
     littleMap->setVisible(false);
     littlePoint->setVisible(false);
     isOpenMap = false;
+	littleSafeZone->setVisible(false);
+}
+
+void MainScene::setSafeZone(cocos2d::Point new_center, int size) {
+	//all the site should be set between 0 and 128
+	Safe_Zone->setPosition(new_center);
+	Safe_Zone->setScale(SafezoneScaleSize[size]);
+	SafezoneScaleSize[0] = SafezoneScaleSize[size];//the first one is the cur status
+	littleSafeZone->setScale(1.11*SafezoneScaleSize[0]/9);
+	return;
 }
 
 void MainScene::ReadyCallback() {
     to_ready->setVisible(false);
-    Point cur_pos = player->getPosition();
+	BASIC_SPEED = 0;
+	direction = Vec2::ZERO;
+    extern c_s_msg to_be_sent;
+	extern string login_username;
+	to_be_sent.type = 0;
+	to_be_sent.x = int(player->getPosition().x)/2;
+	to_be_sent.y = int(player->getPosition().y)/2;
+	#ifndef MAC
+	memcpy_s(to_be_sent.remark, 16, login_username.c_str(), login_username.length());
+	#else
+	memcpy(to_be_sent.remark, login_username.c_str(), login_username.length());
+	#endif
+	write();
+	isOnline = true;
+	show_begin(-1, 0);
+}
+
+
+void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifwinner) {
+
+	DeadLayer->setVisible(true);
+	fog->setVisible(false);
+
+	std::string Remind[2] = { "WINNER WINNER,CHICKEN DINNER!","BETTER LUCK FOR NEXT TIME" };
+
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	auto show_User = cocos2d::Label::createWithTTF(Username, "fonts/Marker Felt.ttf", 30);
+	show_User->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 20);
+	addChild(show_User);
+
+	auto show_res = cocos2d::Label::createWithTTF(Remind[ifwinner], "fonts/Marker Felt.ttf", 50);
+	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 50);
+	addChild(show_res);
+	show_res->setTextColor(Color4B::YELLOW);
+
+	auto show_rank = cocos2d::Label::createWithTTF("Rank: " + std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
+	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 100);
+	addChild(show_rank);
+
+	//close the windows
+
+}
+
+void MainScene::try_receive(float dt)
+{
+	if (!isOnline)return;
+	if (socket_closed())
+		{
+		auto scene = ConnectfailScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		return;
+		}
+	if (!received())return;
+	extern s_c_msg s2c;
+	if (!isRunning)
+		{
+		if (s2c.type)
+			{
+			isRunning = true;
+			BASIC_SPEED = 2.5;
+			}
+		show_begin(s2c.type, s2c.infox);
+		}
+	if (!isRunning)playerID = s2c.infoy;
+	else if (s2c.type==2||s2c.type==3)
+		{
+		isOnline = false;
+		close_socket();
+		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, s2c.type==3);
+		}
+	else
+		{
+		for (int i = 0;i<SOLDIER_NUM;++i)
+			enemy[i]->setPosition(s2c.x[i]*2,s2c.y[i]*2);
+		if (s2c.Poison_LEVEL)
+			{
+			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
+			log("SafeZone change %d %d\n", s2c.Poison_X*2, s2c.Poison_Y*2);
+			}
+		player->setHP(s2c.currenthp);
+		player->setShield(s2c.Armornaijiu);
+		Warning->setVisible(s2c.inpoison);
+		if (s2c.inpoison)log("in poison\n");
+		else log("not in poison\n");
+		extern c_s_msg to_be_sent;
+		to_be_sent.type = 1;
+		to_be_sent.x = player->getPosition().x/2;
+		to_be_sent.y = player->getPosition().y/2;
+		}
+	write();
 }
