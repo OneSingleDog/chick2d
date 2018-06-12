@@ -99,6 +99,8 @@ public:
 	void FinalScene(std::string Uername, int rank, int kill_num, int ifwinner);
 
 	void try_receive(float dt);
+    
+    void set_pill(int pill_now[]);
 };
 
 #endif /* MainScene_h */

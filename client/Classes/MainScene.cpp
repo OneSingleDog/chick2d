@@ -94,7 +94,9 @@ bool MainScene::init()
                         y + MainMap->getTileSize().height / 2);
     
     
-    
+	extern string login_username;
+	player->setusername(login_username);
+
     addChild(MainMap, -5);
     player->addChild(this);
     setViewPointCenter(player->getPosition());
@@ -527,6 +529,7 @@ Point MainScene::tileCoordFromPosition(Point pos)
  */
 void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
     int op = (int)keyCode;
+	extern c_s_msg to_be_sent;
     switch (op) {
         case 146:   // W
             Wflag = true;
@@ -549,25 +552,28 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             if(isOpenSight) {
                 closeSight();
             }
-            player->changeWeapon();
+			to_be_sent.curetype = 0;
+			to_be_sent.Load = 0;
+			to_be_sent.Exchange ^= 1;
             break;
             
         case 141:   // R
             if(SPEED_RATIO != 1) { break; }
-            player->changeBullet();
+			to_be_sent.curetype = 0;
+			to_be_sent.Load = 1;
             break;
             
         case 12:    // LS
             MainScene::SPEED_RATIO = 2;
             break;
             
-        case 134:   // K
-            player->getHurted(20);
-            break;
+        //case 134:   // K
+        //    player->getHurted(20);
+        //    break;
             
-        case 135:   // L
-            player->increaseShieldVal(20);
-            break;
+        //case 135:   // L
+        //    player->increaseShieldVal(20);
+        //    break;
             
         case 82:    // 6
             ++cnt_666;
@@ -923,6 +929,13 @@ void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifw
 
 }
 
+void MainScene::set_pill(int *pill_now) {
+    Medical_cnt->setString(std::to_string(pill_now[0]));
+    Firstaid_cnt->setString(std::to_string(pill_now[1]));
+    Drink_cnt->setString(std::to_string(pill_now[2]));
+    Bandage_cnt->setString(std::to_string(pill_now[3]));
+}
+
 void MainScene::try_receive(float dt)
 {
 	if (!isOnline)return;
@@ -970,8 +983,8 @@ void MainScene::try_receive(float dt)
 		Healing->setVisible(s2c.IsCuring);
 
 		set_pill(s2c.PillAmount);
-
-		player->setSubWeapon(s2c.SubWeaponType);
+            
+        player->setSubWeapon(s2c.SubWeaponType);
 		player->setBullet(s2c.MainWeaponCurBullet, s2c.MainWeaponBackupBullet, s2c.SubWeaponCurBullet, s2c.SubWeaponBackupBullet);
 
 		show_remain(s2c.live_count);
@@ -979,18 +992,21 @@ void MainScene::try_receive(float dt)
 		for (int i = 0;i<SOLDIER_NUM;++i)
 			{
 			if (i==playerID)continue;
-			if (enemy[i].dead())continue;
+			if (enemy[i]->dead())continue;
 			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
 			enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
-			if (s2c.Firing[i]);//shoot
+            if (s2c.Firing[i]) {
+                enemy[i]->Shoot();
+            }
 			if (s2c.Isdead[i])
 				{
 				enemy[i]->setHP(0);
-				//die
-				if (~s2c.BeKilledByPlayerId[i])show_notice(string(s2c.user_name[i])+" was killed by "+string(s2c.user_name[s2c.BeKilledByPlayerId[i]]);
+                enemy[i]->isDying();    // show exploit animation
+				if (~s2c.BeKilledByPlayerId[i])show_notice(string(s2c.user_name[i])+" was killed by "+string(s2c.user_name[s2c.BeKilledByPlayerId[i]]));
 				else show_notice(string(s2c.user_name[i])+" was killed out of safe zone");
 				}
 			}
+        if(s2c.Firing[playerID]) { player->Shoot(); }
 		extern c_s_msg to_be_sent;
 		to_be_sent.type = 1;
 		to_be_sent.x = player->getPosition().x/2;
