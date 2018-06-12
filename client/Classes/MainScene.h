@@ -89,6 +89,7 @@ public:
     //void scheduleBlood(float delta);
     void show_notice(std::string killer,std::string be_killed);
 	void show_begin(int status, int ready_person);
+	void show_remain(int life_cnt);
     void ReadyCallback();
 
 	void setSafeZone(cocos2d::Point new_center, int size);

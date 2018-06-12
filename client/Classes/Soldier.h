@@ -41,6 +41,7 @@ private:
     cocos2d::Sprite *subWeaponShow;
     cocos2d::Label *mainWeaponText;
     cocos2d::Label *subWeaponText;
+	cocos2d::Label *User_tag;
 
 public:
 	static string armName[NUM_OF_WEAPON];
@@ -80,6 +81,7 @@ public:
 	void setShield(float newVal);
 
 	void setVisible(bool flag);
+	void setusername(std::string username);
 };
 
 #endif /* Soldier_h */

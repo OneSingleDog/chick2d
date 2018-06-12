@@ -289,6 +289,17 @@ bool MainScene::init()
 	Warning->setScale(0.15);
 	Warning->setVisible(false);
 
+	Notice = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 30);
+	Notice->setTextColor(Color4B::BLACK);
+	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+	addChild(Notice);
+
+	Remain = cocos2d::Label::createWithTTF("4 / 4", "fonts/Marker Felt.ttf", 50);
+	Remain->setTextColor(Color4B::ORANGE);
+	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
+	addChild(Remain);
+	Remain->setVisible(false);
+
     return true;
 }
 
@@ -396,6 +407,9 @@ void MainScene::myMoveAction(float dt) {
 	Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
 	Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
 	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
+	Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
+	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
 	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
 }
 
@@ -569,10 +583,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
                 openMap();
             }
             break;
-            
-        case 139: // P
-            MainScene::show_notice("kaikai", "xuanxuan");
-            break;
+        
 
         case 59: // space
             MainScene::ReadyCallback();
@@ -632,17 +643,16 @@ void MainScene::setViewPointCenter(Point position) {
     if (GoGameItem != nullptr)GoGameItem->setPosition(GoGameItem->getPosition() - delta);
 }
 
-void MainScene::show_notice(std::string killer, std::string be_killed) {
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    if (Notice != nullptr) return;
-    Notice = cocos2d::Label::createWithTTF("hhhhhh","fonts/Marker Felt.ttf",30);
-    //Notice->setString("xixixi");
-    Notice->setString(be_killed + " is killed by " + killer);
-    Notice->setTextColor(Color4B::BLACK);
-    Notice->setPosition(player->getPosition().x + visibleSize.width / 2-200, player->getPosition().y + visibleSize.height / 2-20);
-    addChild(Notice);
+void MainScene::show_notice(std::string killevent) {
+    if (Notice == nullptr) return;
+    Notice->setString(killevent);
+}
 
+void MainScene::show_remain(int life_cnt) {
+	if (Remain == nullptr) return;
+	Remain->setVisible(true);
+	std::string tem = std::to_string(life_cnt) + " / 4";
+	Remain->setString(tem);
 }
 
 void MainScene::show_begin(int status,int ready_person) {

@@ -103,6 +103,9 @@ void Soldier::create() {
     
     subWeaponText = Label::createWithTTF((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str(), "fonts/Marker Felt.ttf", 20);
     subWeaponText->setTextColor(Color4B::BLACK);
+
+	User_tag = Label::createWithTTF("", "fonts/Marker Felt.ttf", 20);
+
 }
 
 void Soldier::updateBlood() {
@@ -171,6 +174,7 @@ void Soldier::addChild(Scene *scene, int level) {
     
 	scene->addChild(mainWeaponText);
 	scene->addChild(subWeaponText);
+	scene->addChild(User_tag);
 
 	if (type == 1) {
 		circle->setVisible(false);
@@ -358,5 +362,13 @@ void Soldier::setVisible(bool flag) {
 	mainWeaponText->setVisible(flag);
 	subWeaponText->setVisible(flag);
 
+}
+
+
+void Soldier::setusername(std::string username) {
+	if (User_tag == nullptr) return;
+	User_tag->setString(username);
+	if (type == 0) User_tag->setTextColor(Color4B::BLACK);
+	else User_tag->setTextColor(Color4B::RED);
 }
 
