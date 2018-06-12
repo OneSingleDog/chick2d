@@ -38,7 +38,8 @@ struct s_c_msg{
 	send_box Boxes[MAXBOX];
 	int Poison_X;
 	int Poison_Y;
-	int Poison_Size;
+	int Poison_LEVEL;
+	bool inpoison;
 	double currenthp;
 	double Armornaijiu;
 	int PillAmount[4];
@@ -47,9 +48,10 @@ struct s_c_msg{
 	int MainWeaponBackupBullet;
 	int SubWeaponCurBullet;
 	int SubWeaponBackupBullet;
+	bool IsCuring;
 	int x[MAXPLAYER];
 	int y[MAXPLAYER];
-	bool IsCuring[MAXPLAYER];
+	//bool IsCuring[MAXPLAYER];
 	bool IsLoading[MAXPLAYER];
 	bool Firing[MAXPLAYER];	// 表示每个人是不是都在开火
 	int MainWeaponType[MAXPLAYER];

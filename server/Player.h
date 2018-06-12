@@ -84,6 +84,7 @@ public:
 	// 吃毒
 	void InPoison(unsigned nowtime,double dmg);
 	void OutPoison(){poison_time = -1;};
+	bool GetInPoison()const{if(poison_time == -1)return false; else return true;}
 private:
 	string username;
 	int player_id;			  // 玩家编号

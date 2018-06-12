@@ -91,6 +91,7 @@ void Game::EndGame(){
 }
 
 bool Game::alive(int player_id){
+	if(!started)return true;
 	if (living_count<=1)return false;//游戏结束
 	return player[player_id]->JudgeDead();
 }
@@ -105,6 +106,7 @@ string Game::login(const c_s_msg&msg, int player_id){
 		{
 		started = true;
 		living_count = MAXPLAYER;
+		Gamebegintime = clock();
 		}
 	return user_name;
 }
@@ -114,6 +116,7 @@ s_c_msg&Game::info(int player_id){
 		{
 		output.type = 0;
 		output.infox = connected;
+		output.infoy = player_id;
 		}
 	else if (player[player_id]->JudgeDead())
 		{
@@ -129,19 +132,25 @@ s_c_msg&Game::info(int player_id){
 	else
 		{
 		output.type = 1;
-		output.Poison_X = poison_X;
-		output.Poison_Y = poison_Y;
-		output.Poison_Size = poison_SIZE[poison_LEVEL];
+		output.infoy = player_id;
+		output.Poison_X = poison_X + poison_SIZE[poison_LEVEL]/2;
+		output.Poison_Y = poison_Y + poison_SIZE[poison_LEVEL]/2;
+		output.Poison_LEVEL = poison_LEVEL;
+		output.inpoison = player[player_id] -> GetInPoison();
 		for(int i = 0;i < BoxNumber;++ i){
 			output.Boxes[i].PillAmount[0] = box[i] -> GetPillOneAmount();
 			output.Boxes[i].PillAmount[1] = box[i] -> GetPillTwoAmount();
 			output.Boxes[i].PillAmount[2] = box[i] -> GetPillThreeAmount();
 			output.Boxes[i].PillAmount[3] = box[i] -> GetPillFourAmount();
 			output.Boxes[i].Armor = box[i] -> GetArmorNaijiu();
-			output.Boxes[i].Wp1Type = box[i] -> GetWeaponOne() -> GetType();
-			output.Boxes[i].Wp2Type = box[i] -> GetWeaponTwo() -> GetType();
-			output.Boxes[i].Wp1Bullets = box[i] -> GetWeaponOne() -> GetTotalBullet();
-			output.Boxes[i].Wp2Bullets = box[i] -> GetWeaponTwo() -> GetTotalBullet();
+			if(box[i] -> GetWeaponOne() == NULL || box[i] -> GetWeaponOne() -> GetType() == FIST)output.Boxes[i].Wp1Type = -1;
+			else output.Boxes[i].Wp1Type = box[i] -> GetWeaponOne() -> GetType();
+			if(box[i] -> GetWeaponTwo() == NULL || box[i] -> GetWeaponTwo() -> GetType() == FIST)output.Boxes[i].Wp2Type = -1;
+			else output.Boxes[i].Wp2Type = box[i] -> GetWeaponTwo() -> GetType();
+			if(box[i] -> GetWeaponOne() == NULL)output.Boxes[i].Wp1Bullets = 0;
+			else output.Boxes[i].Wp1Bullets = box[i] -> GetWeaponOne() -> GetTotalBullet();
+			if(box[i] -> GetWeaponTwo() == NULL)output.Boxes[i].Wp2Bullets = 0;
+			else output.Boxes[i].Wp2Bullets = box[i] -> GetWeaponTwo() -> GetTotalBullet();
 		}
 		output.currenthp = player[player_id] -> GetPlayerCurrentHP();
 		output.Armornaijiu = player[player_id] -> GetArmorNaijiu();
@@ -149,20 +158,28 @@ s_c_msg&Game::info(int player_id){
 		output.PillAmount[1] = player[player_id] -> GetPillTwoAmount();
 		output.PillAmount[2] = player[player_id] -> GetPillThreeAmount();
 		output.PillAmount[3] = player[player_id] -> GetPillFourAmount();
-		output.SubWeaponType = player[player_id] -> GetSubWeapon() -> GetType();
-		output.MainWeaponCurBullet = player[player_id] -> GetMainWeapon() -> GetCurBullet();
-		output.MainWeaponBackupBullet = player[player_id] -> GetMainWeapon() -> GetBackupBullet();
-		output.SubWeaponCurBullet = player[player_id] -> GetSubWeapon() -> GetCurBullet();
-		output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
+		if(player[player_id] -> GetSubWeapon() == NULL || player[player_id] -> GetSubWeapon() -> GetType() == FIST)output.SubWeaponType = -1;
+		else output.SubWeaponType = player[player_id] -> GetSubWeapon() -> GetType();
+		if(player[player_id] -> GetMainWeapon() == NULL)output.MainWeaponCurBullet = 0;
+		else output.MainWeaponCurBullet = player[player_id] -> GetMainWeapon() -> GetCurBullet();
+		if(player[player_id] -> GetMainWeapon() == NULL)output.MainWeaponBackupBullet = 0;
+		else output.MainWeaponBackupBullet = player[player_id] -> GetMainWeapon() -> GetBackupBullet();
+		if(player[player_id] -> GetSubWeapon() == NULL)output.SubWeaponCurBullet = 0;
+		else output.SubWeaponCurBullet = player[player_id] -> GetSubWeapon() -> GetCurBullet();
+		if(player[player_id] -> GetSubWeapon() == NULL)output.SubWeaponBackupBullet == NULL;
+		else output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
+		output.IsCuring = player[player_id] -> IsCuringNow();
 		for(int i = 0;i < MAXPLAYER;++ i){
 			output.user_name[i] = player[i] -> GetUserName();
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
-			output.IsCuring[i] = player[i] -> IsCuringNow();
-			output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
+			//output.IsCuring[i] = player[i] -> IsCuringNow();
+			if(player[i] -> GetMainWeapon() == NULL)output.IsLoading = false;
+			else output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
 			output.Firing[i] = ShootSuccess[i];
 			ShootSuccess[i] = false;
-			output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
+			if(player[i] -> GetMainWeapon() == NULL || player[i] -> GetMainWeapon() -> GetType() == NULL) MainWeaponType = -1;
+			else output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
 			output.Isdead[i] = player[i] -> JudgeDead();
 			output.BeKilledByPlayerId[i] = player[i] -> GetKillerId();
 		}
