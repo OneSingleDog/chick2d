@@ -52,7 +52,7 @@ Soldier::~Soldier() {
 }
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm0.png", "player/arm1.png" };
-string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon1.png" };
+string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon0_lookover.png" };
 string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/fire1.png" };
 string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/blank.png", "player/weaponshow1.png" };
 int Soldier::maxBullet[NUM_OF_WEAPON] = { 0, 30 };
@@ -154,23 +154,43 @@ void Soldier::addChild(Scene *scene, int level) {
     scene->addChild(weapon);
     scene->addChild(arm);
     scene->addChild(fire);
-    scene->addChild(circle,1);
-   
-    scene->addChild(blood);
-    for(int i = 0; i < 3; ++i) {
-        scene->addChild(progress[i]);
-    }
+
+	scene->addChild(circle, 1);
+	scene->addChild(blood);
+	for(int i = 0; i < 3; ++i) {
+		scene->addChild(progress[i]);
+	}
     
-    scene->addChild(shield);
-    scene->addChild(shieldText);
-    scene->addChild(MainWin);
-    scene->addChild(SubWin);
+	scene->addChild(shield);
+	scene->addChild(shieldText);
+	scene->addChild(MainWin);
+	scene->addChild(SubWin);
     
-    scene->addChild(mainWeaponShow);
-    scene->addChild(subWeaponShow);
+	scene->addChild(mainWeaponShow);
+	scene->addChild(subWeaponShow);
     
-    scene->addChild(mainWeaponText);
-    scene->addChild(subWeaponText);
+	scene->addChild(mainWeaponText);
+	scene->addChild(subWeaponText);
+
+	if (type == 1) {
+		circle->setVisible(false);
+		blood->setVisible(false);
+		for (int i = 0; i < 3; ++i) {
+			progress[i]->setVisible(false);
+		}
+		shield->setVisible(false);
+		shieldText->setVisible(false);
+		MainWin->setVisible(false);
+		SubWin->setVisible(false);
+
+		mainWeaponShow->setVisible(false);
+		subWeaponShow->setVisible(false);
+
+		mainWeaponText->setVisible(false);
+		subWeaponText->setVisible(false);
+		
+	}
+	
 }
 
 Point Soldier::getPosition() {
@@ -314,3 +334,29 @@ void Soldier::setShield(float newVal)
 {
 	shieldVal = newVal;
 }
+
+void Soldier::setVisible(bool flag) {
+
+	body->setVisible(flag);
+	weapon->setVisible(flag);
+	arm->setVisible(flag);
+	fire->setVisible(flag);
+	if (type)return;
+	circle->setVisible(flag);
+	blood->setVisible(flag);
+	for (int i = 0; i < 3; ++i) {
+		progress[i]->setVisible(flag);
+	}
+	shield->setVisible(flag);
+	shieldText->setVisible(flag);
+	MainWin->setVisible(flag);
+	SubWin->setVisible(flag);
+
+	mainWeaponShow->setVisible(flag);
+	subWeaponShow->setVisible(flag);
+
+	mainWeaponText->setVisible(flag);
+	subWeaponText->setVisible(flag);
+
+}
+

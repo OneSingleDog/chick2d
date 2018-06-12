@@ -105,7 +105,7 @@ bool MainScene::init()
 		{
 		enemy[i]->create();
 		enemy[i]->setPosition(0,0);
-//		enemy[i]->setVisible(false);
+		enemy[i]->setVisible(false);
 		enemy[i]->addChild(this);
 		}
     
@@ -911,14 +911,16 @@ void MainScene::try_receive(float dt)
 	extern s_c_msg s2c;
 	if (!isRunning)
 		{
+		playerID = s2c.infoy;
 		if (s2c.type)
 			{
 			isRunning = true;
 			BASIC_SPEED = 2.5;
+			for (int i = 0;i<SOLDIER_NUM;++i)
+				if(i!=playerID)enemy[i]->setVisible(true);
 			}
 		show_begin(s2c.type, s2c.infox);
 		}
-	if (!isRunning)playerID = s2c.infoy;
 	else if (s2c.type==2||s2c.type==3)
 		{
 		isOnline = false;
@@ -932,13 +934,10 @@ void MainScene::try_receive(float dt)
 		if (s2c.Poison_LEVEL)
 			{
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
-			log("SafeZone change %d %d\n", s2c.Poison_X*2, s2c.Poison_Y*2);
 			}
 		player->setHP(s2c.currenthp);
 		player->setShield(s2c.Armornaijiu);
 		Warning->setVisible(s2c.inpoison);
-		if (s2c.inpoison)log("in poison\n");
-		else log("not in poison\n");
 		extern c_s_msg to_be_sent;
 		to_be_sent.type = 1;
 		to_be_sent.x = player->getPosition().x/2;

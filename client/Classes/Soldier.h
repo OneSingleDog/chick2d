@@ -78,6 +78,8 @@ public:
 
 	void setHP(float newVal);
 	void setShield(float newVal);
+
+	void setVisible(bool flag);
 };
 
 #endif /* Soldier_h */
