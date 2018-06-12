@@ -1,10 +1,3 @@
-//
-//  MainScene.cpp
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/4/24.
-//
-
 #include "MainScene.h"
 #include "SimpleAudioEngine.h"
 #include <iostream>
@@ -30,11 +23,15 @@ struct Box {
     int weapon2;
     int bullet1;
     int bullet2;
-    int pill1;
-    int pill2;
+    int pillNum[4];
     int shield;
-    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int p1 = 0, int p2 = 0, int s = 0) :
-    x(x), y(y), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), pill1(p1), pill2(p2), shield(s) {}
+    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int p0 = 0, int p1 = 0, int p2 = 0, int p3 = 0, int s = 0) :
+    x(x), y(y), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), shield(s) {
+        pillNum[0] = p0;
+        pillNum[1] = p1;
+        pillNum[2] = p2;
+        pillNum[3] = p3;
+    }
 };
 
 std::vector<Box> Box_ve;
@@ -43,6 +40,8 @@ float MainScene::SafezoneScaleSize[4] = { 9,4.5,2.25,1.125 };
 Scene* MainScene::createScene() {
     return MainScene::create();
 }
+
+const string PillName[4] = { "others/medical_kit.png", "others/first_aid.png", "others/enr_drink.png", "others/bandage.png" };
 
 // on "init" you need to initialize your instance
 bool MainScene::init()
@@ -53,9 +52,9 @@ bool MainScene::init()
     isOpenBox = false;
     isOpenMap = false;
     
-    Box_ve.push_back(Box(64, 64, 1, 0, 60, 0, 1, 2, 100));
-    Box_ve.push_back(Box(80, 64, 1, 0, 60, 0, 1, 2, 100));
-    Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 2, 100));
+    Box_ve.push_back(Box(64, 64, 1, 1, 60, 0, 1, 1, 1, 1, 100));
+    Box_ve.push_back(Box(80, 64, 1, 1, 60, 30,  1, 0, 1, 0, 100));
+    Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 1, 1, 1, 100));
 
     //////////////////////////////
     // 1. super init first
@@ -188,7 +187,7 @@ bool MainScene::init()
     
     glass = Sprite::create("others/glass.png");
     addChild(glass);
-    glass->setPosition(player->getPosition());
+    glass->setPosition(visibleSize / 2);
     glass->setVisible(false);
     
     littleMap = Sprite::create("others/littlemap.png");
@@ -227,25 +226,25 @@ bool MainScene::init()
 	littleSafeZone->setScale(1.11);
 	littleSafeZone->setVisible(false);
 
-	Medical_kit = Sprite::create("others/medical_kit.png");
+	Medical_kit = Sprite::create(PillName[0]);
 	addChild(Medical_kit, 10);
 	Medical_kit->setScale(0.3);
 	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2+200);
 
-	First_aid = Sprite::create("others/first_aid.png");
+	First_aid = Sprite::create(PillName[1]);
 	addChild(First_aid);
 	First_aid->setScale(0.6);
 	First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
 
-	Bandage = Sprite::create("others/bandage.png");
+    Drink = Sprite::create(PillName[2]);
+    addChild(Drink);
+    Drink->setScale(0.25);
+    Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+    
+	Bandage = Sprite::create(PillName[3]);
 	addChild(Bandage);
 	Bandage->setScale(0.23);
 	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
-
-	Drink = Sprite::create("others/enr_drink.png");
-	addChild(Drink);
-	Drink->setScale(0.25);
-	Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
 
 	Medical_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
 	Medical_cnt->setTextColor(Color4B::BLACK);
@@ -634,8 +633,6 @@ void MainScene::show_begin(int status,int ready_person) {
     }
 }
 
-
-
 const float OK_OPEN_BOX = 32;
 
 void MainScene::CheckBoxes() {
@@ -659,44 +656,128 @@ void MainScene::CheckBoxes() {
     }
 }
 
+string boxWeapon[NUM_OF_WEAPON] = { "", "box/weaponshow1.png" };
+string boxPill[4] = { "box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pill3.png" };
+string boxSheild = "shield.png";
+
 void MainScene::OpenBox(int boxID) {
+    Box& B = Box_ve[boxID];
+    
     log("open Box:%d", boxID);
-    glass->setPosition(player->getPosition());
     glass->setVisible(true);
     isOpenBox = true;
     player->hideStatus();
     fog->setVisible(false);
     
-    // create Menu
-//    Vector<MenuItem*> MenuItems;
-//
-//    for(int i = 0; i < (int)Box_ve.size(); ++i) {
-//
-//    }
-    //auto myMenu = Menu::create();
-    // creating a menu with a single item
+    auto oriPos = this->getPosition();
+    this->setPosition(Vec2::ZERO);
+    MainMap->setPosition(oriPos);
+    Safe_Zone->setVisible(false);
+        
+    /*
+        Menu of things in the box
+    */
     
-    // create a menu item by specifying images
+    auto visibleSize = Director::getInstance()->getWinSize();
     
-    //auto closeItem = MenuItemImage::create("StartGameNormal.png", "StartGameSelected.png",
-//                                           [&](Ref* sender){
-//                                               log("I'm touched!!!");
-//                                           });
+    // creating a Menu from a Vector of items
+    Vector<MenuItem*> MenuItems;
+
     
-//    Size visibleSize = Director::getInstance()->getVisibleSize();
-//    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-//
-//    auto closeItem = MenuItemImage::create(
-//                                           "StartGameNormal.png",
-//                                           "StartGameSelected.png",
-//                                           CC_CALLBACK_1(MainScene::func, this));
-//
-//    auto menu = Menu::create(closeItem, NULL);
-//    closeItem->setPosition(Vec2::ZERO);
-//    menu->setPositionZ(1);
-//    menu->setPosition(Vec2::ZERO);
-//    this->addChild(menu, 1);
-//    log("%f", menu->getPositionZ());
+    if(B.weapon1 != 0) {
+        auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon1], "box/blank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick weapon %d", B.weapon1);
+                                                 boxMenu->removeChildByTag(0);
+                                                 boxMenu->removeChildByTag(7);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4);
+        tmpItem->setTag(0);
+        auto tmpText = Label::createWithTTF(std::to_string(B.bullet1), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    if(B.weapon2 != 0) {
+        auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon2], "box/blank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick weapon %d", B.weapon2);
+                                                 boxMenu->removeChildByTag(1);
+                                                 boxMenu->removeChildByTag(8);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4 - visibleSize.height / 8);
+        tmpItem->setTag(1);
+        auto tmpText = Label::createWithTTF(std::to_string(B.bullet2), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    for(int i = 0; i < 4; ++i) if(B.pillNum[i] != 0) {
+        auto tmpItem = MenuItemImage::create(boxPill[i], "box/blank.png",
+                                             [&, i](Ref* sender){
+                                                 log("Pick %d pill %d", B.pillNum[i], i);
+                                                 boxMenu->removeChildByTag(i + 2);
+                                             });
+        tmpItem->setPosition(visibleSize.width / 6, visibleSize.height / 4 - i * visibleSize.height / 8);
+        tmpItem->setTag(2 + i);
+        auto tmpText = Label::createWithTTF(std::to_string(B.pillNum[i]), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    if(B.shield != 0) {
+        auto tmpItem = MenuItemImage::create("box/shield.png", "box/blank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick shield with val %f", (float)B.shield);
+                                                 boxMenu->removeChildByTag(6);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4 - 3 * visibleSize.height / 8);
+        tmpItem->setTag(6);
+        auto tmpText = Label::createWithTTF(std::to_string(B.shield), "fonts/Marker Felt.ttf", 20);
+        tmpItem->addChild(tmpText);
+        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
+        tmpText->setTextColor(Color4B::BLACK);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    // bullet1
+    if(B.bullet1 != 0) {
+        auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick bullet %d", B.bullet1);
+                                                 boxMenu->removeChildByTag(7);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 3.5, visibleSize.height / 4);
+        tmpItem->setTag(7);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    // bullet2
+    if(B.bullet2 != 0) {
+        auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
+                                             [&](Ref* sender){
+                                                 log("Pick bullet %d", B.bullet2);
+                                                 boxMenu->removeChildByTag(8);
+                                             });
+        tmpItem->setPosition(-visibleSize.width / 3.5, visibleSize.height / 4 - visibleSize.height / 8);
+        tmpItem->setTag(8);
+        MenuItems.pushBack(tmpItem);
+    }
+    
+    /* repeat for as many menu items as needed */
+    
+    boxMenu = Menu::createWithArray(MenuItems);
+    this->addChild(boxMenu, 1);
+    
+    /*
+        End of menu
+     */
 }
 
 void MainScene::closeBox() {
@@ -704,6 +785,14 @@ void MainScene::closeBox() {
     isOpenBox = false;
     player->showStatus();
     fog->setVisible(true);
+    
+    auto oriPos = MainMap->getPosition();
+    this->setPosition(oriPos);
+    MainMap->setPosition(Vec2::ZERO);
+    Safe_Zone->setVisible(true);
+    fog->setPosition(player->getPosition());
+    
+    this->removeChild(boxMenu);
 }
 
 void MainScene::openMap() {

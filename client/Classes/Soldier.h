@@ -1,10 +1,3 @@
-//
-//  Soldier.h
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/6/8.
-//
-
 #ifndef Soldier_h
 #define Soldier_h
 
@@ -36,13 +29,6 @@ private:
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
     cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
 
-    static string armName[NUM_OF_WEAPON];
-    static string weaponName[NUM_OF_WEAPON];
-    static string fireName[NUM_OF_WEAPON];
-    static string weaponShowName[NUM_OF_WEAPON];
-    static int maxBullet[NUM_OF_WEAPON];
-    static float circleSize[NUM_OF_WEAPON];
-
     cocos2d::Sprite *blood;
     cocos2d::ProgressTimer *progress[3];
     cocos2d::Sprite *shield;
@@ -55,6 +41,12 @@ private:
     cocos2d::Label *subWeaponText;
 
 public:
+    static string armName[NUM_OF_WEAPON];
+    static string weaponName[NUM_OF_WEAPON];
+    static string fireName[NUM_OF_WEAPON];
+    static string weaponShowName[NUM_OF_WEAPON];
+    static int maxBullet[NUM_OF_WEAPON];
+    static float circleSize[NUM_OF_WEAPON];
     
     Soldier();
     ~Soldier();

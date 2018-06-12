@@ -1,10 +1,3 @@
-//
-//  Soldier.cpp
-//  chick2d
-//
-//  Created by 侯宇蓬 on 2018/6/8.
-//
-
 #include "Soldier.h"
 #include <algorithm>
 #include <cstdio>
