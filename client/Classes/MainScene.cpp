@@ -227,7 +227,7 @@ bool MainScene::init()
 	littleSafeZone->setVisible(false);
 
 	Medical_kit = Sprite::create(PillName[0]);
-	addChild(Medical_kit, 10);
+	addChild(Medical_kit);
 	Medical_kit->setScale(0.3);
 	Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2+200);
 
