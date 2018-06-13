@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstring>
 #include <ctime>
+#include <cstdlib>
 
 #include "msg.h"
 #include "post.h"
@@ -82,29 +83,32 @@ bool MainScene::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     // create Main Map using Map.tmx
-    MainMap = TMXTiledMap::create("map/Map4.tmx");
+    MainMap = TMXTiledMap::create("map/Map.tmx");
     
     // Get background layer
-    //background = MainMap->getLayer("Background");
-    //house1 = MainMap->getLayer("house1");
+    //background = MainMap->getLayer("river");
+    //auto house1 = MainMap->getLayer("house1");
     collidable = MainMap->getLayer("Collidable");
     collidable->setVisible(false);
     
-    // Get object group
-    TMXObjectGroup *objects = MainMap->getObjectGroup("object");
-    CCASSERT(NULL != objects, "'object' object group not found");
+//    // Get object group
+//    TMXObjectGroup *objects = MainMap->getObjectGroup("object");
+//    CCASSERT(NULL != objects, "'object' object group not found");
+//
+//    // Get object
+//    auto playerShowUpPoint = objects->getObject("start");
+//    CCASSERT(!playerShowUpPoint.empty(), "start object not found");
+//
+//    int x = playerShowUpPoint["x"].asInt();
+//    int y = playerShowUpPoint["y"].asInt();
     
-    // Get object
-    auto playerShowUpPoint = objects->getObject("start");
-    CCASSERT(!playerShowUpPoint.empty(), "start object not found");
-    
-    int x = playerShowUpPoint["x"].asInt();
-    int y = playerShowUpPoint["y"].asInt();
+    srand(time(NULL));
+    int x = 24 * 32 + rand() % (32 * 64);
+    int y = 24 * 32 + rand() % (32 * 64);
     
     // create player and set position
     player->create();
-    player->setPosition(x + MainMap->getTileSize().width / 2,
-                        y + MainMap->getTileSize().height / 2);
+    player->setPosition(x, y);
     
     
 	extern string login_username;
@@ -176,7 +180,7 @@ bool MainScene::init()
         if(op == 1) {
             if(SPEED_RATIO != 1) { return; }
             if(isOpenBox) { return; }
-            //if(!player->ableToOpenSight()) { return; }
+            if(!player->ableToOpenSight()) { return; }
             if(!isOpenSight) {
                 openSight();
             } else {

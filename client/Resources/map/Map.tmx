@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextobjectid="2">
- <tileset firstgid="1" source="Background1.tsx"/>
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextobjectid="2">
+ <tileset firstgid="1" source="Background.tsx"/>
  <tileset firstgid="3809" source="river.tsx"/>
- <tileset firstgid="4845" source="house1.tsx"/>
+ <tileset firstgid="4845" source="house.tsx"/>
  <layer name="Sand" width="128" height="128" locked="1">
   <data encoding="base64" compression="zlib">
    eJztwzENAAAMA6BeU1P/+ipkkNBLqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6vsDRuqAtQ==
@@ -18,10 +18,7 @@
    eJzt2ktKw1AYhuEswFncnpeJcWS7AB12pjM3bIMIJTSkNpdz6Pc88A/aFBp4SXM4TdMAAAAAAAAATLu7X3+oV9/noW2axxXmqdW/dn2fl2OnboV51b96W/R3f6jXmv0794fqrd3f/aFu/+m/0//mXNr/r9WSvxX6l6d/tpL9++nXgZRTun+nf1F907f2d213OvpnGNuTGXbW/zaN7f9vdf3v9C/K+j+b/tmW6D9cO54b/es0t/+l//Gd+w79y1uq/9QzJK7/Oi3V/5p1QQ3934/ncGib52vnoy17/nOl9z9M9Jt7vHZj+3/D2bfnPzv2/iWz17+4LZ7/rfn5r2G/pV9TN/2z6Z9N/2z6Z9M/m/7Z9M+mfzb9s+mfTf9s+mfTP5v+2fTPpn82/bPpn03/bPpn0z+b/tn0z6Z/Nv2z6Z9N/2z6c2qq39zj1E3/bPpn0z/b57Hf94z50h8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANvUDcpW39w==
   </data>
  </layer>
- <objectgroup name="object">
-  <object id="1" name="start" x="2824.97" y="1104.48" width="65.3333" height="62.6667"/>
- </objectgroup>
- <layer name="Collidable" width="128" height="128" visible="0" locked="1">
+ <layer name="Collidable" width="128" height="128" locked="1">
   <properties>
    <property name="collidable" value="true"/>
   </properties>
