@@ -78,10 +78,9 @@ void Game::InitGame(){
 		while(wall -> IsWall(xx-16,yy-16) || wall -> IsWall(xx-16,yy+16) || wall -> IsWall(xx+16,yy-16) || wall -> IsWall(xx+16,yy+16) || wall ->IsWall(xx,yy+16) || wall -> IsWall(xx,yy-16) || wall->IsWall(xx+16,yy) || wall -> IsWall(xx-16,yy)|| wall -> IsWall(xx,yy)){
 			xx = rand()%(MAP_WIDTH-512)+256;
 			yy = rand()%(MAP_LENGTH-512)+256;
-		}
+			}
 		box[i] = new Box(xx, yy, i);
 		box[i]->InitBoxByRandom();
-		printf("%d %d %d %d %d\n",box[i]->GetPillAmount(),box[i] -> GetPillOneAmount(),box[i] -> GetPillTwoAmount(),box[i] -> GetPillThreeAmount(),box[i] -> GetPillFourAmount());
 		}
 	for(int i = 0;i < MAXPLAYER;++ i){
 		ShootSuccess[i] = false;
@@ -237,8 +236,6 @@ void Game::merge(const c_s_msg&msg, int player_id){
 		}
 	if (~msg.BoxId)
 		{
-            printf("%d %d\n",player_id,msg.BoxId);
-            printf("%d\n",box[msg.BoxId]->GetPillAmount());
 		if (msg.PickPill[0]&&msg.PickPill[0]<=box[msg.BoxId]->GetPillOneAmount())
 			{
 			box[msg.BoxId]->TakePillOne(msg.PickPill[0]);

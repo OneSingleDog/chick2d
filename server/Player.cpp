@@ -34,6 +34,11 @@ void Player::ChangePosition(unsigned x,unsigned y){
 }
 
 void Player::CureStart(unsigned type,unsigned sttime){
+	if (type==-1)
+		{
+		IsCuring = false;
+		return;
+		}
 	if(type == 0)return;
 	switch(type){
 		case 1:

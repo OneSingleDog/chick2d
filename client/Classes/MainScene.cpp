@@ -354,6 +354,7 @@ void MainScene::openSight() {
         closeMap();
     }
     player->hideStatus();
+	player->show_circle();
     
     float angle = -player->getRotation();
     if(angle < 0) { angle += 360; }
@@ -627,18 +628,22 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
     switch (op) {
         case 146:   // W
             Wflag = true;
+			to_be_sent.curetype = -1;
             break;
             
         case 142:   // S
             Sflag = true;
+			to_be_sent.curetype = -1;
             break;
             
         case 124:   // A
             Aflag = true;
+			to_be_sent.curetype = -1;
             break;
             
         case 127:   // D
             Dflag = true;
+			to_be_sent.curetype = -1;
             break;
             
         case 140:   // Q
@@ -707,21 +712,25 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
         
 		case 77:
 			if (!isRunning) { break; }
+			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 1;
 			break;
 
 		case 78:
 			if (!isRunning) { break; }
+			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 2;
 			break;
 
 		case 79:
 			if (!isRunning) { break; }
+			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 3;
 			break;
 
 		case 80:
 			if (!isRunning) { break; }
+			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 4;
 			break;
 
@@ -791,7 +800,6 @@ void MainScene::show_notice(std::string killevent) {
 
 void MainScene::show_remain(int life_cnt) {
 	if (Remain == nullptr) return;
-	Remain->setVisible(true);
 	std::string tem = std::to_string(life_cnt) + " / 4";
 	Remain->setString(tem);
 }

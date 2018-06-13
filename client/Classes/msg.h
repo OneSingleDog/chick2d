@@ -13,7 +13,7 @@
 struct c_s_msg{
 	char type;//0 登陆 1 正常
 	int x, y;
-	unsigned char curetype;//药 0没打 客户端处理
+	char curetype;//药 0没打 客户端处理
 	char BoxId;//捡的箱子，-1没捡
 	unsigned char PickPill[4];
 	bool PickBl1;

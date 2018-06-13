@@ -82,6 +82,7 @@ public:
 	void setShield(float newVal);
 
 	void setVisible(bool flag);
+	void show_circle(){ circle->setVisible(true); }
 	void setusername(std::string username);
     
     void makeWave(cocos2d::Scene *scene);
