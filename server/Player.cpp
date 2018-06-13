@@ -183,8 +183,8 @@ Weapon* Player::PickWeapon(Weapon* _weapon){
 }
 
 bool Player::PickBullet(int type, unsigned num){
-	if (type==MainWeapon->GetType())MainWeapon->PickBullet(num);
-	else if (type==SubWeapon->GetType())SubWeapon->PickBullet(num);
+	if (MainWeapon!=NULL && type==MainWeapon->GetType())MainWeapon->PickBullet(num);
+	else if (SubWeapon!= NULL && type==SubWeapon->GetType())SubWeapon->PickBullet(num);
 	else return false;
 	return true;
 }

@@ -75,7 +75,7 @@ void Game::InitGame(){
 		{
 		int xx = rand()%(MAP_WIDTH-16);
 		int yy = rand()%(MAP_LENGTH-16);
-		while(wall -> IsWall(xx,yy) || wall -> IsWall(xx+16,yy) || wall -> IsWall(xx,yy+16) || wall -> IsWall(xx+16,yy+16)){
+		while(wall -> IsWall(xx-16,yy-16) || wall -> IsWall(xx-16,yy+16) || wall -> IsWall(xx+16,yy-16) || wall -> IsWall(xx+16,yy+16)){
 			xx = rand()%(MAP_WIDTH-16);
 			yy = rand()%(MAP_LENGTH-16);
 		}

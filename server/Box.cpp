@@ -2,8 +2,8 @@
 
 void Box::InitBoxByRandom(){
     unsigned randtemp = rand()%10;
-    if(randtemp < 2)pill_amount = 0;
-    else if(randtemp < 7)pill_amount = 1;
+    if(randtemp < 6)pill_amount = 0;
+    else if(randtemp < 9)pill_amount = 1;
     else pill_amount = 2;
 
     for(unsigned i = 0;i < pill_amount;++ i){
@@ -19,7 +19,7 @@ void Box::InitBoxByRandom(){
     }
     else{
         randtemp = rand()%100;
-        if(randtemp < 30)weapon_amount = 1;
+        if(randtemp < 50)weapon_amount = 1;
         else weapon_amount = 0;
     }
     if(weapon_amount == 1){
