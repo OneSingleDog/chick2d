@@ -96,6 +96,7 @@ bool MainScene::init()
     
 	extern string login_username;
 	player->setusername(login_username);
+	log("%s", login_username.c_str());
 
     addChild(MainMap, -5);
     player->addChild(this);
@@ -295,7 +296,7 @@ bool MainScene::init()
     Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
     Healing->setScale(0.15);
     addChild(Healing);
-    Healing->setVisible(true);
+    Healing->setVisible(false);
 
 	Notice = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 30);
 	Notice->setTextColor(Color4B::BLACK);
@@ -605,6 +606,8 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             }
             break;
         
+		case 77:
+
 
         case 59: // space
             MainScene::ReadyCallback();
@@ -963,10 +966,12 @@ void MainScene::try_receive(float dt)
 			}
 		show_begin(s2c.type, s2c.infox);
 		}
+	if (!isRunning);
 	else if (s2c.type==2||s2c.type==3)
 		{
 		isOnline = false;
 		close_socket();
+		if (s2c.type==2)player->isDying();
 		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, s2c.type==3);
 		}
 	else
@@ -984,7 +989,10 @@ void MainScene::try_receive(float dt)
 
 		set_pill(s2c.PillAmount);
             
-        player->setSubWeapon(s2c.SubWeaponType);
+		if (~s2c.SubWeaponType)
+			player->setSubWeapon(s2c.SubWeaponType);
+		else
+			player->setSubWeapon(4);
 		player->setBullet(s2c.MainWeaponCurBullet, s2c.MainWeaponBackupBullet, s2c.SubWeaponCurBullet, s2c.SubWeaponBackupBullet);
 
 		show_remain(s2c.live_count);
@@ -994,7 +1002,10 @@ void MainScene::try_receive(float dt)
 			if (i==playerID)continue;
 			if (enemy[i]->dead())continue;
 			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
-			enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
+			if (s2c.MainWeaponType[i])
+				enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
+			else
+				enemy[i]->setMainWeapon(4);
             if (s2c.Firing[i]) {
                 enemy[i]->Shoot();
             }
@@ -1006,6 +1017,10 @@ void MainScene::try_receive(float dt)
 				else show_notice(string(s2c.user_name[i])+" was killed out of safe zone");
 				}
 			}
+		if (~s2c.MainWeaponType[playerID])
+			player->setMainWeapon(s2c.MainWeaponType[playerID]);
+		else
+			player->setMainWeapon(4);
         if(s2c.Firing[playerID]) { player->Shoot(); }
 		extern c_s_msg to_be_sent;
 		to_be_sent.type = 1;
