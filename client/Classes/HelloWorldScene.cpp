@@ -308,6 +308,8 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		pthread_mutex_lock(&mutex_cocos);
 		flag = flag&&ptr->started();
 		}
+    
+    // flag = true;
 
 	if (flag)
 		{
