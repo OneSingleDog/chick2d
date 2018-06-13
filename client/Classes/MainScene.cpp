@@ -34,17 +34,19 @@ struct Box {
         pillNum[2] = p[2];
         pillNum[3] = p[3];
     }
-	void set(int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p = NULL, int s = 0)
+	bool set(int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p = NULL, int s = 0)
 		{
-		weapon1 = w1;
-		weapon2 = w2;
-		bullet1 = b1;
-		bullet2 = b2;
-		pillNum[0] = p[0];
-		pillNum[1] = p[1];
-		pillNum[2] = p[2];
-		pillNum[3] = p[3];
-		shield = s;
+		bool flag = false;
+		if (weapon1!=w1) { weapon1 = w1;flag = true; }
+		if (weapon2!=w2) { weapon2 = w2;flag = true; }
+		if (bullet1!=b1) { bullet1 = b1;flag = true; }
+		if (bullet2!=b2) { bullet2 = b2; flag = true; }
+		if (pillNum[0]!=p[0]) { pillNum[0] = p[0];flag = true; }
+		if (pillNum[1]!=p[1]) { pillNum[1] = p[1];flag = true; }
+		if (pillNum[2]!=p[2]) { pillNum[2] = p[2];flag = true; }
+		if (pillNum[3]!=p[3]) { pillNum[3] = p[3];flag = true; }
+		if (shield!=s) { shield = s;flag = true; };
+		return flag;
 		}
 };
 
@@ -130,14 +132,13 @@ bool MainScene::init()
     
     // mouse create
     mouse = Sprite::create("others/mouse.png");
-    mouse->setScale(0.04);
     addChild(mouse, 20);
     
     // fog create
     fog = Sprite::create("others/fog.png");
     fog->setPosition(player->getPosition());
     fog->setScale(2);
-    addChild(fog, 5);
+    addChild(fog, -1);
     
     // sight create
     sight = Sprite::create("others/sight.png");
@@ -172,7 +173,7 @@ bool MainScene::init()
     
     // mouse down
     myMouseListener->onMouseDown = [=](Event *event) {
-        log("Fire! %f", this->getPositionZ());
+        //log("Fire! %f", this->getPositionZ());
         EventMouse *e = (EventMouse*)event;
         int op = (int)e->getMouseButton();
         // 0 -> left button
@@ -229,7 +230,7 @@ bool MainScene::init()
 	schedule(schedule_selector(MainScene::try_receive), (float)(1.0/60), kRepeatForever, 0);
     
     glass = Sprite::create("others/glass.png");
-    addChild(glass);
+    addChild(glass,40);
     glass->setPosition(visibleSize / 2);
     glass->setVisible(false);
     
@@ -253,7 +254,7 @@ bool MainScene::init()
 	already->setTextColor(Color4B::BLACK);
 	//already->setString(std::to_string(ready_person) + "/ 4");
 	already->setPosition(Vec2::ZERO);
-	addChild(already,2);
+	addChild(already);
 	already->setVisible(false);
 	
 	Safe_Zone = cocos2d::Sprite::create("others/poison_range.png");
@@ -261,7 +262,7 @@ bool MainScene::init()
 	//Safe_Zone->setPosition(MainMap->getMapSize().width / 2 * 32-100, MainMap->getMapSize().height / 2 * 32-100);
 	Safe_Zone->setScale(9);
 	//Safe_Zone->setScale(4.5);
-	addChild(Safe_Zone, -1);
+	addChild(Safe_Zone, -4);
 
 	littleSafeZone = Sprite::create("others/poison_range.png");
 	addChild(littleSafeZone, 30);
@@ -282,12 +283,12 @@ bool MainScene::init()
     Drink = Sprite::create(PillName[2]);
     addChild(Drink);
     Drink->setScale(0.25);
-    Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+    Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
     
 	Bandage = Sprite::create(PillName[3]);
 	addChild(Bandage);
 	Bandage->setScale(0.23);
-	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
+	Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
 
 	Medical_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
 	Medical_cnt->setTextColor(Color4B::BLACK);
@@ -301,12 +302,12 @@ bool MainScene::init()
 
 	Bandage_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
 	Bandage_cnt->setTextColor(Color4B::BLACK);
-	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
+	Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
 	addChild(Bandage_cnt);
 
 	Drink_cnt = cocos2d::Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
 	Drink_cnt->setTextColor(Color4B::BLACK);
-	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
+	Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
 	addChild(Drink_cnt);
 	
 	DeadLayer = cocos2d::Sprite::create("others/glass.png");
@@ -431,6 +432,8 @@ void MainScene::myMoveAction(float dt) {
     if(Sflag) { direction.y -= BASIC_SPEED; }
     if(Dflag) { direction.x += BASIC_SPEED; }
 	if (player!=nullptr && fabs(direction.length())>1e-6) {
+		extern c_s_msg to_be_sent;
+		to_be_sent.curetype = 0;
 		bool xflag = false, yflag = false;
 		Point ori((player->getPosition()+direction*2.0).x, (player->getPosition()+direction*2.0).y);
 
@@ -476,13 +479,13 @@ void MainScene::myMoveAction(float dt) {
         
         Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
         First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
-        Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
-        Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+        Bandage->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 30);
+        Drink->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 85);
         
         Medical_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 200);
         Firstaid_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 135);
-        Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
-        Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
+        Bandage_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 30);
+        Drink_cnt->setPosition(player->getPosition().x + visibleSize.width / 2 - 35, player->getPosition().y - visibleSize.height / 2 + 80);
 		
 		Warning->setPosition(player->getPosition().x - 250, player->getPosition().y - visibleSize.height / 2 + 30);
 		Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
@@ -692,6 +695,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
 //            break;
             
         case 136:   // M
+			if (isOpenSight||isOpenBox)return;
             if(isOpenMap) {
                 closeMap();
             } else {
@@ -846,7 +850,26 @@ void MainScene::OpenBox(int boxID) {
     this->setPosition(Vec2::ZERO);
     MainMap->setPosition(oriPos);
     Safe_Zone->setVisible(false);
-        
+
+	Notice->setVisible(false);
+	to_ready->setVisible(false);
+	already->setVisible(false);
+	Medical_cnt->setVisible(false);
+	Medical_kit->setVisible(false);
+	Firstaid_cnt->setVisible(false);
+	First_aid->setVisible(false);
+	Bandage->setVisible(false);
+	Bandage_cnt->setVisible(false);
+	Drink->setVisible(false);
+	Drink_cnt->setVisible(false);
+	Remain->setVisible(false);
+	Ping_time->setVisible(false);
+	Healing->setVisible(false);
+	Warning->setVisible(false);
+
+	for (int i = 0;i<totBoxNum;++i)
+		Box_pic[i]->setVisible(false);
+
 	update_box();
 }
 
@@ -985,7 +1008,7 @@ void MainScene::update_box(){
 
 	boxMenu = Menu::createWithArray(MenuItems);
 	this->addChild(boxMenu, 100);
-    boxMenu->setPosition(Vec2::ZERO);
+    //boxMenu->setPosition(visibleSize/2);
 
 	/*
 	End of menu
@@ -1007,6 +1030,22 @@ void MainScene::closeBox() {
     
     this->removeChild(boxMenu);
 	boxMenu = nullptr;
+
+	Notice->setVisible(true);
+	Medical_cnt->setVisible(true);
+	Medical_kit->setVisible(true);
+	Firstaid_cnt->setVisible(true);
+	First_aid->setVisible(true);
+	Bandage->setVisible(true);
+	Bandage_cnt->setVisible(true);
+	Drink->setVisible(true);
+	Drink_cnt->setVisible(true);
+	Remain->setVisible(true);
+	Ping_time->setVisible(true);
+
+	for (int i = 0;i<totBoxNum;++i)
+		Box_pic[i]->setVisible(true);
+
 }
 
 void MainScene::openMap() {
@@ -1070,16 +1109,16 @@ void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifw
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	auto show_User = cocos2d::Label::createWithTTF(Username, "fonts/Marker Felt.ttf", 30);
 	show_User->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 20);
-	addChild(show_User);
+	addChild(show_User,45);
 
 	auto show_res = cocos2d::Label::createWithTTF(Remind[ifwinner], "fonts/Marker Felt.ttf", 50);
 	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 50);
-	addChild(show_res);
+	addChild(show_res,45);
 	show_res->setTextColor(Color4B::YELLOW);
 
 	auto show_rank = cocos2d::Label::createWithTTF("Rank: " + std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
 	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 100);
-	addChild(show_rank);
+	addChild(show_rank,45);
 
 	//close the windows
     
@@ -1096,7 +1135,7 @@ void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifw
     closeItem->setPosition(cocos2d::Vec2(x, y));
     closeItem->setScaleX(1.5);
     closeItem->setScaleY(1.5);
-    addChild(closeItem);
+    addChild(closeItem,45);
 
 }
 
@@ -1172,7 +1211,7 @@ void MainScene::try_receive(float dt)
 		int NowBoxNum = Box_ve.size();
 		for (int i = 0;i<NowBoxNum;++i)
 			{
-			Box_ve[i].set(s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01));
+			if(Box_ve[i].set(s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01))&&isOpenBox&&i==OpenBoxID)update_box();
 			}
 		for (int i = NowBoxNum;i<s2c.Boxnum;++i)
 			{
@@ -1181,14 +1220,13 @@ void MainScene::try_receive(float dt)
             
         while(totBoxNum < s2c.Boxnum) {
             // draw boxes
-            auto tmpb = Sprite::create("others/box.png");
-            addChild(tmpb, -2);
-            tmpb->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
+            auto tmpbox = Sprite::create("others/box.png");
+            addChild(tmpbox, -2);
+            tmpbox->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
+			Box_pic[totBoxNum] = tmpbox;
             
             ++totBoxNum;
         }
-
-		update_box();
 
 		player->setHP(s2c.currenthp);
 		player->setShield(s2c.Armornaijiu);

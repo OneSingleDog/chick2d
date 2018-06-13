@@ -9,6 +9,7 @@ class MainScene : public cocos2d::Scene
 {
 private:
 	static const int SOLDIER_NUM = 4;
+	static const int BOX_NUM = 30;
     cocos2d::TMXTiledMap *MainMap;
     cocos2d::TMXLayer *background;  // background layer of MainMap
     cocos2d::TMXLayer *collidable;
@@ -29,6 +30,8 @@ private:
 	cocos2d::Sprite *DeadLayer;
 	cocos2d::Sprite *Warning;
     cocos2d::Sprite *Healing;
+
+	cocos2d::Sprite *Box_pic[BOX_NUM];
 
     cocos2d::Menu *boxMenu;
         
