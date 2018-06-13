@@ -14,8 +14,8 @@ struct c_s_msg{
 	unsigned char curetype;//药 0没打 客户端处理
 	char BoxId;//捡的箱子，-1没捡
 	unsigned char PickPill[4];
-	unsigned short PickBl1;
-	unsigned short PickBl2;
+	bool PickBl1;
+	bool PickBl2;
 	bool PickArmor;
 	bool PickWp1;
 	bool PickWp2;
@@ -26,6 +26,7 @@ struct c_s_msg{
 
 
 struct send_box{
+	int x,y;
 	int PillAmount[4];
 	double Armor;
 	char Wp1Type, Wp2Type;
@@ -35,6 +36,7 @@ struct send_box{
 struct s_c_msg{
 	char type;//0 未开始 1 正常 2 死亡 3 胜利
 	char infox, infoy;//准备数 /击杀数 被击杀者
+	int Boxnum;
 	send_box Boxes[MAXBOX];
 	int Poison_X;
 	int Poison_Y;

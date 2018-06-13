@@ -140,6 +140,7 @@ s_c_msg&Game::info(int player_id){
 	else
 		{
 		output.type = 1;
+		output.Boxnum = BoxNumber;
 		output.infoy = player_id;
 		output.live_count = living_count;
 		output.Poison_X = poison_X + poison_SIZE[poison_LEVEL]/2;
@@ -147,6 +148,8 @@ s_c_msg&Game::info(int player_id){
 		output.Poison_LEVEL = poison_LEVEL;
 		output.inpoison = player[player_id] -> GetInPoison();
 		for(int i = 0;i < BoxNumber;++ i){
+			output.Boxes[i].x = box[i] -> GetX();
+			output.Boxes[i].y = box[i] -> GetY();
 			output.Boxes[i].PillAmount[0] = box[i] -> GetPillOneAmount();
 			output.Boxes[i].PillAmount[1] = box[i] -> GetPillTwoAmount();
 			output.Boxes[i].PillAmount[2] = box[i] -> GetPillThreeAmount();
@@ -257,15 +260,15 @@ void Game::merge(const c_s_msg&msg, int player_id){
 			box[msg.BoxId]->TakeArmor(player[player_id]->GetArmorNaijiu());
 			player[player_id]->PickArmor(tmp);
 			}
-		if (msg.PickBl1&&box[msg.BoxId]->GetWeaponOne()&&msg.PickBl1<=box[msg.BoxId]->GetWeaponOne()->GetTotalBullet())
+		if (msg.PickBl1&&box[msg.BoxId]->GetWeaponOne())
 			{
 			int type = box[msg.BoxId]->GetWeaponOne()->GetType();
-			if(player[player_id]->PickBullet(type, msg.PickBl1))box[msg.BoxId]->TakeWeaponOneBul(msg.PickBl1);
+			if(player[player_id]->PickBullet(type, box[msg.BoxId] -> GetWeaponOne() -> GetTotalBullet()))box[msg.BoxId]->TakeWeaponOneBul(box[msg.BoxId]->GetWeaponOne()->GetTotalBullet());
 			}
-		if (msg.PickBl2&&box[msg.BoxId]->GetWeaponTwo()&&msg.PickBl2<=box[msg.BoxId]->GetWeaponTwo()->GetTotalBullet())
+		if (msg.PickBl2&&box[msg.BoxId]->GetWeaponTwo())
 			{
 			int type = box[msg.BoxId]->GetWeaponTwo()->GetType();
-			if(player[player_id]->PickBullet(type, msg.PickBl2))box[msg.BoxId]->TakeWeaponTwoBul(msg.PickBl2);
+			if(player[player_id]->PickBullet(type, box[msg.BoxId] -> GetWeaponTwo() -> GetTotalBullet()))box[msg.BoxId]->TakeWeaponTwoBul(box[msg.BoxId]->GetWeaponTwo() -> GetTotalBullet());
 			}
 		if (msg.PickWp1)
 			{
