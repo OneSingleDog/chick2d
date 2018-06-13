@@ -59,7 +59,7 @@ const string PillName[4] = { "others/medical_kit.png", "others/first_aid.png", "
 // on "init" you need to initialize your instance
 bool MainScene::init()
 {
-    
+    totBoxNum = 0;
     playerID = 0;
 	OpenBoxID = -1;
     isOpenSight = false;
@@ -1173,6 +1173,16 @@ void MainScene::try_receive(float dt)
 			{
 			Box_ve.push_back(Box(s2c.Boxes[i].x*2, s2c.Boxes[i].y*2, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
 			}
+            
+        while(totBoxNum < NowBoxNum) {
+            // draw boxes
+            auto tmpb = Sprite::create("others/box.png");
+            addChild(tmpb, -1);
+            float w = MainMap->getTileSize().width;
+            tmpb->setPosition(Box_ve[totBoxNum].x * w, Box_ve[totBoxNum].y * w);
+            
+            ++totBoxNum;
+        }
 
 		update_box();
 

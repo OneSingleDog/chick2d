@@ -309,6 +309,8 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		flag = flag&&ptr->started();
 		}
 
+    //flag = true;
+    
 	if (flag)
 		{
 		auto scene = MainScene::createScene();

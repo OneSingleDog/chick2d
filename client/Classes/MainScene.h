@@ -59,6 +59,8 @@ private:
 	Soldier*enemy[SOLDIER_NUM];
     
     bool Wflag, Aflag, Sflag, Dflag;
+    
+    int totBoxNum;
 
 public:
     static double BASIC_SPEED;
