@@ -72,11 +72,11 @@ void Game::InitGame(){
 	connected = 0;
 	for (int i = 0;i<BEGINBOX;++i)
 		{
-		int xx = rand()%MAP_WIDTH;
-		int yy = rand()%MAP_LENGTH;
+		int xx = rand()%(MAP_WIDTH-16);
+		int yy = rand()%(MAP_LENGTH-16);
 		while(wall -> IsWall(xx,yy) || wall -> IsWall(xx+16,yy) || wall -> IsWall(xx,yy+16) || wall -> IsWall(xx+16,yy+16)){
-			xx = rand()%MAP_WIDTH;
-			yy = rand()%MAP_LENGTH;
+			xx = rand()%(MAP_WIDTH-16);
+			yy = rand()%(MAP_LENGTH-16);
 		}
 		box[i] = new Box(xx, yy, i);
 		box[i]->InitBoxByRandom();
