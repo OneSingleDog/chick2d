@@ -60,7 +60,7 @@ Soldier::~Soldier() {
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm0.png" };
 string Soldier::weaponName[NUM_OF_WEAPON] = { "player/weapon0_lookover.png", "player/weapon1_lookover.png", "player/weapon2_lookover.png", "player/weapon3_lookover.png", "player/blank.png" };
-string Soldier::fireName[NUM_OF_WEAPON] = { "player/fire0.png", "player/fire1.png", "player/fire2.png", "player/fire3.png", "player/blank.png" };
+string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/blank.png", "player/blank.png", "player/blank.png", "player/blank.png" };
 string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/weaponshow0.png", "player/weaponshow1.png", "player/weaponshow2.png", "player/weaponshow3.png", "player/blank.png" };
 int Soldier::maxBullet[NUM_OF_WEAPON] = { 5, 15, 2, 7, 0 };
 float Soldier::circleSize[NUM_OF_WEAPON] = { 1.1, 0.61, 0.3, 0.4, 0.0001 };
@@ -216,25 +216,10 @@ float Soldier::getRotation() {
 
 void Soldier::changeWeapon() {
     arm->stopAllActions();
-    arm->setTexture(Soldier::armName[SubWeapon]);
-    weapon->setTexture(Soldier::weaponName[SubWeapon]);
-    std::swap(MainWeapon, SubWeapon);
-    circle->setScale(circleSize[MainWeapon]);
-    arm->setPosition(body->getPosition());
-    
-    mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
-    subWeaponShow->setTexture(Soldier::weaponShowName[SubWeapon]);
-    
-    string mainStr = mainWeaponText->getString();
-    string subStr = subWeaponText->getString();
-    mainWeaponText->setString(subStr);
-    subWeaponText->setString(mainStr);
-    std::swap(mainCurBulletNum, subCurBulletNum);
-    std::swap(mainTotBulletNum, subTotBulletNum);
 }
 
 void Soldier::changeBullet() {
-    if(MainWeapon == 0) {   // no weapon
+    if(MainWeapon == 4) {   // no weapon
         return;
     }
     // create aninmation
@@ -243,16 +228,7 @@ void Soldier::changeBullet() {
     auto animate= Animate::create(animation);
     // run
     
-    auto callbackChangeBullet = CallFunc::create([&](){
-        int delta = Soldier::maxBullet[MainWeapon] - mainCurBulletNum;
-        if(delta > 0) {
-            mainCurBulletNum += delta;
-            mainTotBulletNum -= delta;
-            mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
-        }
-    });
-    
-    auto seq = Sequence::create(animate, callbackChangeBullet, NULL);
+    auto seq = Sequence::create(animate, NULL);
     
     arm->runAction(seq);
 }
@@ -277,7 +253,9 @@ void Soldier::Shoot() {
 //    mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
     
     // run it
-    fire->runAction(animate);
+    auto seq = Sequence::create(animate, NULL);
+    
+    fire->runAction(seq);
 }
 
 void Soldier::getHurted(float delta) {
@@ -308,7 +286,10 @@ void Soldier::isDying() {
     // create act
     auto animate= Animate::create(animation);
     // run
-    body->runAction(animate);
+    
+    auto seq = Sequence::create(animate, NULL);
+    
+    body->runAction(seq);
 }
 
 void Soldier::hideStatus() {
