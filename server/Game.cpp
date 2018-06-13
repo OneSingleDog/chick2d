@@ -7,7 +7,7 @@
 #ifdef MAC
 Game::Game(){
 	FILE*config=NULL;
-	config = fopen( "/Users/mac/Desktop/Test/Test/config.txt", "r");
+	config = fopen( "/Users/mac/Desktop/学习/面向对象/finalprogram/chick2d/server/config.txt", "r");
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
@@ -27,6 +27,7 @@ Game::Game(){
 //		fscanf(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
 		fscanf(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
+    //for(int i = 0;i < MAXLEVEL;++ i)printf("%d\n",poison_SIZE[i]);
 	fclose(config);
 }
 #else
