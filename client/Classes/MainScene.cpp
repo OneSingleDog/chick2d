@@ -1120,7 +1120,7 @@ void MainScene::try_receive(float dt)
 	else
 		{
 		check_cnt = 0;
-		Ping_time->setString("Ping:"+std::to_string((clock()-last_time)/60)+"ms");
+		Ping_time->setString("Ping:"+std::to_string((clock()-last_time)*1000/60/CLOCKS_PER_SEC)+"ms");
 		last_time = clock();
 		}
 	if (socket_closed())
@@ -1174,12 +1174,12 @@ void MainScene::try_receive(float dt)
 			Box_ve.push_back(Box(s2c.Boxes[i].x*2, s2c.Boxes[i].y*2, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
 			}
             
-        while(totBoxNum < NowBoxNum) {
+        while(totBoxNum < s2c.Boxnum) {
             // draw boxes
             auto tmpb = Sprite::create("others/box.png");
-            addChild(tmpb, -1);
+            addChild(tmpb, 10);
             float w = MainMap->getTileSize().width;
-            tmpb->setPosition(Box_ve[totBoxNum].x * w, Box_ve[totBoxNum].y * w);
+            tmpb->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
             
             ++totBoxNum;
         }
