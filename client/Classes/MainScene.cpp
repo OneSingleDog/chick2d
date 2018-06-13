@@ -141,13 +141,13 @@ bool MainScene::init()
     addChild(sight, 10);
     sight->setVisible(false);
     
-    // boxes create
-    for(auto it = Box_ve.begin(); it != Box_ve.end(); ++it) {
-        auto tmpb = Sprite::create("others/box.png");
-        addChild(tmpb, -1);
-        float w = MainMap->getTileSize().width;
-        tmpb->setPosition((*it).x * w, (*it).y * w);
-    }
+//    // boxes create
+//    for(auto it = Box_ve.begin(); it != Box_ve.end(); ++it) {
+//        auto tmpb = Sprite::create("others/box.png");
+//        addChild(tmpb, -1);
+//        float w = MainMap->getTileSize().width;
+//        tmpb->setPosition((*it).x * w, (*it).y * w);
+//    }
     
     /*
         Mouse Event
@@ -176,6 +176,7 @@ bool MainScene::init()
         if(op == 1) {
             if(SPEED_RATIO != 1) { return; }
             if(isOpenBox) { return; }
+            if(!player->ableToOpenSight()) { return; }
             if(!isOpenSight) {
                 openSight();
             } else {
@@ -256,7 +257,7 @@ bool MainScene::init()
 	//Safe_Zone->setPosition(MainMap->getMapSize().width / 2 * 32-100, MainMap->getMapSize().height / 2 * 32-100);
 	Safe_Zone->setScale(9);
 	//Safe_Zone->setScale(4.5);
-	addChild(Safe_Zone);
+	addChild(Safe_Zone, -1);
 
 	littleSafeZone = Sprite::create("others/poison_range.png");
 	addChild(littleSafeZone, 30);
@@ -1177,7 +1178,7 @@ void MainScene::try_receive(float dt)
         while(totBoxNum < s2c.Boxnum) {
             // draw boxes
             auto tmpb = Sprite::create("others/box.png");
-            addChild(tmpb, 10);
+            addChild(tmpb, -2);
             float w = MainMap->getTileSize().width;
             tmpb->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
             

@@ -87,6 +87,7 @@ public:
     void makeWave(cocos2d::Scene *scene);
 
 	bool dead(){return existLife<1e-6;}
+    bool ableToOpenSight() { return MainWeapon == 0; }
     
     void setMainWeapon(int weaponType);
     void setSubWeapon(int weaponType);

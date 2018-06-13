@@ -309,7 +309,7 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		flag = flag&&ptr->started();
 		}
 
-    //flag = true;
+    flag = true;
     
 	if (flag)
 		{
