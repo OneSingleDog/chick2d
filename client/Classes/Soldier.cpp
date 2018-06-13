@@ -222,7 +222,7 @@ void Soldier::changeBullet() {
     if(MainWeapon == 4) {   // no weapon
         return;
     }
-
+	if (mainCurBulletNum==maxBullet[MainWeapon])return;
 	arm->stopAllActions();
     // create aninmation
     auto animation = Animation::create(SpFrs, 0.1);
