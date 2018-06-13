@@ -416,6 +416,10 @@ void Soldier::setSubWeapon(int weaponType) {
 void Soldier::setMainWeapon(int weaponType) {
     MainWeapon = weaponType;
     mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
+    weapon->setTexture(Soldier::weaponName[MainWeapon]);
+    arm->setTexture(Soldier::armName[MainWeapon]);
+    fire->setTexture(Soldier::fireName[MainWeapon]);
+    circle->setScale(Soldier::circleSize[MainWeapon]);
 }
 
 void Soldier::setBullet(int Mcur, int Mback, int Scur, int Sback) {

@@ -59,7 +59,7 @@ const string PillName[4] = { "others/medical_kit.png", "others/first_aid.png", "
 // on "init" you need to initialize your instance
 bool MainScene::init()
 {
-    
+    totBoxNum = 0;
     playerID = 0;
 	OpenBoxID = -1;
     isOpenSight = false;
@@ -141,13 +141,13 @@ bool MainScene::init()
     addChild(sight, 10);
     sight->setVisible(false);
     
-    // boxes create
-    for(auto it = Box_ve.begin(); it != Box_ve.end(); ++it) {
-        auto tmpb = Sprite::create("others/box.png");
-        addChild(tmpb, -1);
-        float w = MainMap->getTileSize().width;
-        tmpb->setPosition((*it).x * w, (*it).y * w);
-    }
+//    // boxes create
+//    for(auto it = Box_ve.begin(); it != Box_ve.end(); ++it) {
+//        auto tmpb = Sprite::create("others/box.png");
+//        addChild(tmpb, -1);
+//        float w = MainMap->getTileSize().width;
+//        tmpb->setPosition((*it).x * w, (*it).y * w);
+//    }
     
     /*
         Mouse Event
@@ -176,6 +176,7 @@ bool MainScene::init()
         if(op == 1) {
             if(SPEED_RATIO != 1) { return; }
             if(isOpenBox) { return; }
+            if(!player->ableToOpenSight()) { return; }
             if(!isOpenSight) {
                 openSight();
             } else {
@@ -256,7 +257,7 @@ bool MainScene::init()
 	//Safe_Zone->setPosition(MainMap->getMapSize().width / 2 * 32-100, MainMap->getMapSize().height / 2 * 32-100);
 	Safe_Zone->setScale(9);
 	//Safe_Zone->setScale(4.5);
-	addChild(Safe_Zone);
+	addChild(Safe_Zone, -1);
 
 	littleSafeZone = Sprite::create("others/poison_range.png");
 	addChild(littleSafeZone, 30);
@@ -805,8 +806,7 @@ void MainScene::CheckBoxes() {
     int finalID = -1;
     for(int i = 0; i < (int)Box_ve.size(); ++i) {
         Box& B = Box_ve[i];
-        float w = MainMap->getTileSize().width;
-        Vec2 pos = Vec2(B.x * w, B.y * w);
+		Vec2 pos = Vec2(B.x, B.y);
         //log("Box:%d x->%f, y->%f", i, B.x*w, B.y*w);
         float len = (pos - player->getPosition()).length();
         if(len < OK_OPEN_BOX) {
@@ -1120,7 +1120,7 @@ void MainScene::try_receive(float dt)
 	else
 		{
 		check_cnt = 0;
-		Ping_time->setString("Ping:"+std::to_string((clock()-last_time)/60)+"ms");
+		Ping_time->setString("Ping:"+std::to_string((clock()-last_time)*1000/60/CLOCKS_PER_SEC)+"ms");
 		last_time = clock();
 		}
 	if (socket_closed())
@@ -1163,7 +1163,6 @@ void MainScene::try_receive(float dt)
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
 			}
 
-		log("Box num %d", s2c.Boxnum);
 		int NowBoxNum = Box_ve.size();
 		for (int i = 0;i<NowBoxNum;++i)
 			{
@@ -1173,6 +1172,15 @@ void MainScene::try_receive(float dt)
 			{
 			Box_ve.push_back(Box(s2c.Boxes[i].x*2, s2c.Boxes[i].y*2, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
 			}
+            
+        while(totBoxNum < s2c.Boxnum) {
+            // draw boxes
+            auto tmpb = Sprite::create("others/box.png");
+            addChild(tmpb, -2);
+            tmpb->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
+            
+            ++totBoxNum;
+        }
 
 		update_box();
 
@@ -1196,7 +1204,7 @@ void MainScene::try_receive(float dt)
 			if (i==playerID)continue;
 			if (enemy[i]->dead())continue;
 			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
-			if (s2c.MainWeaponType[i])
+			if (~s2c.MainWeaponType[i])
 				enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
 			else
 				enemy[i]->setMainWeapon(4);
