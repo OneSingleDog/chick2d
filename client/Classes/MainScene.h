@@ -53,6 +53,7 @@ private:
 	 static float SafezoneScaleSize[4];
 
     int playerID;
+	int OpenBoxID;
     
 	Soldier*enemy[SOLDIER_NUM];
     
@@ -101,6 +102,7 @@ public:
 	void try_receive(float dt);
     
     void set_pill(int pill_now[]);
+	void update_box();
 };
 
 #endif /* MainScene_h */

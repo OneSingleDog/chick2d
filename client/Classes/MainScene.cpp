@@ -25,13 +25,25 @@ struct Box {
     int bullet2;
     int pillNum[4];
     int shield;
-    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int p0 = 0, int p1 = 0, int p2 = 0, int p3 = 0, int s = 0) :
+    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p=NULL, int s = 0) :
     x(x), y(y), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), shield(s) {
-        pillNum[0] = p0;
-        pillNum[1] = p1;
-        pillNum[2] = p2;
-        pillNum[3] = p3;
+        pillNum[0] = p[0];
+        pillNum[1] = p[1];
+        pillNum[2] = p[2];
+        pillNum[3] = p[3];
     }
+	void set(int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p = NULL, int s = 0)
+		{
+		weapon1 = w1;
+		weapon2 = w2;
+		bullet1 = b1;
+		bullet2 = b2;
+		pillNum[0] = p[0];
+		pillNum[1] = p[1];
+		pillNum[2] = p[2];
+		pillNum[3] = p[3];
+		shield = s;
+		}
 };
 
 std::vector<Box> Box_ve;
@@ -48,12 +60,13 @@ bool MainScene::init()
 {
     
     playerID = 0;
+	OpenBoxID = -1;
     isOpenSight = false;
     isOpenBox = false;
     isOpenMap = false;
     
-    Box_ve.push_back(Box(80, 64, 1, 1, 60, 30,  1, 0, 1, 0, 100));
-    Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 1, 1, 1, 100));
+    //Box_ve.push_back(Box(80, 64, 1, 1, 60, 30,  1, 0, 1, 0, 100));
+    //Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 1, 1, 1, 100));
 
     //////////////////////////////
     // 1. super init first
@@ -610,6 +623,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
             
         case 140:   // Q
+			if(!isRunning) { break; }
             if(SPEED_RATIO != 1) { break; }
             if(isOpenSight) {
                 closeSight();
@@ -620,6 +634,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
             
         case 141:   // R
+			if (!isRunning) { break; }
             if(SPEED_RATIO != 1) { break; }
 			to_be_sent.curetype = 0;
 			to_be_sent.Load = 1;
@@ -646,6 +661,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             
         case 129:   // F
             //log("%f %f", player->getPosition().x, player->getPosition().y);
+			if (!isRunning) { break; }
             if(isOpenBox) {
                 closeBox();
             } else {
@@ -668,18 +684,22 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
         
 		case 77:
+			if (!isRunning) { break; }
 			to_be_sent.curetype = 1;
 			break;
 
 		case 78:
+			if (!isRunning) { break; }
 			to_be_sent.curetype = 2;
 			break;
 
 		case 79:
+			if (!isRunning) { break; }
 			to_be_sent.curetype = 3;
 			break;
 
 		case 80:
+			if (!isRunning) { break; }
 			to_be_sent.curetype = 4;
 			break;
 
@@ -800,12 +820,11 @@ void MainScene::OpenBox(int boxID) {
     if(isOpenSight) {
         closeSight();
     }
-    
-    Box& B = Box_ve[boxID];
-    
+        
     log("open Box:%d", boxID);
     glass->setVisible(true);
     isOpenBox = true;
+	OpenBoxID = boxID;
     player->hideStatus();
     fog->setVisible(false);
     
@@ -814,115 +833,154 @@ void MainScene::OpenBox(int boxID) {
     MainMap->setPosition(oriPos);
     Safe_Zone->setVisible(false);
         
-    /*
-        Menu of things in the box
-    */
-    
-    auto visibleSize = Director::getInstance()->getWinSize();
-    
-    // creating a Menu from a Vector of items
-    Vector<MenuItem*> MenuItems;
-
-    
-    if(B.weapon1 != 0) {
-        auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon1], "box/blank.png",
-                                             [&](Ref* sender){
-                                                 log("Pick weapon %d", B.weapon1);
-                                                 boxMenu->removeChildByTag(0);
-                                                 boxMenu->removeChildByTag(7);
-                                             });
-        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4);
-        tmpItem->setTag(0);
-        auto tmpText = Label::createWithTTF(std::to_string(B.bullet1), "fonts/Marker Felt.ttf", 20);
-        tmpItem->addChild(tmpText);
-        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
-        tmpText->setTextColor(Color4B::BLACK);
-        MenuItems.pushBack(tmpItem);
-    }
-    
-    if(B.weapon2 != 0) {
-        auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon2], "box/blank.png",
-                                             [&](Ref* sender){
-                                                 log("Pick weapon %d", B.weapon2);
-                                                 boxMenu->removeChildByTag(1);
-                                                 boxMenu->removeChildByTag(8);
-                                             });
-        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4 - visibleSize.height / 8);
-        tmpItem->setTag(1);
-        auto tmpText = Label::createWithTTF(std::to_string(B.bullet2), "fonts/Marker Felt.ttf", 20);
-        tmpItem->addChild(tmpText);
-        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
-        tmpText->setTextColor(Color4B::BLACK);
-        MenuItems.pushBack(tmpItem);
-    }
-    
-    for(int i = 0; i < 4; ++i) if(B.pillNum[i] != 0) {
-        auto tmpItem = MenuItemImage::create(boxPill[i], "box/blank.png",
-                                             [&, i](Ref* sender){
-                                                 log("Pick %d pill %d", B.pillNum[i], i);
-                                                 boxMenu->removeChildByTag(i + 2);
-                                             });
-        tmpItem->setPosition(visibleSize.width / 6, visibleSize.height / 4 - i * visibleSize.height / 8);
-        tmpItem->setTag(2 + i);
-        auto tmpText = Label::createWithTTF(std::to_string(B.pillNum[i]), "fonts/Marker Felt.ttf", 20);
-        tmpItem->addChild(tmpText);
-        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
-        tmpText->setTextColor(Color4B::BLACK);
-        MenuItems.pushBack(tmpItem);
-    }
-    
-    if(B.shield != 0) {
-        auto tmpItem = MenuItemImage::create("box/shield.png", "box/blank.png",
-                                             [&](Ref* sender){
-                                                 log("Pick shield with val %f", (float)B.shield);
-                                                 boxMenu->removeChildByTag(6);
-                                             });
-        tmpItem->setPosition(-visibleSize.width / 6, visibleSize.height / 4 - 3 * visibleSize.height / 8);
-        tmpItem->setTag(6);
-        auto tmpText = Label::createWithTTF(std::to_string(B.shield), "fonts/Marker Felt.ttf", 20);
-        tmpItem->addChild(tmpText);
-        tmpText->setPosition(tmpItem->getContentSize().width / 4 * 3, tmpItem->getContentSize().height / 4);
-        tmpText->setTextColor(Color4B::BLACK);
-        MenuItems.pushBack(tmpItem);
-    }
-    
-    // bullet1
-    if(B.bullet1 != 0) {
-        auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
-                                             [&](Ref* sender){
-                                                 log("Pick bullet %d", B.bullet1);
-                                                 boxMenu->removeChildByTag(7);
-                                             });
-        tmpItem->setPosition(-visibleSize.width / 3.5, visibleSize.height / 4);
-        tmpItem->setTag(7);
-        MenuItems.pushBack(tmpItem);
-    }
-    
-    // bullet2
-    if(B.bullet2 != 0) {
-        auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
-                                             [&](Ref* sender){
-                                                 log("Pick bullet %d", B.bullet2);
-                                                 boxMenu->removeChildByTag(8);
-                                             });
-        tmpItem->setPosition(-visibleSize.width / 3.5, visibleSize.height / 4 - visibleSize.height / 8);
-        tmpItem->setTag(8);
-        MenuItems.pushBack(tmpItem);
-    }
-    
-    /* repeat for as many menu items as needed */
-    
-    boxMenu = Menu::createWithArray(MenuItems);
-    this->addChild(boxMenu, 100);
-    
-    /*
-        End of menu
-     */
+	update_box();
 }
+
+void MainScene::update_box(){
+	if (!isOpenBox)return;
+	if (OpenBoxID==-1)return;
+
+	Box& B = Box_ve[OpenBoxID];
+
+	if (boxMenu!=nullptr)
+		{
+		this->removeChild(boxMenu);
+		}
+	/*
+	Menu of things in the box
+	*/
+
+	auto visibleSize = Director::getInstance()->getWinSize();
+
+	// creating a Menu from a Vector of items
+	Vector<MenuItem*> MenuItems;
+
+	extern c_s_msg to_be_sent;
+
+	if (B.weapon1!=0)
+		{
+		auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon1], "box/blank.png",
+											 [&](Ref* sender){
+			log("Pick weapon %d", B.weapon1);
+			if (~to_be_sent.BoxId&&to_be_sent.BoxId!=OpenBoxID)return;
+			to_be_sent.BoxId = OpenBoxID;
+			to_be_sent.PickWp1 = true;
+			/*boxMenu->removeChildByTag(0);
+			boxMenu->removeChildByTag(7);*/
+			});
+		tmpItem->setPosition(-visibleSize.width/6, visibleSize.height/4);
+		tmpItem->setTag(0);
+		auto tmpText = Label::createWithTTF(std::to_string(B.bullet1), "fonts/Marker Felt.ttf", 20);
+		tmpItem->addChild(tmpText);
+		tmpText->setPosition(tmpItem->getContentSize().width/4*3, tmpItem->getContentSize().height/4);
+		tmpText->setTextColor(Color4B::BLACK);
+		MenuItems.pushBack(tmpItem);
+		}
+
+	if (B.weapon2!=0)
+		{
+		auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon2], "box/blank.png",
+											 [&](Ref* sender){
+			log("Pick weapon %d", B.weapon2);
+			if (~to_be_sent.BoxId&&to_be_sent.BoxId!=OpenBoxID)return;
+			to_be_sent.BoxId = OpenBoxID;
+			to_be_sent.PickWp2 = true;
+			/* boxMenu->removeChildByTag(1);
+			boxMenu->removeChildByTag(8);*/
+			});
+		tmpItem->setPosition(-visibleSize.width/6, visibleSize.height/4-visibleSize.height/8);
+		tmpItem->setTag(1);
+		auto tmpText = Label::createWithTTF(std::to_string(B.bullet2), "fonts/Marker Felt.ttf", 20);
+		tmpItem->addChild(tmpText);
+		tmpText->setPosition(tmpItem->getContentSize().width/4*3, tmpItem->getContentSize().height/4);
+		tmpText->setTextColor(Color4B::BLACK);
+		MenuItems.pushBack(tmpItem);
+		}
+
+	for (int i = 0; i < 4; ++i) if (B.pillNum[i]!=0)
+		{
+		auto tmpItem = MenuItemImage::create(boxPill[i], "box/blank.png",
+											 [&, i](Ref* sender){
+			log("Pick %d pill %d", B.pillNum[i], i);
+			if (~to_be_sent.BoxId&&to_be_sent.BoxId!=OpenBoxID)return;
+			to_be_sent.BoxId = OpenBoxID;
+			to_be_sent.PickPill[i] = true;
+			//boxMenu->removeChildByTag(i + 2);
+			});
+		tmpItem->setPosition(visibleSize.width/6, visibleSize.height/4-i*visibleSize.height/8);
+		tmpItem->setTag(2+i);
+		auto tmpText = Label::createWithTTF(std::to_string(B.pillNum[i]), "fonts/Marker Felt.ttf", 20);
+		tmpItem->addChild(tmpText);
+		tmpText->setPosition(tmpItem->getContentSize().width/4*3, tmpItem->getContentSize().height/4);
+		tmpText->setTextColor(Color4B::BLACK);
+		MenuItems.pushBack(tmpItem);
+		}
+
+	if (B.shield!=0)
+		{
+		auto tmpItem = MenuItemImage::create("box/shield.png", "box/blank.png",
+											 [&](Ref* sender){
+			log("Pick shield with val %f", (float)B.shield);
+			if (~to_be_sent.BoxId&&to_be_sent.BoxId!=OpenBoxID)return;
+			to_be_sent.BoxId = OpenBoxID;
+			to_be_sent.PickArmor = true;
+			//boxMenu->removeChildByTag(6);
+			});
+		tmpItem->setPosition(-visibleSize.width/6, visibleSize.height/4-3*visibleSize.height/8);
+		tmpItem->setTag(6);
+		auto tmpText = Label::createWithTTF(std::to_string(B.shield), "fonts/Marker Felt.ttf", 20);
+		tmpItem->addChild(tmpText);
+		tmpText->setPosition(tmpItem->getContentSize().width/4*3, tmpItem->getContentSize().height/4);
+		tmpText->setTextColor(Color4B::BLACK);
+		MenuItems.pushBack(tmpItem);
+		}
+
+	// bullet1
+	if (B.bullet1!=0)
+		{
+		auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
+											 [&](Ref* sender){
+			log("Pick bullet %d", B.bullet1);
+			if (~to_be_sent.BoxId&&to_be_sent.BoxId!=OpenBoxID)return;
+			to_be_sent.BoxId = OpenBoxID;
+			to_be_sent.PickBl1 = true;
+			//boxMenu->removeChildByTag(7);
+			});
+		tmpItem->setPosition(-visibleSize.width/3.5, visibleSize.height/4);
+		tmpItem->setTag(7);
+		MenuItems.pushBack(tmpItem);
+		}
+
+	// bullet2
+	if (B.bullet2!=0)
+		{
+		auto tmpItem = MenuItemImage::create("box/bullet.png", "box/littleblank.png",
+											 [&](Ref* sender){
+			log("Pick bullet %d", B.bullet2);
+			if (~to_be_sent.BoxId&&to_be_sent.BoxId!=OpenBoxID)return;
+			to_be_sent.BoxId = OpenBoxID;
+			to_be_sent.PickBl2 = true;
+			//boxMenu->removeChildByTag(8);
+			});
+		tmpItem->setPosition(-visibleSize.width/3.5, visibleSize.height/4-visibleSize.height/8);
+		tmpItem->setTag(8);
+		MenuItems.pushBack(tmpItem);
+		}
+
+	/* repeat for as many menu items as needed */
+
+	boxMenu = Menu::createWithArray(MenuItems);
+	this->addChild(boxMenu, 100);
+
+	/*
+	End of menu
+	*/
+	}
 
 void MainScene::closeBox() {
     glass->setVisible(false);
     isOpenBox = false;
+	OpenBoxID = -1;
     player->showStatus();
     fog->setVisible(true);
     
@@ -933,6 +991,7 @@ void MainScene::closeBox() {
     fog->setPosition(player->getPosition());
     
     this->removeChild(boxMenu);
+	boxMenu = nullptr;
 }
 
 void MainScene::openMap() {
@@ -1060,6 +1119,18 @@ void MainScene::try_receive(float dt)
 			{
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
 			}
+
+		int NowBoxNum = Box_ve.size();
+		for (int i = 0;i<NowBoxNum;++i)
+			{
+			Box_ve[i].set(s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01));
+			}
+		for (int i = NowBoxNum;i<s2c.Boxnum;++i)
+			{
+			Box_ve.push_back(Box(s2c.Boxes[i].x, s2c.Boxes[i].y, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
+			}
+
+		update_box();
 
 		player->setHP(s2c.currenthp);
 		player->setShield(s2c.Armornaijiu);

@@ -11,12 +11,12 @@ Soldier::Soldier(int tp):type(tp) {
     shieldText = mainWeaponText = subWeaponText = nullptr;
     existLife = 100;
     shieldVal = 0;
-    MainWeapon = 0;
-    SubWeapon = 1;
+    MainWeapon = 4;
+    SubWeapon = 4;
     mainCurBulletNum = 0;
     mainTotBulletNum = 0;
-    subCurBulletNum = 30;
-    subTotBulletNum = 60;
+    subCurBulletNum = 0;
+    subTotBulletNum = 0;
     
     // animation
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("player/changeBullet.plist");
