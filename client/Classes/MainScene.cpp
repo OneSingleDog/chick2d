@@ -162,6 +162,7 @@ bool MainScene::init()
         // 1 -> right button
         if(op == 1) {
             if(SPEED_RATIO != 1) { return; }
+            if(isOpenBox) { return; }
             if(!isOpenSight) {
                 openSight();
             } else {
@@ -294,8 +295,8 @@ bool MainScene::init()
     
     Healing = cocos2d::Sprite::create("others/heal.png");
     Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
-    Healing->setScale(0.15);
     addChild(Healing);
+    Healing->setScale(0.15);
     Healing->setVisible(false);
 
 	Notice = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 30);
@@ -425,9 +426,32 @@ void MainScene::myMoveAction(float dt) {
 
         
         Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
+        
+        //log("angle -> %f", player->getRotation());
     }
     
     littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/8);
+    
+    // fog of war
+    
+    float angle = player->getRotation();
+    angle = 360 - angle;
+    if(angle > 360) {
+        angle -= 360;
+    }
+    angle = angle / 180 * acos(-1.0);
+    float A = cos(angle), B = sin(angle), C = 150 - cos(angle) * player->getPosition().x - sin(angle) * player->getPosition().y;
+    for(int i = 0; i < SOLDIER_NUM; ++i) {
+        if(i == playerID || enemy[i]->dead() || !isRunning) {
+            enemy[i]->setVisible(false);
+        } else {
+            if(cos(angle) * (enemy[i]->getPosition().x - player->getPosition().x) + sin(angle) * (enemy[i]->getPosition().y - player->getPosition().y) < 0) {   // outside
+                enemy[i]->setVisible(false);
+            } else {
+                enemy[i]->setVisible(true);
+            }
+        }
+    }
 }
 
 // 0 -> can move
@@ -722,6 +746,10 @@ string boxPill[4] = { "box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pi
 string boxSheild = "shield.png";
 
 void MainScene::OpenBox(int boxID) {
+    if(isOpenSight) {
+        closeSight();
+    }
+    
     Box& B = Box_ve[boxID];
     
     log("open Box:%d", boxID);
