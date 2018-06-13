@@ -38,6 +38,7 @@ void Player::CureStart(unsigned type,unsigned sttime){
 	switch(type){
 		case 1:
 			if(PillsOne == 0)return;
+			if(Player_Current_Hp == 100.0)return;
 			IsCuring = true;
 			curestarttime = sttime;
 			curetype = type;
@@ -51,6 +52,7 @@ void Player::CureStart(unsigned type,unsigned sttime){
 			break;
 		case 3:
 			if(PillsThree == 0)return;
+			if(Player_Current_Hp >= 100.0)return;
 			IsCuring = true;
 			curestarttime = sttime;
 			curetype = type;
