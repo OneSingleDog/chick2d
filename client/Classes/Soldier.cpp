@@ -222,6 +222,8 @@ void Soldier::changeBullet() {
     if(MainWeapon == 4) {   // no weapon
         return;
     }
+
+	arm->stopAllActions();
     // create aninmation
     auto animation = Animation::create(SpFrs, 0.1);
     // create act
@@ -319,7 +321,7 @@ void Soldier::showStatus() {
     subWeaponShow->setVisible(true);
     mainWeaponText->setVisible(true);
     subWeaponText->setVisible(true);
-	circle->setVisible(false);
+	circle->setVisible(true);
 }
 
 void Soldier::setHP(float newVal)
@@ -395,6 +397,7 @@ void Soldier::setSubWeapon(int weaponType) {
 }
 
 void Soldier::setMainWeapon(int weaponType) {
+	if (MainWeapon==weaponType)return;
     MainWeapon = weaponType;
     mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
     weapon->setTexture(Soldier::weaponName[MainWeapon]);

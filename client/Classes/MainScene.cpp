@@ -1230,10 +1230,13 @@ void MainScene::try_receive(float dt)
             ++totBoxNum;
         }
 
-		player->setHP(s2c.currenthp);
-		player->setShield(s2c.Armornaijiu);
-		Warning->setVisible(s2c.inpoison);
-		Healing->setVisible(s2c.IsCuring);
+		if (!isOpenBox&&!isOpenSight)
+			{
+			player->setHP(s2c.currenthp);
+			player->setShield(s2c.Armornaijiu);
+			Warning->setVisible(s2c.inpoison);
+			Healing->setVisible(s2c.IsCuring);
+			}
 
 		set_pill(s2c.PillAmount);
             
