@@ -8,7 +8,7 @@
 
 //#define MAXPLAYER 4
 //#define MAXBOX 30
-//#define MAXLEVEL 10
+//#define MAXLEVEL 5
 //#define BEGINBOX 20
 //#define PLAYERSIZE 16
 //#define WALLSIZE 16

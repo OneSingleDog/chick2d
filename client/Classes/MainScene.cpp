@@ -173,7 +173,7 @@ bool MainScene::init()
     
     // mouse down
     myMouseListener->onMouseDown = [=](Event *event) {
-        //log("Fire! %f", this->getPositionZ());
+		if (player->dead())return;
         EventMouse *e = (EventMouse*)event;
         int op = (int)e->getMouseButton();
         // 0 -> left button
@@ -627,26 +627,31 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
 	extern c_s_msg to_be_sent;
     switch (op) {
         case 146:   // W
+			if (player->dead())break;
             Wflag = true;
 			to_be_sent.curetype = -1;
             break;
             
         case 142:   // S
+			if (player->dead())break;
             Sflag = true;
 			to_be_sent.curetype = -1;
             break;
             
         case 124:   // A
+			if (player->dead())break;
             Aflag = true;
 			to_be_sent.curetype = -1;
             break;
             
         case 127:   // D
+			if (player->dead())break;
             Dflag = true;
 			to_be_sent.curetype = -1;
             break;
             
         case 140:   // Q
+			if (player->dead())break;
 			if(!isRunning) { break; }
             if(SPEED_RATIO != 1) { break; }
             if(isOpenSight) {
@@ -659,6 +664,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
             
         case 141:   // R
+			if (player->dead())break;
 			if (!isRunning) { break; }
             if(SPEED_RATIO != 1) { break; }
 			to_be_sent.curetype = 0;
@@ -667,6 +673,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
             
         case 12:    // LS
+			if (player->dead())break;
             MainScene::SPEED_RATIO = 2;
             break;
             
@@ -679,6 +686,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
         //    break;
             
         case 82:    // 6
+			if (player->dead())break;
             ++cnt_666;
             if(cnt_666 >= 3) {
                 BASIC_SPEED = 20;
@@ -686,6 +694,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
             
         case 129:   // F
+			if (player->dead())break;
             //log("%f %f", player->getPosition().x, player->getPosition().y);
 			if (!isRunning) { break; }
             if(isOpenBox) {
@@ -702,6 +711,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
 //            break;
             
         case 136:   // M
+			if (player->dead())break;
 			if (isOpenSight||isOpenBox)return;
             if(isOpenMap) {
                 closeMap();
@@ -711,24 +721,28 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
         
 		case 77:
+			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 1;
 			break;
 
 		case 78:
+			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 2;
 			break;
 
 		case 79:
+			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 3;
 			break;
 
 		case 80:
+			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 4;
@@ -736,6 +750,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
 
 
         case 59: // space
+			if (player->dead())break;
             MainScene::ReadyCallback();
             break;
 
@@ -1118,17 +1133,19 @@ void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifw
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	auto show_User = cocos2d::Label::createWithTTF(Username, "fonts/Marker Felt.ttf", 30);
-	show_User->setPosition(-visibleSize.width / 2 + 20, visibleSize.height / 2 - 20);
+	show_User->setPosition(20, visibleSize.height - 20);
 	addChild(show_User,45);
 
 	auto show_res = cocos2d::Label::createWithTTF(Remind[ifwinner], "fonts/Marker Felt.ttf", 50);
-	show_res->setPosition(-visibleSize.width / 2 + 20, visibleSize.height / 2 - 50);
+	show_res->setPosition(20, visibleSize.height - 50);
 	addChild(show_res,45);
 	show_res->setTextColor(Color4B::YELLOW);
 
 	auto show_rank = cocos2d::Label::createWithTTF("Rank: " + std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
-	show_res->setPosition(-visibleSize.width / 2 + 20, visibleSize.height / 2 - 100);
+	show_res->setPosition(20, visibleSize.height-100);
 	addChild(show_rank,45);
+
+	DeadLayer->setPosition(visibleSize/2);
 
 	//close the windows
     
@@ -1207,7 +1224,11 @@ void MainScene::try_receive(float dt)
 		{
 		isOnline = false;
 		close_socket();
-		if (s2c.type==2)player->isDying();
+		if (s2c.type==2)
+			{
+			player->setHP(0);
+			player->isDying();
+			}
 		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, (s2c.type==3)?0:1);
 		}
 	else
