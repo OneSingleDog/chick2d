@@ -764,22 +764,27 @@ void MainScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     int op = (int)keyCode;
     switch (op) {
         case 146:   // W
+			if (player->dead())break;
             Wflag = false;
             break;
             
         case 142:   // S
+			if (player->dead())break;
             Sflag = false;
             break;
             
         case 124:   // A
+			if (player->dead())break;
             Aflag = false;
             break;
             
         case 127:   // D
+			if (player->dead())break;
             Dflag = false;
             break;
             
         case 12:    // LS
+			if (player->dead())break;
             MainScene::SPEED_RATIO = 1;
             break;
             
@@ -1126,44 +1131,69 @@ void MainScene::ReadyCallback() {
 
 void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifwinner) {
 
+	//close the windows
+
+	auto oriPos = this->getPosition();
+	this->setPosition(Vec2::ZERO);
+	MainMap->setPosition(oriPos);
+	Safe_Zone->setVisible(false);
+	player->setVisible(false);
+	Remain->setVisible(false);
+	Notice->setVisible(false);
+	Ping_time->setVisible(false);
+	Safe_Zone->setVisible(false);
+
+	to_ready->setVisible(false);
+	already->setVisible(false);
+	Medical_cnt->setVisible(false);
+	Medical_kit->setVisible(false);
+	Firstaid_cnt->setVisible(false);
+	First_aid->setVisible(false);
+	Bandage->setVisible(false);
+	Bandage_cnt->setVisible(false);
+	Drink->setVisible(false);
+	Drink_cnt->setVisible(false);
+	Healing->setVisible(false);
+	Warning->setVisible(false);
+
+
 	DeadLayer->setVisible(true);
 	fog->setVisible(false);
 
-	std::string Remind[2] = { "WINNER WINNER,CHICKEN DINNER!","BETTER LUCK FOR NEXT TIME" };
+	std::string Remind[2] = {"WINNER WINNER,CHICKEN DINNER!","BETTER LUCK FOR NEXT TIME"};
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	auto show_User = cocos2d::Label::createWithTTF(Username, "fonts/Marker Felt.ttf", 30);
-	show_User->setPosition(20, visibleSize.height - 20);
-	addChild(show_User,45);
+	show_User->setAnchorPoint(Vec2::ZERO);
+	show_User->setPosition(60, visibleSize.height-60);
+	addChild(show_User, 45);
 
 	auto show_res = cocos2d::Label::createWithTTF(Remind[ifwinner], "fonts/Marker Felt.ttf", 50);
-	show_res->setPosition(20, visibleSize.height - 50);
-	addChild(show_res,45);
+	show_res->setAnchorPoint(Vec2::ZERO);
+	show_res->setPosition(60, visibleSize.height-140);
+	addChild(show_res, 45);
 	show_res->setTextColor(Color4B::YELLOW);
 
-	auto show_rank = cocos2d::Label::createWithTTF("Rank: " + std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
-	show_res->setPosition(20, visibleSize.height-100);
-	addChild(show_rank,45);
+	auto show_rank = cocos2d::Label::createWithTTF("Rank: "+std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
+	show_rank->setAnchorPoint(Vec2::ZERO);
+	show_rank->setPosition(60, visibleSize.height-200);
+	addChild(show_rank, 45);
 
 	DeadLayer->setPosition(visibleSize/2);
 
-	//close the windows
-    
-    auto oriPos = this->getPosition();
-    this->setPosition(Vec2::ZERO);
-    MainMap->setPosition(oriPos);
-    
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(MainScene::menuCloseCallback, this));
-    float x = visibleSize.width / 2;
-    float y = visibleSize.height / 2 - 200;
-    closeItem->setPosition(cocos2d::Vec2(x, y));
-    closeItem->setScaleX(1.5);
-    closeItem->setScaleY(1.5);
-    addChild(closeItem,45);
+	auto closeItem = MenuItemImage::create(
+		"CloseNormal.png",
+		"CloseSelected.png",
+		CC_CALLBACK_1(MainScene::menuCloseCallback, this));
+	float x = 0;
+	float y = -200;
+	closeItem->setPosition(cocos2d::Vec2(x, y));
+	closeItem->setScaleX(1.5);
+	closeItem->setScaleY(1.5);
+	//addChild(closeItem,45);
 
+	auto finalMenu = Menu::create(closeItem, NULL);
+	this->addChild(finalMenu, 45);
 }
 
 void MainScene::menuCloseCallback(Ref* pSender) {
@@ -1223,6 +1253,7 @@ void MainScene::try_receive(float dt)
 	else if (s2c.type==2||s2c.type==3)
 		{
 		isOnline = false;
+		Wflag = Aflag = Sflag = Dflag = false;
 		close_socket();
 		if (s2c.type==2)
 			{
