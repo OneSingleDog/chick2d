@@ -806,8 +806,7 @@ void MainScene::CheckBoxes() {
     int finalID = -1;
     for(int i = 0; i < (int)Box_ve.size(); ++i) {
         Box& B = Box_ve[i];
-        float w = MainMap->getTileSize().width;
-        Vec2 pos = Vec2(B.x * w, B.y * w);
+		Vec2 pos = Vec2(B.x, B.y);
         //log("Box:%d x->%f, y->%f", i, B.x*w, B.y*w);
         float len = (pos - player->getPosition()).length();
         if(len < OK_OPEN_BOX) {
@@ -1164,7 +1163,6 @@ void MainScene::try_receive(float dt)
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
 			}
 
-		log("Box num %d", s2c.Boxnum);
 		int NowBoxNum = Box_ve.size();
 		for (int i = 0;i<NowBoxNum;++i)
 			{
@@ -1179,7 +1177,6 @@ void MainScene::try_receive(float dt)
             // draw boxes
             auto tmpb = Sprite::create("others/box.png");
             addChild(tmpb, -2);
-            float w = MainMap->getTileSize().width;
             tmpb->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
             
             ++totBoxNum;
@@ -1207,7 +1204,7 @@ void MainScene::try_receive(float dt)
 			if (i==playerID)continue;
 			if (enemy[i]->dead())continue;
 			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
-			if (s2c.MainWeaponType[i])
+			if (~s2c.MainWeaponType[i])
 				enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
 			else
 				enemy[i]->setMainWeapon(4);
