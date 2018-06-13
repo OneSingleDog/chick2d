@@ -82,7 +82,7 @@ bool MainScene::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     // create Main Map using Map.tmx
-    MainMap = TMXTiledMap::create("map/Try_again/Map4.tmx");
+    MainMap = TMXTiledMap::create("map/Map4.tmx");
     
     // Get background layer
     //background = MainMap->getLayer("Background");
@@ -332,9 +332,9 @@ bool MainScene::init()
 	addChild(Remain);
 	Remain->setVisible(false);
 
-	Ping_time = cocos2d::Label::createWithTTF("hhh", "fonts/Marker Felt.ttf", 40);
+	Ping_time = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 20);
 	Ping_time->setTextColor(Color4B::BLACK);
-	Ping_time->setPosition(player->getPosition().x-visibleSize.width/2+100, player->getPosition().y+visibleSize.height/2-40);
+	Ping_time->setPosition(player->getPosition().x-visibleSize.width/2+50, player->getPosition().y+visibleSize.height/2-20);
 	addChild(Ping_time);
 
 
@@ -483,7 +483,9 @@ void MainScene::myMoveAction(float dt) {
 
         
         Healing->setPosition(Warning->getPosition() + Vec2(0, visibleSize.height / 16));
-        
+
+		Ping_time->setPosition(player->getPosition().x-visibleSize.width/2+50, player->getPosition().y+visibleSize.height/2-20);
+
         //log("angle -> %f", player->getRotation());
     }
     
@@ -1111,9 +1113,16 @@ void MainScene::set_pill(int *pill_now) {
 void MainScene::try_receive(float dt)
 {
 	static clock_t last_time;
+	static int check_cnt;
 	if (!isOnline)return;
-	Ping_time->setString("Ping:"+std::to_string(clock()-last_time)+"ms");
-	last_time = clock();
+	if (check_cnt<0||check_cnt>60)check_cnt = 0;
+	if (check_cnt<60)++check_cnt;
+	else
+		{
+		check_cnt = 0;
+		Ping_time->setString("Ping:"+std::to_string((clock()-last_time)/60)+"ms");
+		last_time = clock();
+		}
 	if (socket_closed())
 		{
 		auto scene = ConnectfailScene::createScene();
@@ -1154,6 +1163,7 @@ void MainScene::try_receive(float dt)
 			setSafeZone(Vec2(s2c.Poison_X*2, s2c.Poison_Y*2), s2c.Poison_LEVEL);
 			}
 
+		log("Box num %d", s2c.Boxnum);
 		int NowBoxNum = Box_ve.size();
 		for (int i = 0;i<NowBoxNum;++i)
 			{
@@ -1161,7 +1171,7 @@ void MainScene::try_receive(float dt)
 			}
 		for (int i = NowBoxNum;i<s2c.Boxnum;++i)
 			{
-			Box_ve.push_back(Box(s2c.Boxes[i].x, s2c.Boxes[i].y, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
+			Box_ve.push_back(Box(s2c.Boxes[i].x*2, s2c.Boxes[i].y*2, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
 			}
 
 		update_box();
