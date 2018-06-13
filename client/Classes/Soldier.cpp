@@ -324,6 +324,7 @@ void Soldier::hideStatus() {
     subWeaponShow->setVisible(false);
     mainWeaponText->setVisible(false);
     subWeaponText->setVisible(false);
+	circle->setVisible(false);
 }
 
 void Soldier::showStatus() {
@@ -337,6 +338,7 @@ void Soldier::showStatus() {
     subWeaponShow->setVisible(true);
     mainWeaponText->setVisible(true);
     subWeaponText->setVisible(true);
+	circle->setVisible(false);
 }
 
 void Soldier::setHP(float newVal)
@@ -357,10 +359,10 @@ void Soldier::setVisible(bool flag) {
 	weapon->setVisible(flag);
 	arm->setVisible(flag);
 	fire->setVisible(flag);
+	User_tag->setVisible(flag);
 	if (type)return;
 	circle->setVisible(flag);
 	blood->setVisible(flag);
-	User_tag->setVisible(flag);
 	for (int i = 0; i < 3; ++i) {
 		progress[i]->setVisible(flag);
 	}

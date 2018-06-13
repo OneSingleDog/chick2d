@@ -41,7 +41,7 @@ private:
 	bool isRunning;
 
     cocos2d::MenuItemImage* GoGameItem;
-    cocos2d::Label  *Notice;
+    cocos2d::Label *Notice;
     cocos2d::Label * to_ready;
     cocos2d::Label * already;
 	cocos2d::Label * Medical_cnt;

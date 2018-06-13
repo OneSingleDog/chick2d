@@ -5,7 +5,6 @@
 #include <cmath>
 #include <vector>
 #include <cstring>
-#include <Notice.h>
 
 #include "msg.h"
 #include "post.h"
@@ -170,8 +169,17 @@ bool MainScene::init()
             }
         } else {
             if(SPEED_RATIO != 1) { return; }
-            player->Shoot();
-            player->makeWave(this);
+			if (isOpenBox) { return; }
+
+			float angle = player->getRotation();
+			angle = 360-angle;
+			if (angle>360) { angle -= 360; }
+			angle = angle/180*acos(-1.0);
+
+			extern c_s_msg to_be_sent;
+			to_be_sent.ShootAngle = angle;
+            //player->Shoot();
+            //player->makeWave(this);
         }
     };
     
@@ -335,6 +343,21 @@ void MainScene::openSight() {
     sight->setPosition(player->getPosition() + ve);
     sight->setVisible(true);
     fog->setVisible(false);
+
+	Medical_kit->setVisible(false);
+	Medical_cnt->setVisible(false);
+	First_aid->setVisible(false);
+	Firstaid_cnt->setVisible(false);
+	Drink->setVisible(false);
+	Drink_cnt->setVisible(false);
+	Bandage->setVisible(false);
+	Bandage_cnt->setVisible(false);
+
+	Warning->setVisible(false);
+	Healing->setVisible(false);
+	Remain->setVisible(false);
+	Notice->setVisible(false);
+
     isOpenSight = true;
 }
 
@@ -346,6 +369,20 @@ void MainScene::closeSight() {
     sight->setVisible(false);
     fog->setVisible(true);
     isOpenSight = false;
+
+	Medical_kit->setVisible(true);
+	Medical_cnt->setVisible(true);
+	First_aid->setVisible(true);
+	Firstaid_cnt->setVisible(true);
+	Drink->setVisible(true);
+	Drink_cnt->setVisible(true);
+	Bandage->setVisible(true);
+	Bandage_cnt->setVisible(true);
+
+	Warning->setVisible(true);
+	Healing->setVisible(true);
+	Remain->setVisible(true);
+	Notice->setVisible(true);
 }
 
 
@@ -445,7 +482,7 @@ void MainScene::myMoveAction(float dt) {
         if(i == playerID || enemy[i]->dead() || !isRunning) {
             enemy[i]->setVisible(false);
         } else {
-            if(cos(angle) * (enemy[i]->getPosition().x - player->getPosition().x) + sin(angle) * (enemy[i]->getPosition().y - player->getPosition().y) < 0) {   // outside
+            if(cos(angle) * (enemy[i]->getPosition().x - player->getPosition().x) + sin(angle) * (enemy[i]->getPosition().y - player->getPosition().y) +150 < 0) {   // outside
                 enemy[i]->setVisible(false);
             } else {
                 enemy[i]->setVisible(true);
@@ -631,6 +668,20 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             break;
         
 		case 77:
+			to_be_sent.curetype = 1;
+			break;
+
+		case 78:
+			to_be_sent.curetype = 2;
+			break;
+
+		case 79:
+			to_be_sent.curetype = 3;
+			break;
+
+		case 80:
+			to_be_sent.curetype = 4;
+			break;
 
 
         case 59: // space
@@ -1036,6 +1087,7 @@ void MainScene::try_receive(float dt)
 				enemy[i]->setMainWeapon(4);
             if (s2c.Firing[i]) {
                 enemy[i]->Shoot();
+				enemy[i]->makeWave(this);
             }
 			if (s2c.Isdead[i])
 				{
