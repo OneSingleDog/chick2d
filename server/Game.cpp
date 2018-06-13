@@ -219,6 +219,7 @@ bool Game::Die(int player_id){
 	box[BoxNumber] = new Box(player[player_id]->GetX(), player[player_id]->GetY(),BoxNumber);
 	box[BoxNumber]->InitBoxByPlayer(player[player_id]);
 	++BoxNumber;
+	--living_count;
 	return true;
 }
 

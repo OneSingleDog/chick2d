@@ -171,7 +171,7 @@ Weapon* Player::PickWeapon(Weapon* _weapon){
 		MainWeapon = _weapon;
 		return NULL;
 		}
-	else if (SubWeapon = NULL)
+	else if (SubWeapon==NULL)
 		{
 		SubWeapon = _weapon;
 		return NULL;
