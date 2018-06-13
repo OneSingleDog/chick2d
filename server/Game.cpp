@@ -72,7 +72,13 @@ void Game::InitGame(){
 	connected = 0;
 	for (int i = 0;i<BEGINBOX;++i)
 		{
-		box[i] = new Box(rand()%MAP_WIDTH, rand()%MAP_LENGTH, i);
+		int xx = rand()%MAP_WIDTH;
+		int yy = rand()%MAP_LENGTH;
+		while(wall -> IsWall(xx,yy) || wall -> IsWall(xx+16,yy) || wall -> IsWall(xx,yy+16) || wall -> IsWall(xx+16,yy+16)){
+			xx = rand()%MAP_WIDTH;
+			yy = rand()%MAP_LENGTH;
+		}
+		box[i] = new Box(xx, yy, i);
 		box[i]->InitBoxByRandom();
 		}
 	for(int i = 0;i < MAXPLAYER;++ i){
