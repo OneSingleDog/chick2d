@@ -49,6 +49,7 @@ private:
 	cocos2d::Label * Bandage_cnt;
 	cocos2d::Label * Drink_cnt;
 	cocos2d::Label * Remain;
+	cocos2d::Label * Ping_time;
 
 	 static float SafezoneScaleSize[4];
 

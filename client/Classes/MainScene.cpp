@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include <cstring>
+#include <ctime>
 
 #include "msg.h"
 #include "post.h"
@@ -81,7 +82,7 @@ bool MainScene::init()
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     // create Main Map using Map.tmx
-    MainMap = TMXTiledMap::create("map/Map4.tmx");
+    MainMap = TMXTiledMap::create("map/Try_again/Map4.tmx");
     
     // Get background layer
     //background = MainMap->getLayer("Background");
@@ -330,6 +331,12 @@ bool MainScene::init()
 	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
 	addChild(Remain);
 	Remain->setVisible(false);
+
+	Ping_time = cocos2d::Label::createWithTTF("hhh", "fonts/Marker Felt.ttf", 40);
+	Ping_time->setTextColor(Color4B::BLACK);
+	Ping_time->setPosition(player->getPosition().x-visibleSize.width/2+100, player->getPosition().y+visibleSize.height/2-40);
+	addChild(Ping_time);
+
 
     Wflag = Aflag = Sflag = Dflag = false;
     
@@ -1079,7 +1086,10 @@ void MainScene::set_pill(int *pill_now) {
 
 void MainScene::try_receive(float dt)
 {
+	static clock_t last_time;
 	if (!isOnline)return;
+	Ping_time->setString("Ping:"+std::to_string(clock()-last_time)+"ms");
+	last_time = clock();
 	if (socket_closed())
 		{
 		auto scene = ConnectfailScene::createScene();
