@@ -199,6 +199,7 @@ s_c_msg&Game::info(int player_id){
 			else output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
 			output.Isdead[i] = player[i] -> JudgeDead();
 			output.BeKilledByPlayerId[i] = player[i] -> GetKillerId();
+			output.face_angle[i] = player[i]->getFaceAngle();
 		}
 
 	}
@@ -227,6 +228,7 @@ void Game::merge(const c_s_msg&msg, int player_id){
 	unsigned nowtime = clock()-Gamebegintime;
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
 	player[player_id]->ChangePosition(msg.x, msg.y);
+	player[player_id]->setFaceAngle(msg.face_angle);
 	if (msg.x>=poison_X&&msg.x<=(poison_X+poison_SIZE[poison_LEVEL])&&msg.y>=poison_Y&&msg.y<=(poison_Y+poison_SIZE[poison_LEVEL]))
 		player[player_id]->OutPoison();
 	else

@@ -85,6 +85,9 @@ public:
 	void InPoison(unsigned nowtime,double dmg);
 	void OutPoison(){poison_time = -1;};
 	bool GetInPoison()const{if(poison_time == -1)return false; else return true;}
+
+	void setFaceAngle(double angle){ FaceAngle = angle; }
+	double getFaceAngle(){ return FaceAngle; }
 private:
 	string username;
 	int player_id;			  // 玩家编号
@@ -112,6 +115,8 @@ private:
 	unsigned PillsTwo;		  // 第二种药品的数量
 	unsigned PillsThree;	  // 第三种药品的数量
 	unsigned PillsFour;		  // 第四种药品的数量
+
+	double FaceAngle;
 };
 
 #endif

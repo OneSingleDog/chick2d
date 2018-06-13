@@ -1118,16 +1118,16 @@ void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifw
 
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	auto show_User = cocos2d::Label::createWithTTF(Username, "fonts/Marker Felt.ttf", 30);
-	show_User->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 20);
+	show_User->setPosition(-visibleSize.width / 2 + 20, visibleSize.height / 2 - 20);
 	addChild(show_User,45);
 
 	auto show_res = cocos2d::Label::createWithTTF(Remind[ifwinner], "fonts/Marker Felt.ttf", 50);
-	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 50);
+	show_res->setPosition(-visibleSize.width / 2 + 20, visibleSize.height / 2 - 50);
 	addChild(show_res,45);
 	show_res->setTextColor(Color4B::YELLOW);
 
 	auto show_rank = cocos2d::Label::createWithTTF("Rank: " + std::to_string(rank)+"     Kill "+std::to_string(kill_num)+" player", "fonts/Marker Felt.ttf", 40);
-	show_res->setPosition(player->getPosition().x - visibleSize.width / 2 + 20, player->getPosition().y + visibleSize.height / 2 - 100);
+	show_res->setPosition(-visibleSize.width / 2 + 20, visibleSize.height / 2 - 100);
 	addChild(show_rank,45);
 
 	//close the windows
@@ -1208,7 +1208,7 @@ void MainScene::try_receive(float dt)
 		isOnline = false;
 		close_socket();
 		if (s2c.type==2)player->isDying();
-		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, s2c.type==3);
+		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, (s2c.type==3)?0:1);
 		}
 	else
 		{
@@ -1261,6 +1261,7 @@ void MainScene::try_receive(float dt)
 			if (i==playerID)continue;
 			if (enemy[i]->dead())continue;
 			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
+			enemy[i]->setRotation(s2c.face_angle[i]);
 			if (~s2c.MainWeaponType[i])
 				enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
 			else
@@ -1283,6 +1284,7 @@ void MainScene::try_receive(float dt)
 			player->setMainWeapon(4);
         if(s2c.Firing[playerID]) { player->Shoot(); }
 		extern c_s_msg to_be_sent;
+		to_be_sent.face_angle = player->getRotation();
 		to_be_sent.type = 1;
 		to_be_sent.x = player->getPosition().x/2;
 		to_be_sent.y = player->getPosition().y/2;

@@ -223,6 +223,7 @@ void Soldier::changeBullet() {
         return;
     }
 	if (mainCurBulletNum==maxBullet[MainWeapon])return;
+	if (mainTotBulletNum==0)return;
 	arm->stopAllActions();
     // create aninmation
     auto animation = Animation::create(SpFrs, 0.1);
