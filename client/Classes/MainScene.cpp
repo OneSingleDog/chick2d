@@ -176,7 +176,7 @@ bool MainScene::init()
         if(op == 1) {
             if(SPEED_RATIO != 1) { return; }
             if(isOpenBox) { return; }
-            if(!player->ableToOpenSight()) { return; }
+            //if(!player->ableToOpenSight()) { return; }
             if(!isOpenSight) {
                 openSight();
             } else {
@@ -378,6 +378,7 @@ void MainScene::openSight() {
 	Healing->setVisible(false);
 	Remain->setVisible(false);
 	Notice->setVisible(false);
+    Ping_time->setVisible(false);
 
     isOpenSight = true;
 }
@@ -400,10 +401,11 @@ void MainScene::closeSight() {
 	Bandage->setVisible(true);
 	Bandage_cnt->setVisible(true);
 
-	Warning->setVisible(true);
-	Healing->setVisible(true);
+	//Warning->setVisible(true);
+	//Healing->setVisible(true);
 	Remain->setVisible(true);
 	Notice->setVisible(true);
+    Ping_time->setVisible(true);
 }
 
 
@@ -822,9 +824,8 @@ void MainScene::CheckBoxes() {
     }
 }
 
-string boxWeapon[NUM_OF_WEAPON] = { "", "box/weaponshow1.png" };
+string boxWeapon[NUM_OF_WEAPON] = { "box/weaponshow1.png", "box/weaponshow1.png", "box/weaponshow2.png", "box/weaponshow3.png", "box/bottom.png" };
 string boxPill[4] = { "box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pill3.png" };
-string boxSheild = "shield.png";
 
 void MainScene::OpenBox(int boxID) {
     if(isOpenSight) {
@@ -867,7 +868,7 @@ void MainScene::update_box(){
 
 	extern c_s_msg to_be_sent;
 
-	if (B.weapon1!=0)
+	if (B.weapon1 != -1)
 		{
 		auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon1], "box/blank.png",
 											 [&](Ref* sender){
@@ -887,7 +888,7 @@ void MainScene::update_box(){
 		MenuItems.pushBack(tmpItem);
 		}
 
-	if (B.weapon2!=0)
+	if (B.weapon2 != -1)
 		{
 		auto tmpItem = MenuItemImage::create(boxWeapon[B.weapon2], "box/blank.png",
 											 [&](Ref* sender){
@@ -981,6 +982,7 @@ void MainScene::update_box(){
 
 	boxMenu = Menu::createWithArray(MenuItems);
 	this->addChild(boxMenu, 100);
+    boxMenu->setPosition(Vec2::ZERO);
 
 	/*
 	End of menu
