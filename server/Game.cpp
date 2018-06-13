@@ -45,13 +45,23 @@ Game::Game(){
 	for (int i = 0;i<MAP_WIDTH;++i)
 		for (int j = 0;j<MAP_WIDTH;++j)
 			{
+#ifdef WINDOWS
 			fscanf_s(config, "%d", &tmp);
+#endif
+#ifdef MAC
+                fscanf(config,"%d",&tmp);
+#endif
 			wall->Set(i, j, tmp);
 			}
 //	for (int i = 0;i<BEGINBOX;++i)
 //		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
+#ifdef WINDOWS
 		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i, poison_SIZE+i);
+#endif
+#ifdef MAC
+    fscanf(config,"%lf%d%d",poison_DMG+i,poison_TIME+i,poison_SIZE+i);
+#endif
 	fclose(config);
 	}
 #endif
