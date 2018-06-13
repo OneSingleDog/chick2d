@@ -1067,7 +1067,31 @@ void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifw
 	addChild(show_rank);
 
 	//close the windows
+    
+    auto oriPos = this->getPosition();
+    this->setPosition(Vec2::ZERO);
+    MainMap->setPosition(oriPos);
+    
+    auto closeItem = MenuItemImage::create(
+                                           "CloseNormal.png",
+                                           "CloseSelected.png",
+                                           CC_CALLBACK_1(MainScene::menuCloseCallback, this));
+    float x = visibleSize.width / 2;
+    float y = visibleSize.height / 2 - 200;
+    closeItem->setPosition(cocos2d::Vec2(x, y));
+    closeItem->setScaleX(1.5);
+    closeItem->setScaleY(1.5);
+    addChild(closeItem);
 
+}
+
+void MainScene::menuCloseCallback(Ref* pSender) {
+    // Close the cocos2d-x game scene and quit the application
+    Director::getInstance()->end();
+    
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    exit(0);
+#endif
 }
 
 void MainScene::set_pill(int *pill_now) {
