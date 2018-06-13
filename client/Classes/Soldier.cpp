@@ -55,6 +55,7 @@ Soldier::~Soldier() {
     if (circle != nullptr) { delete circle; }
     if(mainWeaponText != nullptr) { delete mainWeaponText; }
     if(subWeaponText != nullptr) { delete subWeaponText; }
+	if (User_tag!=nullptr) { delete User_tag; }
 }
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm0.png", "player/arm1.png" };
@@ -157,7 +158,7 @@ void Soldier::setPosition(float x, float y) {
     mainWeaponText->setPosition(MainWin->getPosition() + Vec2(minisize.width, -minisize.height / 4 * 0.9));
     subWeaponText->setPosition(SubWin->getPosition() + Vec2(minisize.width, -minisize.height / 4 * 0.9));
 
-	User_tag->setPosition(x, y+10);
+	User_tag->setPosition(x, y+30);
 }
 
 void Soldier::addChild(Scene *scene, int level) {
@@ -341,11 +342,13 @@ void Soldier::showStatus() {
 void Soldier::setHP(float newVal)
 {
 	existLife = newVal;
+	updateBlood();
 }
 
 void Soldier::setShield(float newVal)
 {
 	shieldVal = newVal;
+	shieldText->setString(std::to_string((int)(std::ceil(shieldVal)+0.01)));
 }
 
 void Soldier::setVisible(bool flag) {
