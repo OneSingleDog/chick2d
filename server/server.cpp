@@ -6,8 +6,8 @@
 
 static Game chick2d;
 
-io_service*service;
-ip::tcp::acceptor*acceptor;
+io_service service;
+ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), server_port));;
 
 const size_t s_c_size = sizeof(s_c_msg);
 const size_t c_s_size = sizeof(c_s_msg);
@@ -23,7 +23,7 @@ private:
 	std::string username_;
 	int id_;
 
-	talk_to_client(int id):sock_(*service), started_(false), username_("NULL"), id_(id){}
+	talk_to_client(int id):sock_(service), started_(false), username_("NULL"), id_(id){}
 
 	size_t read_complete(const boost::system::error_code &err, size_t bytes) {
 		if (err) return 0;
@@ -103,7 +103,7 @@ void handle_accept(talk_to_client::ptr client, const talk_to_client::error_code 
 	clients[now_opened] = new_client;
 	if (now_opened<MAXPLAYER)
 		{
-		acceptor->async_accept(new_client->sock(), boost::bind(handle_accept, new_client, _1));
+		acceptor.async_accept(new_client->sock(), boost::bind(handle_accept, new_client, _1));
 		++now_opened;
 		}
 	}
@@ -112,23 +112,21 @@ int main()
 {
 	while (true)
 		{
-		io_service SERVICE;
-		ip::tcp::acceptor ACCEPTOR(SERVICE, ip::tcp::endpoint(ip::tcp::v4(), server_port));
-		service = &SERVICE;
-		acceptor = &ACCEPTOR;
 		chick2d.InitGame();//³õÊ¼»¯ÓÎÏ·
 		printf("Initial completed\n");
 		now_opened = 0;
 		clients[now_opened] = talk_to_client::new_(now_opened);
-		acceptor->async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
+		acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
 		++now_opened;
-		service->run();
+		service.run();
 		for (int i = 0;i<MAXPLAYER;++i)
 			{
 			clients[i]->stop();
 			clients[i].reset();
 			}
 		chick2d.EndGame();
+		service.stop();
+		service.reset();
 		}
 	return 0;
 }
