@@ -104,6 +104,8 @@ public:
     
     void set_pill(int pill_now[]);
 	void update_box();
+    
+    void menuCloseCallback(Ref* pSender);
 };
 
 #endif /* MainScene_h */

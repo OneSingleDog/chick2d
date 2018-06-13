@@ -7,7 +7,7 @@
 
 using std::string;
 
-const int NUM_OF_WEAPON = 2;
+const int NUM_OF_WEAPON = 5;
 
 class Soldier {
 private:

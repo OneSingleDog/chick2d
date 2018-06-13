@@ -58,12 +58,12 @@ Soldier::~Soldier() {
 	if (User_tag!=nullptr) { delete User_tag; }
 }
 
-string Soldier::armName[NUM_OF_WEAPON] = { "player/arm0.png", "player/arm1.png" };
-string Soldier::weaponName[NUM_OF_WEAPON] = { "player/blank.png", "player/weapon0_lookover.png" };
-string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/fire1.png" };
-string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/blank.png", "player/weaponshow1.png" };
-int Soldier::maxBullet[NUM_OF_WEAPON] = { 0, 30 };
-float Soldier::circleSize[NUM_OF_WEAPON] = { 0.0001, 0.58 };
+string Soldier::armName[NUM_OF_WEAPON] = { "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm0.png" };
+string Soldier::weaponName[NUM_OF_WEAPON] = { "player/weapon0_lookover.png", "player/weapon1_lookover.png", "player/weapon2_lookover.png", "player/weapon3_lookover.png", "player/blank.png" };
+string Soldier::fireName[NUM_OF_WEAPON] = { "player/fire0.png", "player/fire1.png", "player/fire2.png", "player/fire3.png", "player/blank.png" };
+string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/weaponshow0.png", "player/weaponshow1.png", "player/weaponshow2.png", "player/weaponshow3.png", "player/blank.png" };
+int Soldier::maxBullet[NUM_OF_WEAPON] = { 5, 15, 2, 7, 0 };
+float Soldier::circleSize[NUM_OF_WEAPON] = { 1.1, 0.61, 0.3, 0.4, 0.0001 };
 
 void Soldier::create() {
     body = Sprite::create("player/body.png");
