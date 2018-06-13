@@ -647,6 +647,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             if(isOpenSight) {
                 closeSight();
             }
+            player->changeWeapon();
 			to_be_sent.curetype = 0;
 			to_be_sent.Load = 0;
 			to_be_sent.Exchange ^= 1;
@@ -657,6 +658,7 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             if(SPEED_RATIO != 1) { break; }
 			to_be_sent.curetype = 0;
 			to_be_sent.Load = 1;
+            player->changeBullet();
             break;
             
         case 12:    // LS
@@ -831,7 +833,7 @@ void MainScene::CheckBoxes() {
     }
 }
 
-string boxWeapon[NUM_OF_WEAPON] = { "box/weaponshow1.png", "box/weaponshow1.png", "box/weaponshow2.png", "box/weaponshow3.png", "box/bottom.png" };
+string boxWeapon[NUM_OF_WEAPON] = { "box/weaponshow0.png", "box/weaponshow1.png", "box/weaponshow2.png", "box/weaponshow3.png", "box/bottom.png" };
 string boxPill[4] = { "box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pill3.png" };
 
 void MainScene::OpenBox(int boxID) {
