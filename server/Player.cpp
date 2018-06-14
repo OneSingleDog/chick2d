@@ -8,8 +8,6 @@ void Player::InitalPlayer(int _player_id,string _username){
 	Isdead = false;
 
 	Player_Current_Hp = 100.0;
-	Player_Total_Hp = 100.0;
-	Hppercentage = 1.0;
 
 	IsCuring = false;
 
@@ -81,7 +79,6 @@ void Player::CureEnd(unsigned edtime){
 			IsCuring = false;
 			curetype = 0;
 			Player_Current_Hp = 100.0;
-			SetHpPercent();
 			PillsOne --;
 			break;
 		case 2:
@@ -89,7 +86,6 @@ void Player::CureEnd(unsigned edtime){
 			IsCuring = false;
 			curetype = 0;
 			Player_Current_Hp = 75.0;
-			SetHpPercent();
 			PillsTwo --;
 			break;
 		case 3:
@@ -97,7 +93,6 @@ void Player::CureEnd(unsigned edtime){
 			IsCuring = false;
 			curetype = 0;
 			Player_Current_Hp = Player_Current_Hp <= 90 ? Player_Current_Hp+10 : 100;
-			SetHpPercent();
 			PillsThree --;
 			break;
 		case 4:
@@ -105,7 +100,6 @@ void Player::CureEnd(unsigned edtime){
 			IsCuring = false;
 			curetype = 0;
 			Player_Current_Hp = Player_Current_Hp <= 65.0 ? Player_Current_Hp + 10 : 75;
-			SetHpPercent();
 			PillsFour --;
 			break;
 	}
@@ -113,10 +107,9 @@ void Player::CureEnd(unsigned edtime){
 }
 
 void Player::BeAttack(double damage,int from){
-	IsCuring = false;
 	double coverdamage = damage*0.4;
-	if (coverdamage>=Armornaijiu)Armornaijiu = 0;
-	else Armornaijiu -= coverdamage;
+	if (coverdamage>=Armornaijiu)coverdamage = Armornaijiu;
+	Armornaijiu -= coverdamage;
 	double realdamage = damage - coverdamage;
 	if(Player_Current_Hp >= realdamage)Player_Current_Hp -= realdamage;
 	else {
@@ -124,7 +117,6 @@ void Player::BeAttack(double damage,int from){
 		Isdead = true;
 		killer_id = from;
 	}
-	SetHpPercent();
 }
 
 void Player::LossHp(double damage,int disconnect=0){
@@ -135,20 +127,12 @@ void Player::LossHp(double damage,int disconnect=0){
 		if (disconnect)killer_id = -2;
 		else killer_id = -1;
 	}
-	SetHpPercent();
 }
 
 bool Player::Shoot(unsigned nowtime)
 {
-	//double shootangle = 0.0;
-	//double dis = (double)sqrt((targetX - GetX())*(targetX - GetX()) + (targetY - GetY())*(targetY - GetY()));
-	//double disX = (double)(targetX - GetX());
-	//double disY = (double)(targetY - GetY());
-	//shootangle = (double)acos(dis/disX);
-	//if(disY < 0)shootangle = 2*PI - shootangle;
 	IsCuring = false;
 	if(MainWeapon == NULL)return false;
-	//ShootAngle = shootangle;
 	return MainWeapon -> Fire(nowtime);
 }
 
