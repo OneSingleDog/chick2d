@@ -123,8 +123,8 @@ bool MainScene::init()
 	int yy;
 	while (true)
 		{
-		xx = rand()%((MAP_RBOUND-MAP_LBOUND+1)*BOXSIZE)+MAP_LBOUND*BOXSIZE;
-		yy = rand()%((MAP_UBOUND-MAP_DBOUND+1)*BOXSIZE)+MAP_DBOUND*BOXSIZE;
+		xx = rand()%((MAP_RBOUND-MAP_LBOUND)*TILESIZE)+MAP_LBOUND*TILESIZE+TILESIZE/2;
+		yy = rand()%((MAP_UBOUND-MAP_DBOUND)*TILESIZE)+MAP_DBOUND*TILESIZE+TILESIZE/2;;
 		Point tileCoord = this->tileCoordFromPosition(Vec2(xx,yy));
 		int tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
 
@@ -1291,7 +1291,9 @@ void MainScene::try_receive(float dt)
 		close_socket();
 		auto scene = ConnectfailScene::createScene();
 		Director::getInstance()->replaceScene(scene);
+		return;
 		}
+	else wait_time = -1;
 	if (!received())return;
 	if (check_cnt<0||check_cnt>60)check_cnt = 0;
 	if (check_cnt<60)++check_cnt;

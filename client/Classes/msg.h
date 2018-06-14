@@ -7,11 +7,12 @@
 #define PLAYERSIZE 16
 #define WALLSIZE 16
 #define BOXSIZE 16
+#define TILESIZE 32
 
 #define MAP_LBOUND 22
 #define MAP_RBOUND 109
-#define MAP_UBOUND 18
-#define MAP_DBOUND 113
+#define MAP_UBOUND 113
+#define MAP_DBOUND 18
 
 #include <cstring>
 
