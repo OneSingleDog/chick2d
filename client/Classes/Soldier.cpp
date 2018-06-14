@@ -7,7 +7,7 @@ USING_NS_CC;
 using std::string;
 
 Soldier::Soldier(int tp):type(tp) {
-    body = arm = weapon = fire = shield = blood = MainWin = SubWin = mainWeaponShow = subWeaponShow = nullptr;
+    body = arm = weapon = fire = shield = blood = MainWin = SubWin = mainWeaponShow = subWeaponShow = bloodfog = nullptr;
     shieldText = mainWeaponText = subWeaponText = nullptr;
     existLife = 100;
     shieldVal = 0;
@@ -38,6 +38,12 @@ Soldier::Soldier(int tp):type(tp) {
         string name = std::to_string(i) + ".png";
         SpWave.pushBack(cocos2d::AnimationFrame::create(cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(name.c_str()), 1, ValueMap()));
     }
+    
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("player/bloodfog.plist");
+    for(int i = 7; i<= 16; ++i) {
+        string name = std::to_string(i) + ".png";
+        SpBloodfog.pushBack(cocos2d::AnimationFrame::create(cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(name.c_str()), 1, ValueMap()));
+    }
 }
 
 Soldier::~Soldier() {
@@ -56,13 +62,14 @@ Soldier::~Soldier() {
     if(mainWeaponText != nullptr) { delete mainWeaponText; }
     if(subWeaponText != nullptr) { delete subWeaponText; }
 	if (User_tag!=nullptr) { delete User_tag; }
+    if(bloodfog != nullptr) { delete bloodfog; }
 }
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm0.png" };
 string Soldier::weaponName[NUM_OF_WEAPON] = { "player/weapon0_lookover.png", "player/weapon1_lookover.png", "player/weapon2_lookover.png", "player/weapon3_lookover.png", "player/blank.png" };
 string Soldier::fireName[NUM_OF_WEAPON] = { "player/fire0.png", "player/fire1.png", "player/fire2.png", "player/fire3.png", "player/blank.png" };
 string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/weaponshow0.png", "player/weaponshow1.png", "player/weaponshow2.png", "player/weaponshow3.png", "player/blank.png" };
-int Soldier::maxBullet[NUM_OF_WEAPON] = { 5, 15, 2, 7, 0 };
+int Soldier::maxBullet[NUM_OF_WEAPON] = { 5, 20, 2, 7, 0 };
 float Soldier::circleSize[NUM_OF_WEAPON] = { 1.1, 0.61, 0.3, 0.4, 0.0001 };
 
 void Soldier::create() {
@@ -112,7 +119,9 @@ void Soldier::create() {
     subWeaponText->setTextColor(Color4B::BLACK);
 
 	User_tag = Label::createWithTTF("", "fonts/Marker Felt.ttf", 20);
-
+    
+    bloodfog = Sprite::create("player/blank.png");
+    bloodfog->setScale(0.3);
 }
 
 void Soldier::updateBlood() {
@@ -136,6 +145,7 @@ void Soldier::setPosition(float x, float y) {
     arm->setPosition(x, y);
     fire->setPosition(x, y);
     circle->setPosition(x, y);
+    bloodfog->setPosition(x, y);
 
     auto size = Director::getInstance()->getWinSize();
     
@@ -184,6 +194,8 @@ void Soldier::addChild(Scene *scene, int level) {
 	scene->addChild(mainWeaponText);
 	scene->addChild(subWeaponText);
 	scene->addChild(User_tag);
+    
+    scene->addChild(bloodfog);
 
 	if (type == 1) {
 		circle->setVisible(false);
@@ -312,6 +324,7 @@ void Soldier::hideStatus() {
     mainWeaponText->setVisible(false);
     subWeaponText->setVisible(false);
 	circle->setVisible(false);
+    bloodfog->setVisible(false);
 }
 
 void Soldier::showStatus() {
@@ -326,11 +339,15 @@ void Soldier::showStatus() {
     mainWeaponText->setVisible(true);
     subWeaponText->setVisible(true);
 	circle->setVisible(true);
+    bloodfog->setVisible(true);
 }
 
 void Soldier::setHP(float newVal)
 {
-	existLife = newVal;
+    if(fabs(existLife - newVal) > 1e-4) {
+        hurted();
+    }
+    existLife = newVal;
 	updateBlood();
 }
 
@@ -363,6 +380,8 @@ void Soldier::setVisible(bool flag) {
 
 	mainWeaponText->setVisible(flag);
 	subWeaponText->setVisible(flag);
+    
+    bloodfog->setVisible(flag);
 
 }
 
@@ -421,5 +440,23 @@ void Soldier::setBullet(int Mcur, int Mback, int Scur, int Sback) {
     
     mainWeaponText->setString((std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum)).c_str());
     subWeaponText->setString((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str());
+}
+
+void Soldier::hurted() {
+    bloodfog->setVisible(true);
+    
+    // create aninmation
+    auto animation = Animation::create(SpBloodfog, 1 / 10.0);
+    // create act
+    auto animate= Animate::create(animation);
+    // run
+
+    auto callbackHurted = CallFunc::create([=](){
+        bloodfog->setVisible(false);
+    });
+    
+    auto seq = Sequence::create(animate, callbackHurted, NULL);
+
+    bloodfog->runAction(seq);
 }
 

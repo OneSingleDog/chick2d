@@ -2,6 +2,9 @@
 #include "ConnectfailScene.h"
 #include "SimpleAudioEngine.h"
 #include "MainScene.h"
+#include "SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
 
 #define HAVE_STRUCT_TIMESPEC
 #include <pthread.h>
@@ -27,6 +30,11 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
+    auto audio = SimpleAudioEngine::getInstance();
+    
+    // set the background music and continuously play it.
+    audio->playBackgroundMusic("music/start.mp3", true);
+    
 	//////////////////////////////
 	// 1. super init first
 	if (!Scene::init())
@@ -312,7 +320,7 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
     //flag = true;
     
 	if (flag)
-		{
+    {            
 		auto scene = MainScene::createScene();
 		Director::getInstance()->replaceScene(scene);
 		}
