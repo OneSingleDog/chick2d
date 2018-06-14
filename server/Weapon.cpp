@@ -9,7 +9,6 @@ void Weapon::InitWeapon(unsigned type) {
 
 	IsLoading = false;
 	Loadbegintime = 0;
-	//IsShooting = false;
 	Shootbegintime = 0;
 
 	switch (type) {

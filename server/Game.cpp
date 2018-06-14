@@ -23,11 +23,8 @@ Game::Game(){
 			fscanf(config, "%d", &tmp);
 			wall->Set(i, j, tmp);
 			}
-//	for (int i = 0;i<BEGINBOX;++i)
-//		fscanf(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
 		fscanf(config, "%lf%d%d", poison_DMG+i, poison_TIME+i,poison_SIZE+i);
-    //for(int i = 0;i < MAXLEVEL;++ i)printf("%d\n",poison_SIZE[i]);
 	fclose(config);
 }
 #else
@@ -49,8 +46,6 @@ Game::Game(){
 			fscanf_s(config, "%d", &tmp);
 			wall->Set(i, j, tmp);
 			}
-//	for (int i = 0;i<BEGINBOX;++i)
-//		fscanf_s(config, "%d%d", box_X+i, box_Y+i);
 	for (int i = 0;i<MAXLEVEL;++i)
 		fscanf_s(config, "%lf%d%d", poison_DMG+i, poison_TIME+i, poison_SIZE+i);
 	fclose(config);
@@ -63,30 +58,31 @@ Game::~Game()
 	delete wall;
 	}
 
-void Game::InitGame(){
+void Game::InitGame(int p_num, int b_num){
 	srand(time(0));
-	BoxNumber = BEGINBOX;
+	player_num = p_num;
+	BoxNumber = b_num;
 	poison_X = 0;
 	poison_Y = 0;
 	poison_LEVEL = 0;
 	started = false;
 	connected = 0;
 	living_count = 0;
-	for (int i = 0;i<BEGINBOX;++i)
+	for (int i = 0;i<b_num;++i)
 		{
-		int xx = rand()%(MAP_WIDTH-512)+256;
-		int yy = rand()%(MAP_LENGTH-512)+256;
-		while(wall -> IsWall(xx-16,yy-16) || wall -> IsWall(xx-16,yy+16) || wall -> IsWall(xx+16,yy-16) || wall -> IsWall(xx+16,yy+16) || wall ->IsWall(xx,yy+16) || wall -> IsWall(xx,yy-16) || wall->IsWall(xx+16,yy) || wall -> IsWall(xx-16,yy)|| wall -> IsWall(xx,yy)){
-			xx = rand()%(MAP_WIDTH-512)+256;
-			yy = rand()%(MAP_LENGTH-512)+256;
+		int xx = rand()%((MAP_RBOUND-MAP_LBOUND+1)*BOXSIZE)+MAP_LBOUND*BOXSIZE;
+		int yy = rand()%((MAP_UBOUND-MAP_DBOUND+1)*BOXSIZE)+MAP_DBOUND*BOXSIZE;
+		while (wall->IsWall(xx-BOXSIZE, yy-BOXSIZE)||wall->IsWall(xx-BOXSIZE, yy+BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy-BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy+BOXSIZE)||wall->IsWall(xx, yy+BOXSIZE)||wall->IsWall(xx, yy-BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy)||wall->IsWall(xx-BOXSIZE, yy)||wall->IsWall(xx, yy))
+			{
+			xx = rand()%((MAP_RBOUND-MAP_LBOUND+1)*BOXSIZE)+MAP_LBOUND*BOXSIZE;
+			yy = rand()%((MAP_UBOUND-MAP_DBOUND+1)*BOXSIZE)+MAP_DBOUND*BOXSIZE;
 			}
 		box[i] = new Box(xx, yy, i);
 		box[i]->InitBoxByRandom();
 		}
 	memset(ShootSuccess, 0, sizeof(ShootSuccess));
-	for(int i = 0;i < MAXPLAYER;++ i){
+	for (int i = 0;i<MAXPLAYER;++i)
 		dead[i] = false;
-	}
 }
 
 void Game::EndGame(){
@@ -94,6 +90,7 @@ void Game::EndGame(){
 	for (int i = 0;i<MAXPLAYER;++i)if (player[i])delete(player[i]);
 	for (int i = 0;i<BoxNumber;++i)if (box[i])delete(box[i]);
 	BoxNumber = 0;
+	player_num = 0;
 	poison_LEVEL = 0;
 	started = false;
 	connected = 0;
@@ -112,15 +109,15 @@ void Game::disconnect(int player_id){
 
 string Game::login(const c_s_msg&msg, int&player_id){
 	player_id = connected;
-	if (msg.type)return "NULL";//错误
+	if (msg.type)return "NULL";//ERROR
 	player[player_id] = new Player(msg.x, msg.y);
 	string user_name = string(msg.remark);
 	player[player_id]->InitalPlayer(player_id, user_name);
 	++connected;
-	if (connected==MAXPLAYER)
+	if (connected==player_num)//game begin
 		{
 		started = true;
-		for (int i = 0;i<MAXPLAYER;++i)
+		for (int i = 0;i<player_num;++i)
 			if (!player[i]->JudgeDead())++living_count;
 		Gamebegintime = clock();
 		}
@@ -133,6 +130,7 @@ s_c_msg&Game::info(int player_id){
 		output.type = 0;
 		output.infox = connected;
 		output.infoy = player_id;
+		output.live_count = player_num;
 		}
 	else if (player[player_id]->JudgeDead())
 		{
@@ -192,7 +190,7 @@ s_c_msg&Game::info(int player_id){
 		if(player[player_id] -> GetSubWeapon() == NULL)output.SubWeaponBackupBullet = 0;
 		else output.SubWeaponBackupBullet = player[player_id]  -> GetSubWeapon() -> GetBackupBullet();
 		output.IsCuring = player[player_id] -> IsCuringNow();
-		for(int i = 0;i < MAXPLAYER;++ i){
+		for(int i = 0;i < player_num;++ i){
 			#ifdef MAC
 			strcpy(output.user_name[i],player[i] -> GetUserName().c_str());
 			#else
@@ -200,9 +198,6 @@ s_c_msg&Game::info(int player_id){
 			#endif
 			output.x[i] = player[i] -> GetX();
 			output.y[i] = player[i] -> GetY();
-			//output.IsCuring[i] = player[i] -> IsCuringNow();
-			//if(player[i] -> GetMainWeapon() == NULL)output.IsLoading[i] = false;
-			//else output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
 			output.Firing[i] = ShootSuccess[player_id][i]>0;
 			if(ShootSuccess[player_id][i]>0)--ShootSuccess[player_id][i];
 			if(player[i] -> GetMainWeapon() == NULL || player[i] -> GetMainWeapon() -> GetType() == FIST) output.MainWeaponType[i] = -1;
@@ -211,7 +206,6 @@ s_c_msg&Game::info(int player_id){
 			output.BeKilledByPlayerId[i] = player[i] -> GetKillerId();
 			output.face_angle[i] = player[i]->getFaceAngle();
 		}
-
 	}
 	return output;
 }
@@ -236,7 +230,7 @@ bool Game::Die(int player_id){
 void Game::merge(const c_s_msg&msg, int player_id){
 	if (living_count<=1)return;
 	if (msg.type!=1)return;
-	unsigned nowtime = clock()-Gamebegintime;
+	int nowtime = (clock()-Gamebegintime)*1000/CLOCKS_PER_SEC;
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
 	player[player_id]->ChangePosition(msg.x, msg.y);
 	player[player_id]->setFaceAngle(msg.face_angle);
@@ -318,7 +312,7 @@ void Game::merge(const c_s_msg&msg, int player_id){
 #define DIST(xa,ya,xb,yb) (sqrt(((xa)-(xb))*((xa)-(xb))+((ya)-(yb))*((ya)-(yb))))
 void Game::Shoot(int player_id, double angle,unsigned nowtime){
 	if (!player[player_id]->Shoot(nowtime))return;
-	for (int i = 0;i<MAXPLAYER;++i)++ShootSuccess[i][player_id];
+	for (int i = 0;i<player_num;++i)++ShootSuccess[i][player_id];
 	int times = player[player_id]->GetMainWeapon()->GetType()==SHOTGUN ? 5 : 1;
 
 	while (times)
@@ -330,7 +324,7 @@ void Game::Shoot(int player_id, double angle,unsigned nowtime){
 		double A = sin(angle), B = -cos(angle);
 		double C = -(A*sourcex+B*sourcey);
 
-		for (int i = 0;i<MAXPLAYER;++i)
+		for (int i = 0;i<player_num;++i)
 			{
 			if (i==player_id)continue;
 			if (player[i]->JudgeDead())continue;

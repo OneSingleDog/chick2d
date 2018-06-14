@@ -1,30 +1,35 @@
 #ifndef __MSG_H__
 #define __MSG_H__
 
-#define MAXPLAYER 4
+#define MAXPLAYER 5
 #define MAXBOX 30
 #define MAXLEVEL 5
-#define BEGINBOX 20
 #define PLAYERSIZE 16
 #define WALLSIZE 16
+#define BOXSIZE 16
+
+#define MAP_LBOUND 22
+#define MAP_RBOUND 109
+#define MAP_UBOUND 18
+#define MAP_DBOUND 113
 
 #include <cstring>
 
 struct c_s_msg{
-	char type;//0 登陆 1 正常
+	char type;//0 login 1 normal
 	int x, y;
-	char curetype;//药 0没打 客户端处理
+	char curetype;//medicine 0 not curing -1 stop
 	double face_angle;
-	char BoxId;//捡的箱子，-1没捡
+	char BoxId;//-1 not pick
 	unsigned char PickPill[4];
 	bool PickBl1;
 	bool PickBl2;
 	bool PickArmor;
 	bool PickWp1;
 	bool PickWp2;
-	bool Load, Exchange;//装弹，换枪 客户端处理顺序
-	double ShootAngle;//射击角，负数没有发射
-	char remark[16];
+	bool Load, Exchange;
+	double ShootAngle;//if negative not shoot
+	char remark[16];//username
 	c_s_msg(){
 		type = 0;
 		x = y = 0;
@@ -49,8 +54,8 @@ struct send_box{
 	};
 
 struct s_c_msg{
-	char type;//0 未开始 1 正常 2 死亡 3 胜利
-	char infox, infoy;//准备数 /击杀数 rank
+	char type;//0 not begin 1 normal 2 dead 3 winner
+	char infox, infoy;//ready playerID for 0 /killerID rank for 2 3
 	int Boxnum;
 	send_box Boxes[MAXBOX];
 	int Poison_X;
@@ -66,12 +71,10 @@ struct s_c_msg{
 	int SubWeaponCurBullet;
 	int SubWeaponBackupBullet;
 	bool IsCuring;
-	int live_count;
+	int live_count;//if type 0 max player
 	int x[MAXPLAYER];
 	int y[MAXPLAYER];
-	//bool IsCuring[MAXPLAYER];
-	//bool IsLoading[MAXPLAYER];
-	bool Firing[MAXPLAYER];	// 表示每个人是不是都在开火
+	bool Firing[MAXPLAYER];
 	int MainWeaponType[MAXPLAYER];
 	bool Isdead[MAXPLAYER];
 	int BeKilledByPlayerId[MAXPLAYER];

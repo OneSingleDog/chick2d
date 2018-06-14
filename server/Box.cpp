@@ -1,10 +1,12 @@
 #include"Box.h"
 
 void Box::InitBoxByRandom(){
+
     unsigned randtemp = rand()%10;
     if(randtemp < 6)pill_amount = 0;
     else if(randtemp < 9)pill_amount = 1;
     else pill_amount = 2;
+
     Pill_One_Amount = 0;
     Pill_Two_Amount = 0;
     Pill_Three_Amount = 0;
@@ -25,6 +27,7 @@ void Box::InitBoxByRandom(){
         if(randtemp < 30)weapon_amount = 1;
         else weapon_amount = 0;
     }
+
     if(weapon_amount == 1){
         weapontwo = NULL;
         randtemp = rand()%100;
@@ -46,8 +49,8 @@ void Box::InitBoxByRandom(){
             weaponone = new Weapon;
             weaponone -> InitWeapon(HANDGUN);
             unsigned temp = rand()%2;
-            if(temp == 0)weaponone -> SetTotalBullet(15);
-            else weaponone -> SetTotalBullet(30);
+            if(temp == 0)weaponone -> SetTotalBullet(20);
+            else weaponone -> SetTotalBullet(40);
         }
         else {
             weaponone = new Weapon;

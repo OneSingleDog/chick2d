@@ -6,22 +6,22 @@
 #include "msg.h"
 #include <ctime>
 
-//#define MAXPLAYER 4
+//#define MAXPLAYER 5
 //#define MAXBOX 30
 //#define MAXLEVEL 5
-//#define BEGINBOX 20
 //#define PLAYERSIZE 16
 //#define WALLSIZE 16
 //defined in msg.h
 
 class Game{
 private:
+	int player_num;
+
     Player* player[MAXPLAYER];
     Box* box[MAXBOX];
     Wall* wall;
 
-//	int box_X[BEGINBOX], box_Y[BEGINBOX];
-	double poison_DMG[MAXLEVEL];//没ms注释
+	double poison_DMG[MAXLEVEL];//damage per ms
 	int poison_TIME[MAXLEVEL];
 	int poison_SIZE[MAXLEVEL];
 
@@ -44,7 +44,7 @@ private:
 public:
 	s_c_msg output;
     Game();
-    void InitGame();
+    void InitGame(int p_num,int b_num);
 	string login(const c_s_msg&msg, int&player_id);
 	s_c_msg&info(int player_id);
 	void merge(const c_s_msg&msg, int player_id);
