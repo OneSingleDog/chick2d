@@ -339,7 +339,6 @@ void Soldier::showStatus() {
     mainWeaponText->setVisible(true);
     subWeaponText->setVisible(true);
 	circle->setVisible(true);
-    bloodfog->setVisible(true);
 }
 
 void Soldier::setHP(float newVal)
@@ -381,7 +380,7 @@ void Soldier::setVisible(bool flag) {
 	mainWeaponText->setVisible(flag);
 	subWeaponText->setVisible(flag);
     
-    bloodfog->setVisible(flag);
+    if(!flag)bloodfog->setVisible(flag);
 
 }
 

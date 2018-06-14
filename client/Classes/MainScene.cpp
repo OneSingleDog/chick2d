@@ -1293,7 +1293,7 @@ void MainScene::try_receive(float dt)
 		Director::getInstance()->replaceScene(scene);
 		return;
 		}
-	else wait_time = -1;
+	else wait_time = 0;
 	if (!received())return;
 	if (check_cnt<0||check_cnt>60)check_cnt = 0;
 	if (check_cnt<60)++check_cnt;
