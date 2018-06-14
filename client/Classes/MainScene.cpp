@@ -995,6 +995,9 @@ void MainScene::OpenBox(int boxID) {
 	for (int i = 0;i<totBoxNum;++i)
 		Box_pic[i]->setVisible(false);
 
+	for (int i = 0;i<max_player;++i)
+		enemy[i]->setVisible(false);
+
 	update_box();
 }
 
@@ -1170,6 +1173,10 @@ void MainScene::closeBox() {
 
 	for (int i = 0;i<totBoxNum;++i)
 		Box_pic[i]->setVisible(true);
+
+	for (int i = 0;i<max_player;++i)
+		if(i!=playerID&&!enemy[i]->dead())
+			enemy[i]->setVisible(true);
 
 }
 
