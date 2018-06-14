@@ -125,8 +125,55 @@ bool MainScene::init()
 		{
 		xx = rand()%((MAP_RBOUND-MAP_LBOUND)*TILESIZE)+MAP_LBOUND*TILESIZE+TILESIZE/2;
 		yy = rand()%((MAP_UBOUND-MAP_DBOUND)*TILESIZE)+MAP_DBOUND*TILESIZE+TILESIZE/2;;
-		Point tileCoord = this->tileCoordFromPosition(Vec2(xx,yy));
+		Point tileCoord = this->tileCoordFromPosition(Vec2(xx-TILESIZE/2,yy-TILESIZE/2));
 		int tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+		if (tileGid > 0)
+			{ //in the collidable layer
+			Value prop = MainMap->getPropertiesForGID(tileGid);
+			ValueMap propValueMap = prop.asValueMap();
+
+			//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+			std::string collision = propValueMap["collidable"].asString();
+
+			if (collision=="true")continue;
+			}
+
+		tileCoord = this->tileCoordFromPosition(Vec2(xx-TILESIZE/2, yy+TILESIZE/2));
+		tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+		if (tileGid > 0)
+			{ //in the collidable layer
+			Value prop = MainMap->getPropertiesForGID(tileGid);
+			ValueMap propValueMap = prop.asValueMap();
+
+			//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+			std::string collision = propValueMap["collidable"].asString();
+
+			if (collision=="true")continue;
+			}
+		break;
+
+		tileCoord = this->tileCoordFromPosition(Vec2(xx+TILESIZE/2, yy-TILESIZE/2));
+		tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+		if (tileGid > 0)
+			{ //in the collidable layer
+			Value prop = MainMap->getPropertiesForGID(tileGid);
+			ValueMap propValueMap = prop.asValueMap();
+
+			//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+			std::string collision = propValueMap["collidable"].asString();
+
+			if (collision=="true")continue;
+			}
+		break;
+
+		tileCoord = this->tileCoordFromPosition(Vec2(xx+TILESIZE/2, yy+TILESIZE/2));
+		tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
 
 		if (tileGid > 0)
 			{ //in the collidable layer

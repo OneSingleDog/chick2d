@@ -8,7 +8,7 @@
 using std::string;
 
 #define REDUCTION 0.10
-#define PILLONEDELAY 8000
+#define PILLONEDELAY 6000
 #define PILLTWODELAY 5000
 #define PILLTHREEDELAY 3000
 #define PILLFOURDELAY 2000
