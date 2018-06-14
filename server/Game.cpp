@@ -41,7 +41,7 @@ Game::Game(){
 	int tmp;
 	wall = new Wall;
 	for (int i = 0;i<MAP_WIDTH;++i)
-		for (int j = 0;j<MAP_WIDTH;++j)
+		for (int j = 0;j<MAP_LENGTH;++j)
 			{
 			fscanf_s(config, "%d", &tmp);
 			wall->Set(i, j, tmp);
@@ -241,6 +241,7 @@ bool Game::Die(int player_id){
 void Game::merge(const c_s_msg&msg, int player_id){
 	if (living_count<=1)return;
 	if (msg.type!=1)return;
+	if (player[player_id]->JudgeDead())return;
 	int nowtime = (clock()-Gamebegintime)*1000/CLOCKS_PER_SEC;
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
 	player[player_id]->ChangePosition(msg.x, msg.y);

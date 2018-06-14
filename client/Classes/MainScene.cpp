@@ -154,7 +154,6 @@ bool MainScene::init()
 
 			if (collision=="true")continue;
 			}
-		break;
 
 		tileCoord = this->tileCoordFromPosition(Vec2(xx+TILESIZE/2, yy-TILESIZE/2));
 		tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
@@ -170,7 +169,6 @@ bool MainScene::init()
 
 			if (collision=="true")continue;
 			}
-		break;
 
 		tileCoord = this->tileCoordFromPosition(Vec2(xx+TILESIZE/2, yy+TILESIZE/2));
 		tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
@@ -690,8 +688,7 @@ int MainScene::judgePlayerPosition(Point position) {
 Point MainScene::tileCoordFromPosition(Point pos)
 {
     int x = pos.x / MainMap->getTileSize().width;
-    int y = ((MainMap->getMapSize().height * MainMap->getTileSize().height) - pos.y) /
-    MainMap->getTileSize().height;
+	int y = ((MainMap->getMapSize().height * MainMap->getTileSize().height)-pos.y)/MainMap->getTileSize().height;
     
     return Point(x, y);
 }

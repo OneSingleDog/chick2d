@@ -260,7 +260,7 @@ void Soldier::Shoot() {
     animFrames.pushBack(SpriteFrame::create("player/blank.png", Rect(0, 0, 28, 28)));
     
     // create the animation out of the frames
-    Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
+    Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.2f);
     Animate* animate = Animate::create(animation);
 
     // Just show animation
