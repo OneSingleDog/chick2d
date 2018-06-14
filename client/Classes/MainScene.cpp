@@ -516,7 +516,7 @@ void MainScene::myMoveAction(float dt) {
     for(int i = 0; i < SOLDIER_NUM; ++i) {
         if(i == playerID || !isRunning) {
             enemy[i]->setVisible(false);
-        } else {
+        } else if(!enemy[i]->dead()) {
             if(cos(angle) * (enemy[i]->getPosition().x - player->getPosition().x) + sin(angle) * (enemy[i]->getPosition().y - player->getPosition().y) +150 < 0) {   // outside
                 enemy[i]->setVisible(false);
             } else {
