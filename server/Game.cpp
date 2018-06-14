@@ -7,7 +7,7 @@
 #ifdef MAC
 Game::Game(){
 	FILE*config=NULL;
-	config = fopen( "/Users/mac/Desktop/学习/面向对象/finalprogram/chick2d/server/config.txt", "r");
+	config = fopen( "/Users/hyp1231/Desktop/chick2d_hyp/chick2d/server/config.txt", "r");
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
