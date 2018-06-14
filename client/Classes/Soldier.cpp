@@ -343,7 +343,7 @@ void Soldier::showStatus() {
 
 void Soldier::setHP(float newVal)
 {
-    if(fabs(existLife - newVal) > 1e-4) {
+    if(existLife - newVal > 1e-4) {
         hurted();
     }
     existLife = newVal;

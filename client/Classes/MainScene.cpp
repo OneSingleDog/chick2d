@@ -1442,7 +1442,7 @@ void MainScene::try_receive(float dt)
 		if (!isOpenBox&&!isOpenSight)
 			{
             // audio
-                if(fabs(player->getLife() - s2c.currenthp) > 10) {
+                if(player->getLife() - s2c.currenthp > 10) {
                     auto audio = SimpleAudioEngine::getInstance();
                     audio->playEffect("music/effect/hurt.mp3");
                 }
