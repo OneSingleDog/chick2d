@@ -30,12 +30,14 @@ private:
     cocos2d::Vector<cocos2d::AnimationFrame*> SpFrs;
     cocos2d::Vector<cocos2d::AnimationFrame*> SpExploit;
 	cocos2d::Vector<cocos2d::AnimationFrame*> SpWave;
+    cocos2d::Vector<cocos2d::AnimationFrame*> SpBloodfog;
 
     cocos2d::Sprite *blood;
     cocos2d::ProgressTimer *progress[3];
     cocos2d::Sprite *shield;
     cocos2d::Sprite *MainWin, *SubWin;
     cocos2d::Sprite *wave;
+    cocos2d::Sprite *bloodfog;
     
     cocos2d::Label *shieldText;
     cocos2d::Sprite *mainWeaponShow;
@@ -93,6 +95,10 @@ public:
     void setMainWeapon(int weaponType);
     void setSubWeapon(int weaponType);
     void setBullet(int Mcur, int Mback, int Scur, int Sback);
+    
+    float getLife() { return existLife; }
+    
+    void hurted();
 };
 
 #endif /* Soldier_h */

@@ -10,6 +10,9 @@
 
 #include "msg.h"
 #include "post.h"
+#include "SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
 
 USING_NS_CC;
 
@@ -723,28 +726,28 @@ void MainScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event) {
             }
             break;
         
-		case 77:
+		case 77:    // 1
 			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 1;
 			break;
 
-		case 78:
+		case 78:    // 2
 			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 2;
 			break;
 
-		case 79:
+		case 79:    // 3
 			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
 			to_be_sent.curetype = 3;
 			break;
 
-		case 80:
+		case 80:    // 4
 			if (player->dead())break;
 			if (!isRunning) { break; }
 			if (Wflag||Aflag||Sflag||Dflag)break;
@@ -821,10 +824,18 @@ void MainScene::show_notice(std::string killevent) {
 	Notice->setString(killevent);
 }
 
+bool start_fight = false;   // if start playing "fight.mp3"
+
 void MainScene::show_remain(int life_cnt) {
 	if (Remain == nullptr) return;
 	std::string tem = std::to_string(life_cnt) + " / 4";
-	Remain->setString(tem);
+    Remain->setString(tem);
+    
+    if(life_cnt <= 2 && !start_fight) { // start playing "fight.mp3"
+        start_fight = true;
+        auto audio = SimpleAudioEngine::getInstance();
+        audio->playBackgroundMusic("music/fight.mp3");
+    }
 }
 
 void MainScene::show_begin(int status,int ready_person) {
@@ -1133,6 +1144,15 @@ void MainScene::ReadyCallback() {
 
 
 void MainScene::FinalScene(std::string Username, int rank, int kill_num, int ifwinner) {
+    // Audio
+    
+    auto audio = SimpleAudioEngine::getInstance();
+    audio->stopBackgroundMusic();
+    if(rank == 1) {
+        audio->playBackgroundMusic("music/winner.mp3");
+    } else {
+        audio->playBackgroundMusic("music/losser.mp3");
+    }
 
 	//close the windows
 
@@ -1215,6 +1235,8 @@ void MainScene::set_pill(int *pill_now) {
     Bandage_cnt->setString(std::to_string(pill_now[3]));
 }
 
+string audioName[NUM_OF_WEAPON] = { "music/effect/weaponaudio0.mp3", "music/effect/weaponaudio1.mp3", "music/effect/weaponaudio2.mp3", "music/effect/weaponaudio3.mp3" };
+
 void MainScene::try_receive(float dt)
 {
 	static clock_t last_time;
@@ -1242,6 +1264,8 @@ void MainScene::try_receive(float dt)
 		if (s2c.type)
 			{
 			isRunning = true;
+            auto audio = SimpleAudioEngine::getInstance();
+            audio->stopBackgroundMusic();
 			BASIC_SPEED = 2.5;
 			for (int i = 0;i<SOLDIER_NUM;++i)
 				{
@@ -1296,7 +1320,12 @@ void MainScene::try_receive(float dt)
 
 		if (!isOpenBox&&!isOpenSight)
 			{
-			player->setHP(s2c.currenthp);
+            // audio
+                if(fabs(player->getLife() - s2c.currenthp) > 10) {
+                    auto audio = SimpleAudioEngine::getInstance();
+                    audio->playEffect("music/effect/hurt.mp3");
+                }
+            player->setHP(s2c.currenthp);
 			player->setShield(s2c.Armornaijiu);
 			Warning->setVisible(s2c.inpoison);
 			Healing->setVisible(s2c.IsCuring);
@@ -1311,7 +1340,7 @@ void MainScene::try_receive(float dt)
 		player->setBullet(s2c.MainWeaponCurBullet, s2c.MainWeaponBackupBullet, s2c.SubWeaponCurBullet, s2c.SubWeaponBackupBullet);
 
 		show_remain(s2c.live_count);
-
+            
 		for (int i = 0;i<SOLDIER_NUM;++i)
 			{
 			if (i==playerID)continue;
@@ -1339,7 +1368,14 @@ void MainScene::try_receive(float dt)
 			player->setMainWeapon(s2c.MainWeaponType[playerID]);
 		else
 			player->setMainWeapon(4);
-        if(s2c.Firing[playerID]) { player->Shoot(); }
+        if(s2c.Firing[playerID]) {
+            player->Shoot();
+            auto audio = SimpleAudioEngine::getInstance();
+            int weapon = s2c.MainWeaponType[playerID];
+            if(weapon != 4) {
+                audio->playEffect(audioName[weapon].c_str());
+            }
+        }
 		extern c_s_msg to_be_sent;
 		to_be_sent.face_angle = player->getRotation();
 		to_be_sent.type = 1;
