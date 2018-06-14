@@ -49,6 +49,7 @@ public:
 	s_c_msg&info(int player_id);
 	void merge(const c_s_msg&msg, int player_id);
 	bool alive(int player_id);
+	void disconnect(int player_id);
 	void EndGame();
 	~Game();
 };

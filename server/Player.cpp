@@ -127,12 +127,13 @@ void Player::BeAttack(double damage,int from){
 	SetHpPercent();
 }
 
-void Player::LossHp(double damage){
+void Player::LossHp(double damage,int disconnect=0){
 	if(Player_Current_Hp > damage)Player_Current_Hp -= damage;
 	else {
 		Player_Current_Hp = 0;
 		Isdead = true;
-		killer_id = -1;
+		if (disconnect)killer_id = -2;
+		else killer_id = -1;
 	}
 	SetHpPercent();
 }

@@ -71,6 +71,7 @@ void Game::InitGame(){
 	poison_LEVEL = 0;
 	started = false;
 	connected = 0;
+	living_count = 0;
 	for (int i = 0;i<BEGINBOX;++i)
 		{
 		int xx = rand()%(MAP_WIDTH-512)+256;
@@ -102,6 +103,13 @@ bool Game::alive(int player_id){
 	return !dead[player_id];
 }
 
+void Game::disconnect(int player_id){
+	if (dead[player_id])return;
+	dead[player_id] = true;
+	player[player_id]->LossHp(100, 1);
+	if (started)Die(player_id);
+}
+
 string Game::login(const c_s_msg&msg, int player_id){
 	if (msg.type)return "NULL";//错误
 	player[player_id] = new Player(msg.x, msg.y);
@@ -111,7 +119,8 @@ string Game::login(const c_s_msg&msg, int player_id){
 	if (connected==MAXPLAYER)
 		{
 		started = true;
-		living_count = MAXPLAYER;
+		for (int i = 0;i<MAXPLAYER;++i)
+			if (!player[i]->JudgeDead())++living_count;
 		Gamebegintime = clock();
 		}
 	return user_name;
@@ -224,6 +233,7 @@ bool Game::Die(int player_id){
 }
 
 void Game::merge(const c_s_msg&msg, int player_id){
+	if (living_count<=1)return;
 	if (msg.type!=1)return;
 	unsigned nowtime = clock()-Gamebegintime;
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();

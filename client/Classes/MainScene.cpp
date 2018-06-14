@@ -1326,8 +1326,9 @@ void MainScene::try_receive(float dt)
 				{
 				enemy[i]->setHP(0);
                 enemy[i]->isDying();    // show exploit animation
-				if (~s2c.BeKilledByPlayerId[i])show_notice(string(s2c.user_name[i])+" was killed by "+string(s2c.user_name[s2c.BeKilledByPlayerId[i]]));
-				else show_notice(string(s2c.user_name[i])+" was killed out of safe zone");
+				if (s2c.BeKilledByPlayerId[i]>=0)show_notice(string(s2c.user_name[i])+" was killed by "+string(s2c.user_name[s2c.BeKilledByPlayerId[i]]));
+				else if (s2c.BeKilledByPlayerId[i]==-1)show_notice(string(s2c.user_name[i])+" was killed out of safe zone");
+				else show_notice(string(s2c.user_name[i])+" has disconnected");
 				}
 			}
 		if (~s2c.MainWeaponType[playerID])

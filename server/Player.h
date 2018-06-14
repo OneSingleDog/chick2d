@@ -31,7 +31,7 @@ public:
 	// 换弹，返回是否可以换弹
 	bool LoadBullet(unsigned nowtime);
     // 受到电网伤害
-	void LossHp(double damage);
+	void LossHp(double damage,int disconnect);
 	// 换武器
 	void ExchangeWeapon();
 

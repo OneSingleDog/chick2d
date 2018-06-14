@@ -12,6 +12,9 @@ ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), server_port
 const size_t s_c_size = sizeof(s_c_msg);
 const size_t c_s_size = sizeof(c_s_msg);
 
+int now_opened;
+int now_aborted;
+
 class talk_to_client: public boost::enable_shared_from_this<talk_to_client>, boost::noncopyable {
 	typedef talk_to_client self_type;
 
@@ -42,11 +45,7 @@ public:
 
 	static ptr new_(int id) { ptr new_(new talk_to_client(id)); return new_; }
 
-	void stop() {
-		if (!started_) return;
-		started_ = false;
-		sock_.close();
-		}
+	void stop();
 
 	bool started() const { return started_; }
 	ip::tcp::socket & sock() { return sock_; }
@@ -75,7 +74,7 @@ private:
 		if(chick2d.alive(id_))do_read();//是否继续连接
 		else
 			{
-			printf("%d has died.\n",id_);
+			printf("%s has died.\n",username_.c_str());
 			stop();
 			}
 		return;
@@ -92,20 +91,37 @@ private:
 		}
 };
 
-int now_opened;
-talk_to_client::ptr clients[MAXPLAYER];
+talk_to_client::ptr clients[1024];
 
 void handle_accept(talk_to_client::ptr client, const talk_to_client::error_code & err)
 	{
 	client->start();
-	printf("A player has connected\n");
+	printf("A player has connected.\n");
 	talk_to_client::ptr new_client = talk_to_client::new_(now_opened);
 	clients[now_opened] = new_client;
-	if (now_opened<MAXPLAYER)
+	if (now_opened-now_aborted<MAXPLAYER)
 		{
 		acceptor.async_accept(new_client->sock(), boost::bind(handle_accept, new_client, _1));
 		++now_opened;
 		}
+	}
+
+void talk_to_client::stop() {
+	if (!started_) return;
+	started_ = false;
+	sock_.close();
+	if (username_=="NULL")
+		{
+		++now_aborted;
+		printf("A player has aborted.\n");
+		if (now_opened-now_aborted==MAXPLAYER-1)
+			{
+			clients[now_opened] = talk_to_client::new_(now_opened);
+			acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
+			++now_opened;
+			}
+		}
+	else chick2d.disconnect(id_);
 	}
 
 int main()
@@ -115,18 +131,19 @@ int main()
 		chick2d.InitGame();//初始化游戏
 		printf("Initial completed\n");
 		now_opened = 0;
+		now_aborted = 0;
 		clients[now_opened] = talk_to_client::new_(now_opened);
 		acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
 		++now_opened;
+		service.reset();
 		service.run();
-		for (int i = 0;i<MAXPLAYER;++i)
+		for (int i = 0;i<now_opened;++i)
 			{
 			clients[i]->stop();
 			clients[i].reset();
 			}
 		chick2d.EndGame();
 		service.stop();
-		service.reset();
 		}
 	return 0;
 }
