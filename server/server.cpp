@@ -1,6 +1,7 @@
 #include"boost.h"
 #include"Game.h"
 #include<string>
+#include<iostream>
 
 static Game chick2d;
 
@@ -44,7 +45,7 @@ talk_to_client::ptr clients[1024];
 void handle_accept(talk_to_client::ptr client, const talk_to_client::error_code & err)
 	{
 	client->start();
-	printf("A player has connected.\n");
+	std::cout<<"A player has connected.\n";
 	talk_to_client::ptr new_client = talk_to_client::new_();
 	clients[now_opened] = new_client;
 	if (now_opened-now_aborted<player_num)
@@ -61,7 +62,7 @@ void talk_to_client::stop() {
 	if (username_=="NULL")
 		{
 		++now_aborted;
-		printf("A player has aborted.\n");
+		std::cout<<"A player has aborted.\n";
 		if (now_opened-now_aborted==player_num-1)
 			{
 			clients[now_opened] = talk_to_client::new_();
@@ -85,10 +86,11 @@ int main(int argc,char**argv)
 		}
 	if (player_num<2||player_num>5||box_num<10||box_num>20)
 		{
-		printf("Invalid parameter!\n");
+		std::cout<<"Invalid parameter!\n";
 		return 0;
 		}
-	acceptor=new ip::tcp::acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), server_port));
+	acceptor = new ip::tcp::acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), server_port));
+	std::cout<<"port:"<<server_port<<" player number:"<<player_num<<" box number:"<<box_num<<std::endl;
 	while (true)
 		{
 		chick2d.InitGame(player_num,box_num);//Initial the game
