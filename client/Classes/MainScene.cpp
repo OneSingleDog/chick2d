@@ -329,7 +329,8 @@ bool MainScene::init()
 
 	Notice = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 30);
 	Notice->setTextColor(Color4B::BLACK);
-	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 80);
+	Notice->setAnchorPoint(Vec2(1, 1));
+	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 30, player->getPosition().y + visibleSize.height / 2 - 100);
 	addChild(Notice);
 
 	Remain = cocos2d::Label::createWithTTF("4 / 4", "fonts/Marker Felt.ttf", 50);
@@ -465,10 +466,7 @@ void MainScene::myMoveAction(float dt) {
         if(isOpenBox) {
             closeBox();
         }
-        if (Notice != nullptr) {
-            Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 200, player->getPosition().y + visibleSize.height / 2 - 20);
-        }
-        //Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 10, player->getPosition().y + visibleSize.height / 2 - 10);
+
         to_ready->setPosition(player->getPosition().x, player->getPosition().y + visibleSize.height / 2 - 30);
         littleMap->setPosition(player->getPosition());
         
@@ -497,9 +495,13 @@ void MainScene::myMoveAction(float dt) {
 
 		Ping_time->setPosition(player->getPosition().x-visibleSize.width/2+50, player->getPosition().y+visibleSize.height/2-20);
 
-        //log("angle -> %f", player->getRotation());
+		if (Notice!=nullptr)
+			{
+			Notice->setPosition(player->getPosition().x+visibleSize.width/2-30, player->getPosition().y+visibleSize.height/2-100);
+			}
     }
     
+
     littleSafeZone->setPosition(littleMap->getPosition()+(Safe_Zone->getPosition()-MainMap->getMapSize()*16)/8);
     
     // fog of war
@@ -512,7 +514,7 @@ void MainScene::myMoveAction(float dt) {
     angle = angle / 180 * acos(-1.0);
     float A = cos(angle), B = sin(angle), C = 150 - cos(angle) * player->getPosition().x - sin(angle) * player->getPosition().y;
     for(int i = 0; i < SOLDIER_NUM; ++i) {
-        if(i == playerID || enemy[i]->dead() || !isRunning) {
+        if(i == playerID || !isRunning) {
             enemy[i]->setVisible(false);
         } else {
             if(cos(angle) * (enemy[i]->getPosition().x - player->getPosition().x) + sin(angle) * (enemy[i]->getPosition().y - player->getPosition().y) +150 < 0) {   // outside
@@ -815,7 +817,7 @@ void MainScene::setViewPointCenter(Point position) {
 
 void MainScene::show_notice(std::string killevent) {
     if (Notice == nullptr) return;
-    Notice->setString(killevent);
+	Notice->setString(killevent);
 }
 
 void MainScene::show_remain(int life_cnt) {
@@ -1253,13 +1255,14 @@ void MainScene::try_receive(float dt)
 	else if (s2c.type==2||s2c.type==3)
 		{
 		isOnline = false;
+		player->setHP(0);
 		Wflag = Aflag = Sflag = Dflag = false;
+		if (isOpenSight)closeSight();
+		if (isOpenBox)closeBox();
+		if (isOpenMap)closeMap();
 		close_socket();
 		if (s2c.type==2)
-			{
-			player->setHP(0);
 			player->isDying();
-			}
 		FinalScene(string(s2c.user_name[playerID]), s2c.infoy, s2c.infox, (s2c.type==3)?0:1);
 		}
 	else

@@ -117,7 +117,7 @@ bool HelloWorld::init()
 	user_name->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2+50);
 	this->addChild(user_name, 1);
 	user_name->setTextColor(Color4B::GRAY);
-	username = ui::TextField::create("<Please input username here>",
+	username = ui::TextField::create("Please input username here",
 		"fonts/Marker Felt.ttf",
 		32);
 	username->setPosition(Point(origin.x + visibleSize.width / 2 +130, origin.y + visibleSize.height / 2+50));
@@ -129,7 +129,7 @@ bool HelloWorld::init()
 	server_ip->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 25);
 	this->addChild(server_ip, 1);
 	server_ip->setTextColor(Color4B::GRAY);
-	serverip = ui::TextField::create("<Please input server-ip here>",
+	serverip = ui::TextField::create("Please input server-ip here",
 		"fonts/Marker Felt.ttf",
 		32);
 	serverip->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 25));
@@ -141,7 +141,7 @@ bool HelloWorld::init()
 	server_port->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 100);
 	this->addChild(server_port, 1);
 	server_port->setTextColor(Color4B::GRAY);
-	serverport = ui::TextField::create("<Please input server-port here>",
+	serverport = ui::TextField::create("Please input server-port here",
 		"fonts/Marker Felt.ttf",
 		32);
 	serverport->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 100));
@@ -165,8 +165,8 @@ void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventTyp
 
 		textField->setMaxLengthEnabled(true); //设置允许最大数目限制
 
-		textField->setMaxLength(20);
-		//设置最大允许数目为20
+		textField->setMaxLength(12);
+		//设置最大允许数目为12
 
 		textField->setPlaceHolder("input text here");  //设置占位符 
 

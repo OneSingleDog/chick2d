@@ -290,8 +290,11 @@ void Soldier::isDying() {
     auto animate= Animate::create(animation);
     // run
     
-    auto seq = Sequence::create(animate, NULL);
-    
+	auto callbackDying = CallFunc::create([=](){
+		this->setVisible(false);
+		});
+
+	auto seq = Sequence::create(animate, callbackDying, NULL);
     body->runAction(seq);
 }
 
