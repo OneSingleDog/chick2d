@@ -8,7 +8,6 @@
 #include <ctime>
 #include <cstdlib>
 
-#include "msg.h"
 #include "post.h"
 #include "SimpleAudioEngine.h"
 
@@ -23,20 +22,20 @@ const int LITTLE_MAP_SIZE = 512;
 int cnt_666 = 0;
 
 struct Box {
-    int x, y;
+	int x, y, type;
     int weapon1;
     int weapon2;
     int bullet1;
     int bullet2;
     int pillNum[4];
     int shield;
-    Box(int x = -1, int y = -1, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p=NULL, int s = 0) :
-    x(x), y(y), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), shield(s) {
-        pillNum[0] = p[0];
-        pillNum[1] = p[1];
-        pillNum[2] = p[2];
-        pillNum[3] = p[3];
-    }
+	Box(int x = -1, int y = -1, int type = 0, int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p = NULL, int s = 0):
+		x(x), y(y), type(type), weapon1(w1), weapon2(w2), bullet1(b1), bullet2(b2), shield(s) {
+		pillNum[0] = p[0];
+		pillNum[1] = p[1];
+		pillNum[2] = p[2];
+		pillNum[3] = p[3];
+	}
 	bool set(int w1 = 0, int w2 = 0, int b1 = 0, int b2 = 0, int *p = NULL, int s = 0)
 		{
 		bool flag = false;
@@ -50,6 +49,10 @@ struct Box {
 		if (pillNum[3]!=p[3]) { pillNum[3] = p[3];flag = true; }
 		if (shield!=s) { shield = s;flag = true; };
 		return flag;
+		}
+	Vec2 getPosition()
+		{
+		return Vec2(x, y);
 		}
 };
 
@@ -66,12 +69,18 @@ const string PillName[4] = { "others/medical_kit.png", "others/first_aid.png", "
 bool MainScene::init()
 {
 	log("structure size: %d", sizeof(s_c_msg));
+	wait_time = 0;
     totBoxNum = 0;
+	totAirdrop = 0;
     playerID = 0;
 	OpenBoxID = -1;
     isOpenSight = false;
     isOpenBox = false;
     isOpenMap = false;
+
+	isOnline = false;
+	isRunning = false;
+	isEnd = false;
     
     //Box_ve.push_back(Box(80, 64, 1, 1, 60, 30,  1, 0, 1, 0, 100));
     //Box_ve.push_back(Box(64, 80, 1, 0, 60, 0, 1, 1, 1, 1, 100));
@@ -109,12 +118,34 @@ bool MainScene::init()
 //    int y = playerShowUpPoint["y"].asInt();
     
     srand(time(NULL));
-    int x = 24 * 32 + rand() % (32 * 64);
-    int y = 24 * 32 + rand() % (32 * 64);
-    
+
+	int xx;
+	int yy;
+	while (true)
+		{
+		xx = rand()%((MAP_RBOUND-MAP_LBOUND+1)*BOXSIZE)+MAP_LBOUND*BOXSIZE;
+		yy = rand()%((MAP_UBOUND-MAP_DBOUND+1)*BOXSIZE)+MAP_DBOUND*BOXSIZE;
+		Point tileCoord = this->tileCoordFromPosition(Vec2(xx,yy));
+		int tileGid = collidable->getTileGIDAt(tileCoord);// contervt to tiled site
+
+		if (tileGid > 0)
+			{ //in the collidable layer
+			Value prop = MainMap->getPropertiesForGID(tileGid);
+			ValueMap propValueMap = prop.asValueMap();
+
+			//auto propValueMap = _tiledmap->getPropertiesForGID(tileGid).asValueMap();
+
+			std::string collision = propValueMap["collidable"].asString();
+
+			if (collision=="true")continue;
+			}
+		break;
+		}
+
+
     // create player and set position
     player->create();
-    player->setPosition(x, y);
+    player->setPosition(xx, yy);
     
     
 	extern string login_username;
@@ -337,7 +368,7 @@ bool MainScene::init()
 	Notice->setPosition(player->getPosition().x + visibleSize.width / 2 - 30, player->getPosition().y + visibleSize.height / 2 - 100);
 	addChild(Notice);
 
-	Remain = cocos2d::Label::createWithTTF("4 / 4", "fonts/Marker Felt.ttf", 50);
+	Remain = cocos2d::Label::createWithTTF("", "fonts/Marker Felt.ttf", 50);
 	Remain->setTextColor(Color4B::ORANGE);
 	Remain->setPosition(player->getPosition().x + visibleSize.width / 2 - 100, player->getPosition().y + visibleSize.height / 2 - 40);
 	addChild(Remain);
@@ -479,6 +510,9 @@ void MainScene::myMoveAction(float dt) {
         
         Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
         littlePoint->setPosition(delta + player->getPosition());
+
+		for(int i=0;i<totAirdrop;++i)
+			littleAirdrop[i]->setPosition(littleMap->getPosition()+(Box_ve[AirdropNum[i]].getPosition()-MainMap->getMapSize()*16)/8);
         
         Medical_kit->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 200);
         First_aid->setPosition(player->getPosition().x + visibleSize.width / 2 - 85, player->getPosition().y - visibleSize.height / 2 + 135);
@@ -828,7 +862,7 @@ bool start_fight = false;   // if start playing "fight.mp3"
 
 void MainScene::show_remain(int life_cnt) {
 	if (Remain == nullptr) return;
-	std::string tem = std::to_string(life_cnt) + " / 4";
+	std::string tem = std::to_string(life_cnt)+" / "+std::to_string(max_player);
     Remain->setString(tem);
     
     if(life_cnt <= 2 && !start_fight) { // start playing "fight.mp3"
@@ -845,7 +879,7 @@ void MainScene::show_begin(int status,int ready_person) {
 		already->setPosition(player->getPosition().x+visibleSize.width/2-100, player->getPosition().y+visibleSize.height/2-120);
 		}
     else if (status == 0) {//not begin
-        already->setString(std::to_string(ready_person) + "/ 4");
+		already->setString(std::to_string(ready_person)+"/ "+std::to_string(max_player));
 		already->setVisible(true);
     }
     else {
@@ -1095,6 +1129,8 @@ void MainScene::closeBox() {
 void MainScene::openMap() {
     littleMap->setVisible(true);
     littlePoint->setVisible(true);
+	for (int i = 0;i<totAirdrop;++i)
+		littleAirdrop[i]->setVisible(true);
     isOpenMap = true;
     
     float xrate = player->getPosition().x / (MainMap->getTileSize().width * MainMap->getMapSize().width);
@@ -1102,6 +1138,8 @@ void MainScene::openMap() {
     
     Vec2 delta = LITTLE_MAP_SIZE * Vec2(xrate - 0.5, yrate - 0.5);
     littlePoint->setPosition(delta + player->getPosition());
+	for (int i = 0;i<totAirdrop;++i)
+		littleAirdrop[i]->setPosition(littleMap->getPosition()+(Box_ve[AirdropNum[i]].getPosition()-MainMap->getMapSize()*16)/8);
 	
 	littleSafeZone->setVisible(true);
 }
@@ -1109,6 +1147,8 @@ void MainScene::openMap() {
 void MainScene::closeMap() {
     littleMap->setVisible(false);
     littlePoint->setVisible(false);
+	for (int i = 0;i<totAirdrop;++i)
+		littleAirdrop[i]->setVisible(false);
     isOpenMap = false;
 	littleSafeZone->setVisible(false);
 }
@@ -1124,6 +1164,7 @@ void MainScene::setSafeZone(cocos2d::Point new_center, int size) {
 
 void MainScene::ReadyCallback() {
 	if (isOnline)return;
+	if (isEnd)return;
     to_ready->setVisible(false);
 	BASIC_SPEED = 0;
 	direction = Vec2::ZERO;
@@ -1139,6 +1180,7 @@ void MainScene::ReadyCallback() {
 	#endif
 	write();
 	isOnline = true;
+	wait_time = clock();
 	show_begin(-1, 0);
 }
 
@@ -1242,6 +1284,14 @@ void MainScene::try_receive(float dt)
 	static clock_t last_time;
 	static int check_cnt;
 	if (!isOnline)return;
+	if (wait_time>0&&(clock()-wait_time)/CLOCKS_PER_SEC>5)
+		{
+		isOnline = false;
+		isEnd = true;
+		close_socket();
+		auto scene = ConnectfailScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		}
 	if (!received())return;
 	if (check_cnt<0||check_cnt>60)check_cnt = 0;
 	if (check_cnt<60)++check_cnt;
@@ -1253,6 +1303,8 @@ void MainScene::try_receive(float dt)
 		}
 	if (socket_closed())
 		{
+		isOnline = false;
+		isEnd = true;
 		auto scene = ConnectfailScene::createScene();
 		Director::getInstance()->replaceScene(scene);
 		return;
@@ -1261,6 +1313,7 @@ void MainScene::try_receive(float dt)
 	if (!isRunning)
 		{
 		playerID = s2c.infoy;
+		max_player = s2c.live_count;
 		if (s2c.type)
 			{
 			isRunning = true;
@@ -1280,6 +1333,8 @@ void MainScene::try_receive(float dt)
 	else if (s2c.type==2||s2c.type==3)
 		{
 		isOnline = false;
+		isRunning = false;
+		isEnd = true;
 		player->setHP(0);
 		Wflag = Aflag = Sflag = Dflag = false;
 		if (isOpenSight)closeSight();
@@ -1305,15 +1360,30 @@ void MainScene::try_receive(float dt)
 			}
 		for (int i = NowBoxNum;i<s2c.Boxnum;++i)
 			{
-			Box_ve.push_back(Box(s2c.Boxes[i].x*2, s2c.Boxes[i].y*2, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
+			Box_ve.push_back(Box(s2c.Boxes[i].x*2, s2c.Boxes[i].y*2, s2c.Boxes[i].type, s2c.Boxes[i].Wp1Type, s2c.Boxes[i].Wp2Type, s2c.Boxes[i].Wp1Bullets, s2c.Boxes[i].Wp2Bullets, s2c.Boxes[i].PillAmount, (int)(std::ceil(s2c.Boxes[i].Armor)+0.01)));
 			}
             
         while(totBoxNum < s2c.Boxnum) {
             // draw boxes
-            auto tmpbox = Sprite::create("others/box.png");
-            addChild(tmpbox, -2);
-            tmpbox->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
-			Box_pic[totBoxNum] = tmpbox;
+			if (Box_ve[totBoxNum].type)
+				{
+				auto tmpbox = Sprite::create("others/airdrop.png");
+				tmpbox->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
+				addChild(tmpbox, -2);
+				Box_pic[totBoxNum] = tmpbox;
+				auto tmppoint = Sprite::create("others/littleairdrop.png");
+				tmppoint->setPosition(player->getPosition());
+				addChild(tmppoint, 30);
+				tmppoint->setVisible(false);
+				AirdropNum[totAirdrop++] = totBoxNum;
+				}
+			else
+				{
+				auto tmpbox = Sprite::create("others/box.png");
+				addChild(tmpbox, -2);
+				tmpbox->setPosition(Box_ve[totBoxNum].x, Box_ve[totBoxNum].y);
+				Box_pic[totBoxNum] = tmpbox;
+				}
             
             ++totBoxNum;
         }

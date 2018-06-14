@@ -46,6 +46,7 @@ struct c_s_msg{
 
 
 struct send_box{
+	char type;
 	int x, y;
 	int PillAmount[4];
 	double Armor;

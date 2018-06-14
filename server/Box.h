@@ -19,11 +19,13 @@ private:
 	unsigned Pill_Four_Amount;
 
 	double Armornaijiu;				//if 0 no armor
+	char type;                       //1 for airdrop
 public:
 	Box(int _x,int _y,int _id):node(_x,_y),Boxid(_id){}
 
 	void InitBoxByRandom();
 	void InitBoxByPlayer(Player*_player);
+	void InitBoxByAirdrop();
 
 	unsigned GetId()const{return Boxid;}
 	double GetArmorNaijiu()const{return Armornaijiu;}
@@ -33,6 +35,7 @@ public:
 	unsigned GetPillTwoAmount()const{return Pill_Two_Amount;}
 	unsigned GetPillThreeAmount()const{return Pill_Three_Amount;}
 	unsigned GetPillFourAmount()const{return Pill_Four_Amount;}
+	char GetType()const{ return type; }
 	Weapon* GetWeaponOne()const{return weaponone;}
 	Weapon* GetWeaponTwo()const{return weapontwo;}
 

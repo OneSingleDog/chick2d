@@ -37,8 +37,10 @@
 
 #define SNIPER_RIFLE_DAMAGE 100
 #define ASSAULT_RIFLE_DAMAGE 30
-#define SHOTGUN_DAMAGE 50
+#define SHOTGUN_DAMAGE 40
 #define HANDGUN_DAMAGE 25
+
+#define SHOTGUN_TIMES 3
 
 class Weapon {
 public:

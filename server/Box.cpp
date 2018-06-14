@@ -2,6 +2,7 @@
 
 void Box::InitBoxByRandom(){
 
+	type = 0;
     unsigned randtemp = rand()%10;
     if(randtemp < 6)pill_amount = 0;
     else if(randtemp < 9)pill_amount = 1;
@@ -42,15 +43,15 @@ void Box::InitBoxByRandom(){
             weaponone = new Weapon;
             weaponone -> InitWeapon(ASSAULT_RIFLE);
             unsigned temp = rand()%2;
-            if(temp == 0)weaponone -> SetTotalBullet(15);
-            else weaponone -> SetTotalBullet(30);
+            if(temp == 0)weaponone -> SetTotalBullet(20);
+            else weaponone -> SetTotalBullet(40);
         }
         else if(randtemp < 70){
             weaponone = new Weapon;
             weaponone -> InitWeapon(HANDGUN);
             unsigned temp = rand()%2;
-            if(temp == 0)weaponone -> SetTotalBullet(20);
-            else weaponone -> SetTotalBullet(40);
+            if(temp == 0)weaponone -> SetTotalBullet(15);
+            else weaponone -> SetTotalBullet(30);
         }
         else {
             weaponone = new Weapon;
@@ -66,11 +67,38 @@ void Box::InitBoxByRandom(){
     }
 
     randtemp = rand()%100;
-    if(randtemp < 40)Armornaijiu = 100;
+    if(randtemp < 30)Armornaijiu = 20;
     else Armornaijiu = 0;
 }
 
+void Box::InitBoxByAirdrop()
+	{
+	type = 1;
+	weapon_amount = 2;
+	pill_amount = 4;
+	Pill_One_Amount = 1;
+	Pill_Two_Amount = 1;
+	Pill_Three_Amount = 1;
+	Pill_Four_Amount = 1;
+	Armornaijiu = 100;
+	weaponone = new Weapon;
+	weaponone->InitWeapon(SNIPER_RIFLE);
+	weaponone->SetTotalBullet(10);
+	weapontwo = new Weapon;
+	if (rand()%2)
+		{
+		weapontwo->InitWeapon(SHOTGUN);
+		weapontwo->SetTotalBullet(10);
+		}
+	else
+		{
+		weapontwo->InitWeapon(ASSAULT_RIFLE);
+		weapontwo->SetTotalBullet(40);
+		}
+	}
+
 void Box::InitBoxByPlayer(Player*_player){
+	type = 0;
     pill_amount = _player -> GetPillOneAmount() + _player -> GetPillTwoAmount();
     pill_amount += _player -> GetPillThreeAmount() + _player -> GetPillFourAmount();
     Pill_One_Amount = _player -> GetPillOneAmount();

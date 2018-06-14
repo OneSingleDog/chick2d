@@ -5,6 +5,8 @@
 #include "Soldier.h"
 #include "ui/CocosGUI.h"
 
+#include "msg.h"
+
 class MainScene : public cocos2d::Scene
 {
 private:
@@ -20,6 +22,8 @@ private:
     cocos2d::Sprite *glass;
     cocos2d::Sprite *littleMap;
     cocos2d::Sprite *littlePoint;
+	cocos2d::Sprite *littleAirdrop[MAXLEVEL];
+	int AirdropNum[MAXLEVEL];
 	cocos2d::Sprite *Safe_Zone;
 	cocos2d::Sprite *littleSafeZone;
 	cocos2d::Sprite *Medical_kit;
@@ -42,6 +46,7 @@ private:
 
 	bool isOnline;
 	bool isRunning;
+	bool isEnd;
 
     cocos2d::MenuItemImage* GoGameItem;
     cocos2d::Label *Notice;
@@ -64,6 +69,10 @@ private:
     bool Wflag, Aflag, Sflag, Dflag;
     
     int totBoxNum;
+	int totAirdrop;
+
+	int max_player;
+	clock_t wait_time;
 
 public:
     static double BASIC_SPEED;

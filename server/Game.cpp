@@ -7,7 +7,7 @@
 #ifdef MAC
 Game::Game(){
 	FILE*config=NULL;
-	config = fopen( "/Users/hyp1231/Desktop/chick2d_hyp/chick2d/server/config.txt", "r");
+	config = fopen( "/Users/mac/Desktop/学习/面向对象/finalprogram/chick2d/server/config.txt", "r");
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
@@ -157,6 +157,7 @@ s_c_msg&Game::info(int player_id){
 		output.Poison_LEVEL = poison_LEVEL;
 		output.inpoison = player[player_id] -> GetInPoison();
 		for(int i = 0;i < BoxNumber;++ i){
+			output.Boxes[i].type = box[i]->GetType();
 			output.Boxes[i].x = box[i] -> GetX();
 			output.Boxes[i].y = box[i] -> GetY();
 			output.Boxes[i].PillAmount[0] = box[i] -> GetPillOneAmount();
@@ -216,6 +217,16 @@ void Game::change_poison(){
 	int t = poison_SIZE[poison_LEVEL-1]-poison_SIZE[poison_LEVEL]+1;
 	poison_X += rand()%t;
 	poison_Y += rand()%t;
+	int xx = poison_X+rand()%poison_SIZE[poison_LEVEL];
+	int yy = poison_Y+rand()%poison_SIZE[poison_LEVEL];
+	while (wall->IsWall(xx-BOXSIZE, yy-BOXSIZE)||wall->IsWall(xx-BOXSIZE, yy+BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy-BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy+BOXSIZE)||wall->IsWall(xx, yy+BOXSIZE)||wall->IsWall(xx, yy-BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy)||wall->IsWall(xx-BOXSIZE, yy)||wall->IsWall(xx, yy))
+		{
+		xx = poison_X+rand()%poison_SIZE[poison_LEVEL];
+		yy = poison_Y+rand()%poison_SIZE[poison_LEVEL];
+		}
+	box[BoxNumber] = new Box(xx, yy, BoxNumber);
+	box[BoxNumber]->InitBoxByAirdrop();
+	++BoxNumber;
 }
 
 bool Game::Die(int player_id){
@@ -313,7 +324,7 @@ void Game::merge(const c_s_msg&msg, int player_id){
 void Game::Shoot(int player_id, double angle,unsigned nowtime){
 	if (!player[player_id]->Shoot(nowtime))return;
 	for (int i = 0;i<player_num;++i)++ShootSuccess[i][player_id];
-	int times = player[player_id]->GetMainWeapon()->GetType()==SHOTGUN ? 5 : 1;
+	int times = player[player_id]->GetMainWeapon()->GetType()==SHOTGUN ? SHOTGUN_TIMES : 1;
 
 	while (times)
 		{

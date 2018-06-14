@@ -385,7 +385,6 @@ void Soldier::setVisible(bool flag) {
 
 }
 
-
 void Soldier::setusername(std::string username) {
 	if (User_tag == nullptr) return;
 	User_tag->setString(username);
