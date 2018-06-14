@@ -1377,7 +1377,9 @@ void MainScene::try_receive(float dt)
 				tmppoint->setPosition(player->getPosition());
 				addChild(tmppoint, 30);
 				tmppoint->setVisible(false);
-				AirdropNum[totAirdrop++] = totBoxNum;
+				AirdropNum[totAirdrop] = totBoxNum;
+				littleAirdrop[totAirdrop] = tmppoint;
+				++totAirdrop;
 				}
 			else
 				{
