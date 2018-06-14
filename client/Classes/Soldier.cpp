@@ -239,7 +239,7 @@ void Soldier::changeBullet() {
 void Soldier::Shoot() {
     arm->stopAllActions();
 
-    if(MainWeapon == 0) {
+    if(MainWeapon == 4) {
         return;
     }
     // now lets animate the sprite we moved
@@ -417,6 +417,7 @@ void Soldier::setBullet(int Mcur, int Mback, int Scur, int Sback) {
     subTotBulletNum = Sback;
 
 	if (mainCurBulletNum==maxBullet[MainWeapon])arm->stopAllActions();
+	if (mainTotBulletNum==0)arm->stopAllActions();
     
     mainWeaponText->setString((std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum)).c_str());
     subWeaponText->setString((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str());
