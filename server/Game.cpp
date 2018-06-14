@@ -83,8 +83,8 @@ void Game::InitGame(){
 		box[i] = new Box(xx, yy, i);
 		box[i]->InitBoxByRandom();
 		}
+	memset(ShootSuccess, 0, sizeof(ShootSuccess));
 	for(int i = 0;i < MAXPLAYER;++ i){
-		ShootSuccess[i] = false;
 		dead[i] = false;
 	}
 }
@@ -110,7 +110,8 @@ void Game::disconnect(int player_id){
 	if (started)Die(player_id);
 }
 
-string Game::login(const c_s_msg&msg, int player_id){
+string Game::login(const c_s_msg&msg, int&player_id){
+	player_id = connected;
 	if (msg.type)return "NULL";//错误
 	player[player_id] = new Player(msg.x, msg.y);
 	string user_name = string(msg.remark);
@@ -202,8 +203,8 @@ s_c_msg&Game::info(int player_id){
 			//output.IsCuring[i] = player[i] -> IsCuringNow();
 			//if(player[i] -> GetMainWeapon() == NULL)output.IsLoading[i] = false;
 			//else output.IsLoading[i] = player[i] -> GetMainWeapon() -> IsLoadingBullet();
-			output.Firing[i] = ShootSuccess[i];
-			ShootSuccess[i] = false;
+			output.Firing[i] = ShootSuccess[player_id][i]>0;
+			if(ShootSuccess[player_id][i]>0)--ShootSuccess[player_id][i];
 			if(player[i] -> GetMainWeapon() == NULL || player[i] -> GetMainWeapon() -> GetType() == FIST) output.MainWeaponType[i] = -1;
 			else output.MainWeaponType[i] = player[i] -> GetMainWeapon() -> GetType();
 			output.Isdead[i] = player[i] -> JudgeDead();
@@ -225,7 +226,7 @@ void Game::change_poison(){
 
 bool Game::Die(int player_id){
 	if (!player[player_id]->JudgeDead())return false;
-	box[BoxNumber] = new Box(player[player_id]->GetX(), player[player_id]->GetY(),BoxNumber);
+	box[BoxNumber] = new Box(player[player_id]->GetX()+8, player[player_id]->GetY()+8,BoxNumber);
 	box[BoxNumber]->InitBoxByPlayer(player[player_id]);
 	++BoxNumber;
 	--living_count;
@@ -309,7 +310,7 @@ void Game::merge(const c_s_msg&msg, int player_id){
 		player[player_id]->GetMainWeapon()->LoadEnd(nowtime);
 	if (msg.ShootAngle>=0)
 		Shoot(player_id, msg.ShootAngle,nowtime);
-	player[player_id]->CureStart(msg.type, nowtime);
+	player[player_id]->CureStart(msg.curetype, nowtime);
 	player[player_id]->CureEnd(nowtime);
 }
 
@@ -317,7 +318,7 @@ void Game::merge(const c_s_msg&msg, int player_id){
 #define DIST(xa,ya,xb,yb) (sqrt(((xa)-(xb))*((xa)-(xb))+((ya)-(yb))*((ya)-(yb))))
 void Game::Shoot(int player_id, double angle,unsigned nowtime){
 	if (!player[player_id]->Shoot(nowtime))return;
-	ShootSuccess[player_id] = true;
+	for (int i = 0;i<MAXPLAYER;++i)++ShootSuccess[i][player_id];
 	int times = player[player_id]->GetMainWeapon()->GetType()==SHOTGUN ? 5 : 1;
 
 	while (times)
@@ -325,8 +326,8 @@ void Game::Shoot(int player_id, double angle,unsigned nowtime){
 		angle = player[player_id]->GetShootAngle(angle);
 		double mindist = player[player_id]->GetMainWeapon()->GetDistance();
 		int target = -1;
-		unsigned sourcex = player[player_id]->GetX()+PLAYERSIZE/2, sourcey = player[player_id]->GetY()+PLAYERSIZE/2;
-		double A = cos(angle), B = -sin(angle);
+		int sourcex = player[player_id]->GetX()+PLAYERSIZE/2, sourcey = player[player_id]->GetY()+PLAYERSIZE/2;
+		double A = sin(angle), B = -cos(angle);
 		double C = -(A*sourcex+B*sourcey);
 
 		for (int i = 0;i<MAXPLAYER;++i)
@@ -335,7 +336,9 @@ void Game::Shoot(int player_id, double angle,unsigned nowtime){
 			if (player[i]->JudgeDead())continue;
 
 			bool hit = false;
-			unsigned tmpx = player[i]->GetX(), tmpy = player[i]->GetY();
+			int tmpx = player[i]->GetX(), tmpy = player[i]->GetY();
+
+			if (SGN(A)!=SGN(tmpy-sourcey)||SGN(B)!=SGN(sourcex-tmpx))continue;
 
 			char sign = SGN(A*tmpx+B*tmpy+C);
 			if (sign!=SGN(A*(tmpx+PLAYERSIZE)+B*tmpy+C))hit = true;
@@ -370,14 +373,31 @@ void Game::Shoot(int player_id, double angle,unsigned nowtime){
 					}
 				}
 			}
-		if (target==-1)continue;
+		if (target==-1)
+			{
+			--times;
+			continue;
+			}
 		for (double tested_dist = 0;tested_dist<mindist;tested_dist += WALLSIZE/2.0)
-			if (wall->IsWall(int(sourcex+tested_dist*cos(angle)), int(sourcey+tested_dist*sin(angle))))
+			{
+			int xx = int(sourcex+tested_dist*cos(angle));
+			int yy = int(sourcex+tested_dist*cos(angle));
+			if (xx<0||xx>=MAP_WIDTH||yy<0||yy>=MAP_LENGTH)
 				{
 				target = -1;
 				break;
 				}
-		if (target==-1)continue;
+			if (wall->IsWall(xx, yy))
+				{
+				target = -1;
+				break;
+				}
+			}
+		if (target==-1)
+			{
+			--times;
+			continue;
+			}
 		player[target]->BeAttack(player[player_id]->GetMainWeapon()->GetDamage(), player_id);
 		if (Die(target))player[player_id]->KillOnePlayer();
 		--times;

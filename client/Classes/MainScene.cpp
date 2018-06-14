@@ -62,6 +62,7 @@ const string PillName[4] = { "others/medical_kit.png", "others/first_aid.png", "
 // on "init" you need to initialize your instance
 bool MainScene::init()
 {
+	log("structure size: %d", sizeof(s_c_msg));
     totBoxNum = 0;
     playerID = 0;
 	OpenBoxID = -1;
@@ -1315,7 +1316,7 @@ void MainScene::try_receive(float dt)
 			{
 			if (i==playerID)continue;
 			if (enemy[i]->dead())continue;
-			enemy[i]->setPosition(s2c.x[i]*2, s2c.y[i]*2);
+			enemy[i]->setPosition(s2c.x[i]*2+16, s2c.y[i]*2+16);
 			enemy[i]->setRotation(s2c.face_angle[i]);
 			if (~s2c.MainWeaponType[i])
 				enemy[i]->setMainWeapon(s2c.MainWeaponType[i]);
@@ -1342,8 +1343,8 @@ void MainScene::try_receive(float dt)
 		extern c_s_msg to_be_sent;
 		to_be_sent.face_angle = player->getRotation();
 		to_be_sent.type = 1;
-		to_be_sent.x = player->getPosition().x/2;
-		to_be_sent.y = player->getPosition().y/2;
+		to_be_sent.x = (player->getPosition().x-16)/2;
+		to_be_sent.y = (player->getPosition().y-16)/2;
 		}
 	write();
 }

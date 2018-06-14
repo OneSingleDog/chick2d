@@ -26,7 +26,7 @@ private:
 	std::string username_;
 	int id_;
 
-	talk_to_client(int id):sock_(service), started_(false), username_("NULL"), id_(id){}
+	talk_to_client():sock_(service), started_(false), username_("NULL"), id_(){}
 
 	size_t read_complete(const boost::system::error_code &err, size_t bytes) {
 		if (err) return 0;
@@ -43,7 +43,7 @@ public:
 		do_read();
 		}
 
-	static ptr new_(int id) { ptr new_(new talk_to_client(id)); return new_; }
+	static ptr new_() { ptr new_(new talk_to_client()); return new_; }
 
 	void stop();
 
@@ -74,7 +74,7 @@ private:
 		if(chick2d.alive(id_))do_read();//是否继续连接
 		else
 			{
-			printf("%s has died.\n",username_.c_str());
+			printf("%s has finished the game.\n",username_.c_str());
 			stop();
 			}
 		return;
@@ -97,7 +97,7 @@ void handle_accept(talk_to_client::ptr client, const talk_to_client::error_code 
 	{
 	client->start();
 	printf("A player has connected.\n");
-	talk_to_client::ptr new_client = talk_to_client::new_(now_opened);
+	talk_to_client::ptr new_client = talk_to_client::new_();
 	clients[now_opened] = new_client;
 	if (now_opened-now_aborted<MAXPLAYER)
 		{
@@ -116,7 +116,7 @@ void talk_to_client::stop() {
 		printf("A player has aborted.\n");
 		if (now_opened-now_aborted==MAXPLAYER-1)
 			{
-			clients[now_opened] = talk_to_client::new_(now_opened);
+			clients[now_opened] = talk_to_client::new_();
 			acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
 			++now_opened;
 			}
@@ -132,7 +132,7 @@ int main()
 		printf("Initial completed\n");
 		now_opened = 0;
 		now_aborted = 0;
-		clients[now_opened] = talk_to_client::new_(now_opened);
+		clients[now_opened] = talk_to_client::new_();
 		acceptor.async_accept(clients[now_opened]->sock(), boost::bind(handle_accept, clients[now_opened], _1));
 		++now_opened;
 		service.reset();

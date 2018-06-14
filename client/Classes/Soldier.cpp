@@ -231,7 +231,7 @@ void Soldier::changeBullet() {
     auto animate= Animate::create(animation);
     // run
     
-    auto seq = Sequence::create(animate, NULL);
+    auto seq = RepeatForever::create(animate);
     
     arm->runAction(seq);
 }
@@ -244,7 +244,8 @@ void Soldier::Shoot() {
     }
     // now lets animate the sprite we moved
     Vector<SpriteFrame*> animFrames;
-    animFrames.pushBack(SpriteFrame::create(Soldier::fireName[MainWeapon], Rect(0,0,270,90)));
+	for(int i=0;i<20;++i)
+		animFrames.pushBack(SpriteFrame::create(Soldier::fireName[MainWeapon], Rect(0, 0, 270, 90)));
     animFrames.pushBack(SpriteFrame::create("player/blank.png", Rect(0, 0, 28, 28)));
     
     // create the animation out of the frames
@@ -415,6 +416,8 @@ void Soldier::setBullet(int Mcur, int Mback, int Scur, int Sback) {
     mainTotBulletNum = Mback;
     subCurBulletNum = Scur;
     subTotBulletNum = Sback;
+
+	if (mainCurBulletNum==maxBullet[MainWeapon])arm->stopAllActions();
     
     mainWeaponText->setString((std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum)).c_str());
     subWeaponText->setString((std::to_string(subCurBulletNum) + "/" + std::to_string(subTotBulletNum)).c_str());

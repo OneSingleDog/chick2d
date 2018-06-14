@@ -25,7 +25,7 @@ private:
 	int poison_TIME[MAXLEVEL];
 	int poison_SIZE[MAXLEVEL];
 
-    bool ShootSuccess[MAXPLAYER];
+    int ShootSuccess[MAXPLAYER][MAXPLAYER];
 
 	int poison_LEVEL;
 	int poison_X, poison_Y;
@@ -45,7 +45,7 @@ public:
 	s_c_msg output;
     Game();
     void InitGame();
-	string login(const c_s_msg&msg, int player_id);
+	string login(const c_s_msg&msg, int&player_id);
 	s_c_msg&info(int player_id);
 	void merge(const c_s_msg&msg, int player_id);
 	bool alive(int player_id);
