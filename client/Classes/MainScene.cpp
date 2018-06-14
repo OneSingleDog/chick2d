@@ -1220,6 +1220,7 @@ void MainScene::try_receive(float dt)
 	static clock_t last_time;
 	static int check_cnt;
 	if (!isOnline)return;
+	if (!received())return;
 	if (check_cnt<0||check_cnt>60)check_cnt = 0;
 	if (check_cnt<60)++check_cnt;
 	else
@@ -1234,7 +1235,6 @@ void MainScene::try_receive(float dt)
 		Director::getInstance()->replaceScene(scene);
 		return;
 		}
-	if (!received())return;
 	extern s_c_msg s2c;
 	if (!isRunning)
 		{
