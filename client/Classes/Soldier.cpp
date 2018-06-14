@@ -60,7 +60,7 @@ Soldier::~Soldier() {
 
 string Soldier::armName[NUM_OF_WEAPON] = { "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm1.png", "player/arm0.png" };
 string Soldier::weaponName[NUM_OF_WEAPON] = { "player/weapon0_lookover.png", "player/weapon1_lookover.png", "player/weapon2_lookover.png", "player/weapon3_lookover.png", "player/blank.png" };
-string Soldier::fireName[NUM_OF_WEAPON] = { "player/blank.png", "player/blank.png", "player/blank.png", "player/blank.png", "player/blank.png" };
+string Soldier::fireName[NUM_OF_WEAPON] = { "player/fire0.png", "player/fire1.png", "player/fire2.png", "player/fire3.png", "player/blank.png" };
 string Soldier::weaponShowName[NUM_OF_WEAPON] = { "player/weaponshow0.png", "player/weaponshow1.png", "player/weaponshow2.png", "player/weaponshow3.png", "player/blank.png" };
 int Soldier::maxBullet[NUM_OF_WEAPON] = { 5, 15, 2, 7, 0 };
 float Soldier::circleSize[NUM_OF_WEAPON] = { 1.1, 0.61, 0.3, 0.4, 0.0001 };
@@ -244,8 +244,7 @@ void Soldier::Shoot() {
     }
     // now lets animate the sprite we moved
     Vector<SpriteFrame*> animFrames;
-	for(int i=0;i<20;++i)
-		animFrames.pushBack(SpriteFrame::create(Soldier::fireName[MainWeapon], Rect(0, 0, 270, 90)));
+	animFrames.pushBack(SpriteFrame::create(Soldier::fireName[MainWeapon], Rect(0, 0, 500, 500)));
     animFrames.pushBack(SpriteFrame::create("player/blank.png", Rect(0, 0, 28, 28)));
     
     // create the animation out of the frames
@@ -407,7 +406,7 @@ void Soldier::setMainWeapon(int weaponType) {
     mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
     weapon->setTexture(Soldier::weaponName[MainWeapon]);
     arm->setTexture(Soldier::armName[MainWeapon]);
-    fire->setTexture(Soldier::fireName[MainWeapon]);
+    //fire->setTexture(Soldier::fireName[MainWeapon]);
     circle->setScale(Soldier::circleSize[MainWeapon]);
 }
 
