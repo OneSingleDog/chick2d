@@ -59,7 +59,9 @@ bool HelloWorld::init()
 		closeItem->getContentSize().width <= 0 ||
 		closeItem->getContentSize().height <= 0)
 	{
+		#ifdef _DEBUG
 		problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
+		#endif
 	}
 	else
 	{
@@ -78,7 +80,9 @@ bool HelloWorld::init()
 		StartGameItem->getContentSize().width <= 0 ||
 		StartGameItem->getContentSize().height <= 0)
 	{
+		#ifdef _DEBUG
 		problemLoading("'StartGameNormal.png' and 'StartGameSelected.png'");
+		#endif
 	}
 	else
 	{
@@ -97,7 +101,9 @@ bool HelloWorld::init()
 	auto label = Label::createWithTTF("Chick2d", "fonts/Marker Felt.ttf", 180);
 	if (label == nullptr)
 	{
+		#ifdef _DEBUG
 		problemLoading("'fonts/Marker Felt.ttf'");
+		#endif
 	}
 	else
 	{

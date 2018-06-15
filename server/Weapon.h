@@ -40,7 +40,7 @@
 #define SHOTGUN_DAMAGE 40
 #define HANDGUN_DAMAGE 25
 
-#define SHOTGUN_TIMES 3
+#define SHOTGUN_TIMES 5
 
 class Weapon {
 public:

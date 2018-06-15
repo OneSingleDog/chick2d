@@ -60,8 +60,8 @@ private:
 
 	static const int NUM_OF_PILL = 4;
 
-	string MainScene::boxWeapon[Soldier::NUM_OF_WEAPON] = {"box/weaponshow0.png", "box/weaponshow1.png", "box/weaponshow2.png", "box/weaponshow3.png", "box/bottom.png"};
-	string MainScene::boxPill[NUM_OF_PILL] = {"box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pill3.png"};
+	string boxWeapon[Soldier::NUM_OF_WEAPON] = {"box/weaponshow0.png", "box/weaponshow1.png", "box/weaponshow2.png", "box/weaponshow3.png", "box/bottom.png"};
+	string boxPill[NUM_OF_PILL] = {"box/pill0.png", "box/pill1.png", "box/pill2.png", "box/pill3.png"};
 	string audioName[Soldier::NUM_OF_WEAPON] = {"music/effect/weaponaudio0.mp3", "music/effect/weaponaudio1.mp3", "music/effect/weaponaudio2.mp3", "music/effect/weaponaudio3.mp3"};
 
 	std::vector<Box> Box_ve;

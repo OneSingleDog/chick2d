@@ -30,7 +30,11 @@ Game::Game(){
 #else
 Game::Game(){
 	FILE*config = NULL;
+	#ifdef DEBUGVS
 	fopen_s(&config, "E:\\VS2017\\Source\\chick2d-server\\x64\\Debug\\config.txt", "r");
+	#else
+	fopen_s(&config, "config.txt", "r");
+	#endif
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
@@ -217,6 +221,7 @@ void Game::change_poison(){
 	int t = poison_SIZE[poison_LEVEL-1]-poison_SIZE[poison_LEVEL]+1;
 	poison_X += rand()%t;
 	poison_Y += rand()%t;
+	if (poison_SIZE[poison_LEVEL]==0)return;
 	int xx = poison_X+rand()%poison_SIZE[poison_LEVEL];
 	int yy = poison_Y+rand()%poison_SIZE[poison_LEVEL];
 	while (wall->IsWall(xx-BOXSIZE, yy-BOXSIZE)||wall->IsWall(xx-BOXSIZE, yy+BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy-BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy+BOXSIZE)||wall->IsWall(xx, yy+BOXSIZE)||wall->IsWall(xx, yy-BOXSIZE)||wall->IsWall(xx+BOXSIZE, yy)||wall->IsWall(xx-BOXSIZE, yy)||wall->IsWall(xx, yy))
