@@ -12,7 +12,7 @@ using namespace CocosDenshion;
 #include "boost.h"
 
 USING_NS_CC;
-//USING_NS_CC_EXT;
+
 using namespace std;
 
 Scene* HelloWorld::createScene()
@@ -20,12 +20,14 @@ Scene* HelloWorld::createScene()
 	return HelloWorld::create();
 }
 
+#ifdef _DEBUG
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
+#endif
 
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
@@ -35,8 +37,6 @@ bool HelloWorld::init()
     // set the background music and continuously play it.
     audio->playBackgroundMusic("music/start.mp3", true);
     
-	//////////////////////////////
-	// 1. super init first
 	if (!Scene::init())
 	{
 		return false;
@@ -45,15 +45,9 @@ bool HelloWorld::init()
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//    you may modify it.
-
 	 auto back = Sprite::create("Background.jpg");
 	 back->setPosition(510, 400);
 	 this->addChild(back, 1);
-
-
 
 	// add a "close" icon to exit the progress. it's an autorelease object
 	auto closeItem = MenuItemImage::create(
@@ -100,12 +94,6 @@ bool HelloWorld::init()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	/////////////////////////////
-	// 3. add your codes below...
-
-	// add a label shows "Chick2d"
-	// create and initialize a label
-
 	auto label = Label::createWithTTF("Chick2d", "fonts/Marker Felt.ttf", 180);
 	if (label == nullptr)
 	{
@@ -132,7 +120,6 @@ bool HelloWorld::init()
 	username->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_username, this));
 	this->addChild(username, 1);
 
-
 	auto server_ip = Label::create("ServerIP:", "fonts/Marker Felt.ttf", 32);
 	server_ip->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 25);
 	this->addChild(server_ip, 1);
@@ -143,7 +130,6 @@ bool HelloWorld::init()
 	serverip->setPosition(Point(origin.x + visibleSize.width / 2 + 130, origin.y + visibleSize.height / 2 - 25));
 	serverip->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_userip, this));
 	this->addChild(serverip, 1);
-
 
 	auto server_port = Label::create("ServerPort:", "fonts/Marker Felt.ttf", 32);
 	server_port->setPosition(visibleSize.width / 2 - 130, visibleSize.height / 2 - 100);
@@ -156,9 +142,9 @@ bool HelloWorld::init()
 	serverport->addEventListener(CC_CALLBACK_2(HelloWorld::textFieldEvent_userport, this));
 	this->addChild(serverport, 1);
 
-
 	return true;
 }
+
 void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventType type)
 {
 	if (type == ui::TextField::EventType::ATTACH_WITH_IME) {
@@ -169,16 +155,12 @@ void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventTyp
 
 		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f+70)));
 
-		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
+		textField->setMaxLengthEnabled(true);
+		textField->setMaxLength(12);//max input 12
 
-		textField->setMaxLengthEnabled(true); //设置允许最大数目限制
+		textField->setPlaceHolder("input username here");
 
-		textField->setMaxLength(12);
-		//设置最大允许数目为12
-
-		textField->setPlaceHolder("input text here");  //设置占位符 
-
-		textField->setPlaceHolderColor(Color4B::GRAY); //设置占位符颜色
+		textField->setPlaceHolderColor(Color4B::GRAY);//color
 
 		textField->setTextColor(Color4B::GRAY);
 	}
@@ -192,6 +174,7 @@ void HelloWorld::textFieldEvent_username (Ref * pSender, ui::TextField::EventTyp
 	}
 
 }
+
 void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType type)
 {
 	if (type == ui::TextField::EventType::ATTACH_WITH_IME) {
@@ -202,16 +185,11 @@ void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType t
 
 		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f - 5)));
 
-		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
+		textField->setMaxLengthEnabled(true);
+		textField->setMaxLength(15);//max input 15
 
-		textField->setMaxLengthEnabled(true); //设置允许最大数目限制
-
-		textField->setMaxLength(15);
-		//设置最大允许数目为15
-
-		textField->setPlaceHolder("input text here");  //设置占位符 
-
-		textField->setPlaceHolderColor(Color4B::GRAY); //设置占位符颜色
+		textField->setPlaceHolder("input server IP here");
+		textField->setPlaceHolderColor(Color4B::GRAY);//color
 
 		textField->setTextColor(Color4B::GRAY);
 	}
@@ -224,6 +202,7 @@ void HelloWorld::textFieldEvent_userip(Ref * pSender, ui::TextField::EventType t
 		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f + 130, screenSize.height / 2.0f - 25)));
 	}
 }
+
 void HelloWorld::textFieldEvent_userport(Ref * pSender, ui::TextField::EventType type)
 {
 	if (type == ui::TextField::EventType::ATTACH_WITH_IME) {
@@ -234,16 +213,11 @@ void HelloWorld::textFieldEvent_userport(Ref * pSender, ui::TextField::EventType
 
 		textField->runAction(CCMoveTo::create(0.225f, Vec2(screenSize.width / 2.0f+130, screenSize.height / 2.0f - 80)));
 
-		//displayValueLabel->setString(String::createWithFormat("attach with IME")->getCString());
+		textField->setMaxLengthEnabled(true);
+		textField->setMaxLength(6);//max input 6
 
-		textField->setMaxLengthEnabled(true); //设置允许最大数目限制
-
-		textField->setMaxLength(6);
-		//设置最大允许数目为6
-
-		textField->setPlaceHolder("input text here");  //设置占位符 
-
-		textField->setPlaceHolderColor(Color4B::GRAY); //设置占位符颜色
+		textField->setPlaceHolder("input server port here");
+		textField->setPlaceHolderColor(Color4B::GRAY);//color
 
 		textField->setTextColor(Color4B::GRAY);
 	}
@@ -258,7 +232,6 @@ void HelloWorld::textFieldEvent_userport(Ref * pSender, ui::TextField::EventType
 
 }
 
-
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application
@@ -267,13 +240,6 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 	exit(0);
 #endif
-
-	/*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-	//EventCustom customEndEvent("game_scene_close_event");
-	//_eventDispatcher->dispatchEvent(&customEndEvent);
-
-
 }
 
 void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
@@ -316,9 +282,7 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		pthread_mutex_lock(&mutex_cocos);
 		flag = flag&&ptr->started();
 		}
-
-    //flag = true;
-    
+ 
 	if (flag)
     {            
 		auto scene = MainScene::createScene();
@@ -329,5 +293,4 @@ void HelloWorld::StartCallback(cocos2d::Ref *pSender) {
 		auto scene = ConnectfailScene::createScene();
 		Director::getInstance()->replaceScene(scene);
 		}
-
 }

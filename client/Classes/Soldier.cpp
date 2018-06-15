@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <string>
 #include <cmath>
+
 USING_NS_CC;
 using std::string;
 
@@ -18,7 +19,7 @@ Soldier::Soldier(int tp):type(tp) {
     subCurBulletNum = 0;
     subTotBulletNum = 0;
     
-    // animation
+    //load animation from cache
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("player/changeBullet.plist");
     for(int i = 704; i <= 735; ++i) {
         if(i >= 708 && i <= 710)continue;
@@ -80,20 +81,19 @@ void Soldier::create() {
     circle = Sprite::create("player/circle.png");
     circle->setScale(Soldier::circleSize[MainWeapon]);
 
-    blood = Sprite::create("others/bar.png");   //创建进度框
+    blood = Sprite::create("others/bar.png"); //bar
     blood->setScale(0.7);
-    auto sprBlood0 = Sprite::create("others/bloodG.png");  //创建血条
+    auto sprBlood0 = Sprite::create("others/bloodG.png");//blood on the bar
     auto sprBlood1 = Sprite::create("others/bloodY.png");
     auto sprBlood2 = Sprite::create("others/bloodR.png");
-    progress[0] = ProgressTimer::create(sprBlood0);        //创建progress对象
-    progress[1] = ProgressTimer::create(sprBlood1);        //创建progress对象
-    progress[2] = ProgressTimer::create(sprBlood2);        //创建progress对象
+    progress[0] = ProgressTimer::create(sprBlood0);        //progress object
+    progress[1] = ProgressTimer::create(sprBlood1);        //progress object
+    progress[2] = ProgressTimer::create(sprBlood2);        //progress object
 
     for(int i = 0; i < 3; ++i) {
-        progress[i]->setType(ProgressTimer::Type::BAR);        //类型：条状
+        progress[i]->setType(ProgressTimer::Type::BAR);        //shape
         progress[i]->setScale(0.7);
-        //从右到左减少血量
-        progress[i]->setMidpoint(Point(0,0.5));     //如果是从左到右的话，改成(1,0.5)即可
+        progress[i]->setMidpoint(Point(0,0.5));     //if left to right (1,0.5)
         progress[i]->setBarChangeRate(Point(1,0));
         progress[i]->setVisible(false);
     }
@@ -126,7 +126,7 @@ void Soldier::create() {
 
 void Soldier::updateBlood() {
     for(int i = 0; i < 3; ++i) {
-        progress[i]->setPercentage(existLife);  //这里是百分制显示
+        progress[i]->setPercentage(existLife);//percentage
     }
     progress[0]->setVisible(existLife >= 75);
     progress[1]->setVisible(existLife < 75 && existLife >= 25);
@@ -149,7 +149,7 @@ void Soldier::setPosition(float x, float y) {
 
     auto size = Director::getInstance()->getWinSize();
     
-    blood->setPosition(this->getPosition() - Vec2(0, size.height / 5 * 2)); //设置框的位置
+    blood->setPosition(this->getPosition() - Vec2(0, size.height / 5 * 2));
     for(int i = 0; i < 3; ++i) {
         progress[i]->setPosition(this->getPosition() - Vec2(0, size.height / 5 * 2));
     }
@@ -263,10 +263,6 @@ void Soldier::Shoot() {
     Animation* animation = Animation::createWithSpriteFrames(animFrames, 0.2f);
     Animate* animate = Animate::create(animation);
 
-    // Just show animation
-//    --mainCurBulletNum;
-//    mainWeaponText->setString(std::to_string(mainCurBulletNum) + "/" + std::to_string(mainTotBulletNum));
-    
     // run it
     auto seq = Sequence::create(animate, NULL);
     
@@ -380,7 +376,7 @@ void Soldier::setVisible(bool flag) {
 	mainWeaponText->setVisible(flag);
 	subWeaponText->setVisible(flag);
     
-    if(!flag)bloodfog->setVisible(flag);
+    if(!flag)bloodfog->setVisible(flag);//only set invisible
 
 }
 
@@ -423,7 +419,6 @@ void Soldier::setMainWeapon(int weaponType) {
     mainWeaponShow->setTexture(Soldier::weaponShowName[MainWeapon]);
     weapon->setTexture(Soldier::weaponName[MainWeapon]);
     arm->setTexture(Soldier::armName[MainWeapon]);
-    //fire->setTexture(Soldier::fireName[MainWeapon]);
     circle->setScale(Soldier::circleSize[MainWeapon]);
 }
 

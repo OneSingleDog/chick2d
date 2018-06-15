@@ -43,11 +43,11 @@ void talk_to_svr::on_connect(const error_code & err) {
 	if (!err)
 		{
 		#ifdef DEBUGVS
-		OutputDebugPrintf("Connected ok\n");//连接成功
+		OutputDebugPrintf("Connected ok\n");//connect ok
 		#endif
 		pthread_mutex_unlock(&mutex_cocos);
 		pthread_mutex_lock(&mutex_boost);
-		do_write(c2s);//登陆信息
+		do_write(c2s);//form login information
 		}
 	else
 		{
@@ -68,10 +68,6 @@ void talk_to_svr::on_read(const error_code & err, size_t bytes) {
 		#endif
 		}
 	if (!started()) return;
-
-	#ifdef DEBUGVS
-	//OutputDebugPrintf("Read!\n");
-	#endif
 
     #ifdef MAC
     memcpy(&s2c, read_buffer_, s_c_size);
@@ -111,7 +107,6 @@ void*boost_main(void*)
 	if (canceled)return NULL;
 	talk_to_svr::start(ptr,ip::tcp::endpoint(ip::address::from_string(login_host.c_str()), stoi(login_port)), login_username);
 	service.run();
-	//system("pause");
 	#ifdef MAC
 	pthread_detach(pthread_self());
 	#endif

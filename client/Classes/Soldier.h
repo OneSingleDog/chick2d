@@ -7,8 +7,6 @@
 
 using std::string;
 
-const int NUM_OF_WEAPON = 5;
-
 class Soldier {
 private:
 	int type;
@@ -47,6 +45,7 @@ private:
 	cocos2d::Label *User_tag;
 
 public:
+	static const int NUM_OF_WEAPON = 5;
 	static string armName[NUM_OF_WEAPON];
 	static string weaponName[NUM_OF_WEAPON];
 	static string fireName[NUM_OF_WEAPON];
