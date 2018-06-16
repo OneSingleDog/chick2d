@@ -7,7 +7,11 @@
 #ifdef MAC
 Game::Game(){
 	FILE*config=NULL;
+	#ifdef _DEBUG
 	config = fopen( "/Users/mac/Desktop/学习/面向对象/finalprogram/chick2d/server/config.txt", "r");
+	#else
+	config = fopen("config.txt", "r");
+	#endif
 	if (config==NULL)
 		{
 		printf("Open config failed\n");
@@ -392,7 +396,7 @@ void Game::Shoot(int player_id, double angle,unsigned nowtime){
 		for (double tested_dist = 0;tested_dist<mindist;tested_dist += WALLSIZE/2.0)
 			{
 			int xx = int(sourcex+tested_dist*cos(angle));
-			int yy = int(sourcex+tested_dist*cos(angle));
+			int yy = int(sourcey+tested_dist*sin(angle));
 			if (xx<0||xx>=MAP_WIDTH||yy<0||yy>=MAP_LENGTH)
 				{
 				target = -1;
