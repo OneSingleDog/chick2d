@@ -40,6 +40,9 @@ For example: `./chick2d_server -PORT 8001 -PLAYER 5 -BOX 15` for MacOS
 > Hint: To build a loacl area network, just open your mobile phone hotspot.<br>
 > 提示：如果想创建一个局域网，打开你的手机热点即可。
 
+> Hint: Make sure that `config.txt` and the server application are in the same path.<br>
+> 提示：确保配置文件 `config.txt` 和服务端程序在同一路径下。
+
 ### Client 客户端
 
 Firstly, make sure you and the server have connected to the same local area network.
