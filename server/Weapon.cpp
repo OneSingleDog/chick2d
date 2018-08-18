@@ -62,7 +62,7 @@ double Weapon::GetRandomFireAngle(double curangle) {
 	return curangle + anglerange;
 }
 
-void Weapon::LoadBegin(unsigned bgtime){
+void Weapon::LoadBegin(int bgtime){
 	if(IsLoading)return;
 	if(BackupBullet == 0)return;
 	if(CurBullet == CurMaxBullet)return;
@@ -70,7 +70,7 @@ void Weapon::LoadBegin(unsigned bgtime){
 	Loadbegintime = bgtime;
 }
 
-void Weapon::LoadEnd(unsigned edtime){
+void Weapon::LoadEnd(int edtime){
 	if(IsLoading && edtime - Loadbegintime >= loadtime){
 		unsigned resbull = CurMaxBullet - CurBullet;
 		if(BackupBullet <= resbull){
@@ -90,7 +90,7 @@ void Weapon::PickBullet(unsigned BulletCount) {
 	TotalBullet += BulletCount;
 }
 
-bool Weapon::Fire(unsigned nowtime){
+bool Weapon::Fire(int nowtime){
 	if(nowtime - Shootbegintime <= shootdelay)return false;
 	if(CurBullet == 0)return false;
 	if(IsLoading)return false;

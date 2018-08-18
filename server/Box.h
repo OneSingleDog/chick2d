@@ -3,6 +3,7 @@
 
 #include "Player.h"
 #include "node.h"
+#include <cstdlib>
 
 class Box:public node{
 private:

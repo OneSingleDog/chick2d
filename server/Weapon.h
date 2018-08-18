@@ -48,10 +48,10 @@ public:
 
 	double GetRandomFireAngle(double curangle);
 
-	void  LoadBegin(unsigned bgtime);
-	void  LoadEnd(unsigned edtime);
+	void  LoadBegin(int bgtime);
+	void  LoadEnd(int edtime);
 
-	bool  Fire(unsigned nowtime);
+	bool  Fire(int nowtime);
 
 	void  Exchange();
 
@@ -80,9 +80,9 @@ private:
 	unsigned BackupBullet;
 
 	bool IsLoading;
-	unsigned Loadbegintime;
+	int Loadbegintime;
 
-	unsigned Shootbegintime;
+	int Shootbegintime;
 
 	double distance;
 	double damage;

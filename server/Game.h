@@ -4,7 +4,6 @@
 #include "Wall.h"
 #include "Box.h"
 #include "msg.h"
-#include <ctime>
 
 //#define MAXPLAYER 5
 //#define MAXBOX 30
@@ -30,7 +29,7 @@ private:
 	int poison_LEVEL;
 	int poison_X, poison_Y;
 	int BoxNumber;
-    clock_t Gamebegintime;
+    long long Gamebegintime;
 	bool started;
 	int connected;
 	int living_count;

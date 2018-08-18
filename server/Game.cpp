@@ -5,6 +5,7 @@
 #include <cmath>
 
 #ifdef MAC
+#include <sys/time.h>
 Game::Game(){
 	FILE*config=NULL;
 	#ifdef _DEBUG
@@ -32,6 +33,7 @@ Game::Game(){
 	fclose(config);
 }
 #else
+#include <windows.h>
 Game::Game(){
 	FILE*config = NULL;
 	#ifdef DEBUGVS
@@ -127,7 +129,13 @@ string Game::login(const c_s_msg&msg, int&player_id){
 		started = true;
 		for (int i = 0;i<player_num;++i)
 			if (!player[i]->JudgeDead())++living_count;
-		Gamebegintime = clock();
+		#ifdef MAC
+		struct timeval tv;
+		gettimeofday(&tv,NULL);
+		Gamebegintime = (long long)tv.tv_sec*1000+tv.tv_usec/1000;
+		#else
+		Gamebegintime = GetTickCount();
+		#endif
 		}
 	return user_name;
 }
@@ -251,7 +259,14 @@ void Game::merge(const c_s_msg&msg, int player_id){
 	if (living_count<=1)return;
 	if (msg.type!=1)return;
 	if (player[player_id]->JudgeDead())return;
-	int nowtime = (clock()-Gamebegintime)*1000/CLOCKS_PER_SEC;
+	long long nowtime;
+	#ifdef MAC
+	struct timeval tv;
+	gettimeofday(&tv,NULL);
+	nowtime = (long long)tv.tv_sec*1000+tv.tv_usec/1000-Gamebegintime;
+	#else
+	nowtime = GetTickCount()-Gamebegintime;
+	#endif
 	if (poison_LEVEL<MAXLEVEL-1&&nowtime>=poison_TIME[poison_LEVEL+1])change_poison();
 	player[player_id]->ChangePosition(msg.x, msg.y);
 	player[player_id]->setFaceAngle(msg.face_angle);
